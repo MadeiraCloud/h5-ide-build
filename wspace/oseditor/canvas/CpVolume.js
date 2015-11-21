@@ -1,1 +1,102 @@
-define(["CanvasPopup","./TplPopup","constant","CloudResources"],function(e,t,n,r){return e.extend({type:"VolumePopup",events:{"mousedown li":"clickVolume"},closeOnBlur:!0,initialize:function(){var t,n,r,i,s;e.prototype.initialize.apply(this,arguments),this.host&&this.listenTo(this.host,"change:volume",this.render),t=this.models||[];if(t[0]&&t[0].get){s=this.models;for(r=0,i=s.length;r<i;r++)n=s[r],this.listenTo(n,"change:name",this.updateVolume),this.listenTo(n,"change:size",this.updateVolume)}this.selectAtBegin&&this.clickVolume({currentTarget:this.$el.find("[data-id="+this.selectAtBegin.id+"]")[0]})},migrate:function(e){var t;t=e.$el.find(".selected").attr("data-id"),this.$el.find('[data-id="'+t+'"]').addClass("selected")},updateVolume:function(e){var t;t=this.$el.find("[data-id="+e.id+"]"),t.children(".vpp-name").text(e.get("name")),t.children(".vpp-size").text(e.get("size")+"GB")},render:function(){var t;e.prototype.render.apply(this,arguments),this.selected&&(t=this.selected.getAttribute("data-id"),this.clickVolume({currentTarget:this.$el.find("[data-id="+t+"]")[0]}))},content:function(){var e,n,i,s,o,u,a;i=this.models||[];if(i[0]&&i[0].get){i=[],a=this.host.volumes();for(o=0,u=a.length;o<u;o++)s=a[o],n=s.get("appId"),i.push({id:s.get("id"),appId:n,name:s.get("name"),size:s.get("size"),snapshot:s.get("snapshot")}),n&&(e=r(s.type,s.design().region()).get(n),_.last(i).state=(e!=null?e.get("status"):void 0)||"unknown")}return t.volume(i)},clickVolume:function(e){var t,n;if(this.selected===e.currentTarget)return;return t=$(e.currentTarget).addClass("selected"),n=t.attr("data-id"),this.canvas.selectVolume(n),this.selected&&$(this.selected).removeClass("selected"),this.selected=e.currentTarget,!this.canvas.design.modeIsApp()&&e.which===1&&t.dnd(e,{dropTargets:this.canvas.$el,dataTransfer:{id:n},eventPrefix:"addVol_"}),!1},remove:function(){this.canvas.selectVolume(null),e.prototype.remove.call(this)}})});
+define(["CanvasPopup", "./TplPopup", "constant", "CloudResources"], function(CanvasPopup, TplPopup, constant, CloudResources) {
+  return CanvasPopup.extend({
+    type: "VolumePopup",
+    events: {
+      "mousedown li": "clickVolume"
+    },
+    closeOnBlur: true,
+    initialize: function() {
+      var data, volume, _i, _len, _ref;
+      CanvasPopup.prototype.initialize.apply(this, arguments);
+      if (this.host) {
+        this.listenTo(this.host, "change:volume", this.render);
+      }
+      data = this.models || [];
+      if (data[0] && data[0].get) {
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          volume = _ref[_i];
+          this.listenTo(volume, "change:name", this.updateVolume);
+          this.listenTo(volume, "change:size", this.updateVolume);
+        }
+      }
+      if (this.selectAtBegin) {
+        this.clickVolume({
+          currentTarget: this.$el.find('[data-id=' + this.selectAtBegin.id + ']')[0]
+        });
+      }
+    },
+    migrate: function(oldPopup) {
+      var id;
+      id = oldPopup.$el.find(".selected").attr("data-id");
+      this.$el.find('[data-id="' + id + '"]').addClass("selected");
+    },
+    updateVolume: function(volume) {
+      var $vol;
+      $vol = this.$el.find('[data-id=' + volume.id + ']');
+      $vol.children(".vpp-name").text(volume.get("name"));
+      $vol.children(".vpp-size").text(volume.get("size") + "GB");
+    },
+    render: function() {
+      var id;
+      CanvasPopup.prototype.render.apply(this, arguments);
+      if (this.selected) {
+        id = this.selected.getAttribute("data-id");
+        this.clickVolume({
+          currentTarget: this.$el.find("[data-id=" + id + "]")[0]
+        });
+      }
+    },
+    content: function() {
+      var appData, appId, data, volume, _i, _len, _ref;
+      data = this.models || [];
+      if (data[0] && data[0].get) {
+        data = [];
+        _ref = this.host.volumes();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          volume = _ref[_i];
+          appId = volume.get("appId");
+          data.push({
+            id: volume.get("id"),
+            appId: appId,
+            name: volume.get("name"),
+            size: volume.get("size"),
+            snapshot: volume.get("snapshot")
+          });
+          if (appId) {
+            appData = CloudResources(volume.type, volume.design().region()).get(appId);
+            _.last(data).state = (appData != null ? appData.get('status') : void 0) || 'unknown';
+          }
+        }
+      }
+      return TplPopup.volume(data);
+    },
+    clickVolume: function(evt) {
+      var $vol, volId;
+      if (this.selected === evt.currentTarget) {
+        return;
+      }
+      $vol = $(evt.currentTarget).addClass("selected");
+      volId = $vol.attr("data-id");
+      this.canvas.selectVolume(volId);
+      if (this.selected) {
+        $(this.selected).removeClass("selected");
+      }
+      this.selected = evt.currentTarget;
+      if (!this.canvas.design.modeIsApp() && evt.which === 1) {
+        $vol.dnd(evt, {
+          dropTargets: this.canvas.$el,
+          dataTransfer: {
+            id: volId
+          },
+          eventPrefix: "addVol_"
+        });
+      }
+      return false;
+    },
+    remove: function() {
+      this.canvas.selectVolume(null);
+      CanvasPopup.prototype.remove.call(this);
+    }
+  });
+});

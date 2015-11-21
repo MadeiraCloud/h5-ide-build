@@ -1,1 +1,9 @@
-define(["ComplexResModel","constant"],function(e,t){return e.extend({type:t.RESTYPE.OSELB,serialize:function(){}},{handleTypes:t.RESTYPE.OSELB,deserialize:function(){}})});
+define(["ComplexResModel", "constant"], function(ComplexResModel, constant) {
+  return ComplexResModel.extend({
+    type: constant.RESTYPE.OSELB,
+    serialize: function() {}
+  }, {
+    handleTypes: constant.RESTYPE.OSELB,
+    deserialize: function() {}
+  });
+});

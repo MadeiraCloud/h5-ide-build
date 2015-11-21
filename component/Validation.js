@@ -1,1 +1,4472 @@
-define("component/trustedadvisor/lib/TA.Config",{validDebug:"",syncTimeout:1e4,componentTypeToFileMap:{aws:{"AWS.AutoScaling.Group":["asg"],"AWS.EC2.SecurityGroup":["sg"],"AWS.VPC.VPNGateway":["vgw"],"AWS.VPC.VPNConnection":["vpn"],"AWS.VPC.CustomerGateway":["cgw"],"AWS.VPC.InternetGateway":["igw"],"AWS.EC2.Instance":["instance","state"],"AWS.ELB":["elb"],"AWS.VPC.NetworkInterface":["eni"],"AWS.VPC.NetworkAcl":["acl"],"AWS.AutoScaling.LaunchConfiguration":["state"],"AWS.VPC.RouteTable":["rtb"],"AWS.EC2.EBS.Volume":["ebs"],"AWS.EC2.KeyPair":["kp"],"AWS.RDS.DBInstance":["dbinstance"],"AWS.RDS.OptionGroup":["og"],"AWS.RDS.DBSubnetGroup":["sbg"]},openstack:{"OS::Neutron::Port":["osport"],"OS::Neutron::Subnet":["ossubnet"],"OS::Neutron::Router":["osrouter"],"OS::Neutron::Pool":["ospool"],"OS::Neutron::VIP":["oslistener"]}},globalList:{aws:{eip:["isHasIGW"],az:["isAZAlone"],sg:["isStackUsingOnlyOneSG","isAssociatedSGNumExceedLimit"],vpc:["isVPCAbleConnectToOutside"],stack:["~isHaveNotExistAMI"],kp:["longLiveNotice"],dbinstance:["isOgValid","isHaveEnoughIPForDB"],instance:["isMesosMasterCountLegal","isMesosHasSlave","isMesosMasterPlacedInPublicSubnet","isInstanceOrLcConnectable"],subnet:["isCidrConflict"]},openstack:{ossubnet:["subnetHasPortShouldConncectedOut","isSubnetCIDRConflict"],osstack:["isResExtendQuotaLimit"]}},asyncList:{aws:{cgw:["isCGWHaveIPConflict"],stack:["verify","isHaveNotExistAMIAsync","hasTerminateProtection"],subnet:["getAllAWSENIForAppEditAndDefaultVPC"],ebs:["isSnapshotExist"],kp:["isKeyPairExistInAws"],elb:["isSSLCertExist"],asg:["isTopicNonexist"],vpc:["isVPCUsingNonexistentDhcp"],og:["isOGExeedCountLimit"]},openstack:{}},get:function(e,t){var n;return Design.instance().type()==="AwsOps"?t="aws":t="openstack",((n=this[e])!=null?n[t]:void 0)||this[e].aws}}),define("TaHelper",["constant","MC","i18n!/nls/lang.js","Design","underscore"],function(e,t,n,r,i){var s,o;return o={taReturn:function(t,n,r){var i;return i={level:e.TA[t],info:n},r&&(i.uid=r),i},genTip:function(e){var t;return e.length>2?t=Function.call.apply(sprintf,e):t=e[1],t}},s={map:{protocal:{1:"icmp",6:"tcp",17:"udp","-1":"all"}},protocal:{get:function(e){return s.map.protocal[e.toString()]||e}},i18n:{"short":function(){return n.TA}},component:{get:function(e,n){return n?r.instance().component(e):t.canvas_data.component[e]}},message:{error:function(t,n){return n=o.genTip(arguments),o.taReturn(e.TA.ERROR,n,t)},warning:function(t,n){return n=o.genTip(arguments),o.taReturn(e.TA.WARNING,n,t)},notice:function(t,n){return n=o.genTip(arguments),o.taReturn(e.TA.NOTICE,n,t)}},eni:{getByInstance:function(n){return i.filter(t.canvas_data.component,function(r){if(r.type===e.RESTYPE.ENI&&t.extractID(r.resource.Attachment.InstanceId)===n.uid)return!0})}},sg:{get:function(n){var r,o,u,a,f,l,c,h,p,d,v,m,g,y,b,w;f=[];if(n.type===e.RESTYPE.LC){y=n.resource.SecurityGroups;for(l=0,d=y.length;l<d;l++)a=y[l],f.push(s.component.get(t.extractID(a)))}else if(n.type===e.RESTYPE.INSTANCE){o=s.eni.getByInstance(n);for(c=0,v=o.length;c<v;c++){r=o[c],b=r.resource.GroupSet;for(h=0,m=b.length;h<m;h++)u=b[h],f.push(s.component.get(t.extractID(u.GroupId)))}}else if(n.type===e.RESTYPE.ELB){w=n.resource.SecurityGroups;for(p=0,g=w.length;p<g;p++)a=w[p],f.push(s.component.get(t.extractID(a)))}return i.uniq(i.compact(f))},port:function(t){var n,r,o,u,a,f,l,c,h,p,d,v;r={"in":{},out:{}},i.isArray(t)||(t=[t]),n=function(e,t){var n,o;n=s.protocal.get(e.IpProtocol),r[t][n]||(r[t][n]=[]),o={from:Number(e.FromPort),to:Number(e.ToPort),range:e.IpRanges};if(i.where(r[t][n],o).length===0)return r[t][n].push(o)};for(a=0,c=t.length;a<c;a++){u=t[a];if(u.type!==e.RESTYPE.SG)continue;d=u.resource.IpPermissionsEgress;for(f=0,h=d.length;f<h;f++)o=d[f],n(o,"out");v=u.resource.IpPermissions;for(l=0,p=v.length;l<p;l++)o=v[l],n(o,"in")}return r},isInRange:function(e,t,n,r){var o,u,a;return o=!1,a=s.protocal.get(e.toLowerCase()),u=Number(t),i.each(n[r],function(e,t){return(t===a||t==="all")&&i.each(e,function(e){return u>=e.from&&u<=e.to&&(o=!0),null}),null}),o}}},s});var __indexOf=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/trustedadvisor/validation/aws/stack/stack",["constant","jquery","MC","i18n!/nls/lang.js","ApiRequest","CloudResources","TaHelper"],function(e,t,n,r,i,s,o){var u,a,f,l,c,h,p,d;return f=o.i18n.short(),u=function(e){var t,r,i;return r=n.canvas_data.component[e],i=r.resource.Instances,t=[],_.each(i,function(e){var r,i,s;return i=e.InstanceId,s=n.extractID(i),r=n.canvas_data.component[s].resource.Placement.AvailabilityZone,__indexOf.call(t,r)>=0||t.push(r),null}),t},p=function(e){var t,r;return t="",r=n.canvas_data.component[e],r&&r.name&&(t=r.name),t},d=function(e){var t,r;return r="",t=n.canvas_data.component[e],t&&t.type&&(r=t.type),r},h=function(s){var o,u,a;try{return s||(s=function(){}),a=n.canvas_data,i("stack_verify",{username:t.cookie("usercode"),session_id:t.cookie("session_id"),spec:a}).then(function(t){var n,i,o,u,a,f,l,c,h,v,m,g;n=!0,v=null,l="";if(t!==!0){n=!1;try{v=t,m=JSON.parse(v),f=m.uid,o=m.code,c=m.key,h=m.message,u=p(f),a=d(f),l=sprintf(r.TA.ERROR_STACK_FORMAT_VALID_FAILED,u,h),o==="EMPTY_VALUE"&&c==="InstanceId"&&h==="Key InstanceId can not empty"&&a==="AWS.VPC.NetworkInterface"&&(n=!0),o==="EMPTY_VALUE"&&c==="LaunchConfigurationName"&&h==="Key LaunchConfigurationName can not empty"&&a==="AWS.AutoScaling.Group"&&(n=!0),o==="EMPTY_VALUE"&&c==="TopicARN"&&h==="Key TopicARN can not empty"&&a==="AWS.AutoScaling.NotificationConfiguration"&&(n=!0)}catch(y){i=y,l=r.TA.ERROR_STACK_FORMAT_VALID_ERROR}}else s(null);return n?s(null):(g={level:e.TA.ERROR,info:l},s(g),void 0)},function(e){return s(null)}),u=sprintf(r.TA.ERROR_STACK_CHECKING_FORMAT_VALID),{level:e.TA.ERROR,info:u}}catch(f){return o=f,s(null)}},c=function(t){var i,o,u,a,f,l,c;try{t||(t=function(){}),c=[],i=[],f={},_.each(n.canvas_data.component,function(t){var n,r;if(t.type===e.RESTYPE.INSTANCE||t.type===e.RESTYPE.LC)n=t.resource.ImageId,r="",t.type===e.RESTYPE.INSTANCE?r=t.resource.InstanceId:t.type===e.RESTYPE.LC&&(r=t.resource.LaunchConfigurationARN),n&&!r&&(f[n]||(f[n]=[],i.push(n)),f[n].push(t.uid));return null});if(!i.length)return t(null);o=s(Design.instance().credentialId(),e.RESTYPE.AMI,n.canvas_data.region),a=function(){return t(null)},l=function(s){var o,u,a,l,h,p,d,v,m,g,y,b;d=_.pluck(s||[],"id"),p=_.difference(i,d);for(v=0,g=p.length;v<g;v++){o=p[v],b=f[o]||[];for(m=0,y=b.length;m<y;m++)h=b[m],l=n.canvas_data.component[h],l.type===e.RESTYPE.LC?(a="lc",u=r.PROP.LC_TITLE):(a="instance",u=r.PROP.ELB_INSTANCES),c.push({level:e.TA.ERROR,uid:h,info:sprintf(r.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI,u,a,l.name,o)})}return c.length?(t(c),void 0):t(null)},o.fetchAmis(i,!0).then(l,a)}catch(h){return u=h,t(null)}},l=function(){var t,i,o,u;return t=[],o={},_.each(n.canvas_data.component,function(n){var r,i;if(n.type===e.RESTYPE.INSTANCE||n.type===e.RESTYPE.LC)r=n.resource.ImageId,i="",n.type===e.RESTYPE.INSTANCE?i=n.resource.InstanceId:n.type===e.RESTYPE.LC&&(i=n.resource.LaunchConfigurationARN),r&&!i&&(o[r]||(o[r]=[],t.push(r)),o[r].push(n.uid));return null}),u=[],i=s(Design.instance().credentialId(),e.RESTYPE.AMI,n.canvas_data.region),_.each(t,function(t){var s;return i.get(t)||(s=o[t],_.each(s,function(i){var s,o,a,f,l,c;return f=n.canvas_data.component[i],l=f.type,a=f.name,s=r.PROP.ELB_INSTANCES,o="instance",l===e.RESTYPE.LC&&(s=r.PROP.LC_TITLE,o="lc"),c=sprintf(r.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI,s,o,a,t),u.push({level:e.TA.ERROR,info:c,uid:i}),null})),null}),u},a=function(t,n){var r,i;r=Design.instance();if(!r.modeIsAppEdit()||!n){t(null);return}i=[],_.each(n.removedComps,function(t){var n,r;t.type===e.RESTYPE.INSTANCE&&i.push(t.resource.InstanceId);if(t.type===e.RESTYPE.ASG)return n=Design.modelClassForType(e.RESTYPE.ASG),r=n.members(t.resource.AutoScalingGroupARN),i=i.concat(_.pluck(r,"appId"))});if(!i.length){t(null);return}return r.opsModel().checkTerminateProtection(i).then(function(e){var n,r,i,s,u;if(_.size(e)){s=[];for(n in e)i=e[n],_.isString(i)?r="<span class='validation-tag tag-instance'>"+i+"("+n+")</span>":r="<span class='validation-tag tag-instance'>"+n+"</span>",s.push(r);return u=s.join(", "),t(o.message.error(null,f.TERMINATED_PROTECTION_CANNOT_TERMINATE,u))}return t(null)},function(e){return void 0,t(null)})},{hasTerminateProtection:a,isHaveNotExistAMIAsync:c,isHaveNotExistAMI:l,verify:h}});var __indexOf=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/trustedadvisor/validation/aws/ec2/instance",["constant","MC","Design","TaHelper"],function(e,t,n,r){var i,s,o,u,a,f,l,c,h,p;return i=r.i18n.short(),u=function(n){var r,s,o,u,a,f,l,c,h,p;return o=t.canvas_data.component[n],a=o.type,l=a===e.RESTYPE.INSTANCE,s=!1,f=c=r=null,o?f=t.genResRef(n,"resource.InstanceId"):(c=o.resource.LaunchConfigurationName,r=o.resource.ImageId),_.each(t.canvas_data.component,function(t){return t.type===e.RESTYPE.VOL&&t.resource.VolumeType!=="standard"&&(l&&t.resource.AttachmentSet.InstanceId===f?s=!0:!l&&t.resource.ImageId===r&&t.resource.LaunchConfigurationName===c&&(s=!0)),null}),!s||(p=o.resource.EbsOptimized)!=="false"&&p!==!1&&p!==""?null:(u=o.name,h=sprintf(i.NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME,u),{level:e.TA.NOTICE,info:h,uid:n})},p=function(e){var n,r,i,s;return n=t.canvas_data.component[e],r=n.resource.IpPermissions,i=n.resource.IpPermissionsEgress,s=0,r&&(s+=r.length),i&&(s+=i.length),s},s=function(n){var r,s,o,u,a,f,l,c;r=t.canvas_data.component[n],u=r.type,a=u===e.RESTYPE.INSTANCE,f=[];if(a){_.each(t.canvas_data.component,function(r){var i,s,o;return r.type===e.RESTYPE.ENI&&(i=r.resource.Attachment.InstanceId,s=t.extractID(i),s===n&&(o=r.resource.GroupSet,_.each(o,function(e){var n,r;return r=e.GroupId,n=t.extractID(r),__indexOf.call(f,n)>=0||f.push(n),null}))),null}),c=0,_.each(f,function(e){return c+=p(e),null});if(c>50)return s=r.name,l=sprintf(i.WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM,s,50),{level:e.TA.WARNING,info:l,uid:n}}else{f=[],a?o=r.resource.SecurityGroup:o=r.resource.SecurityGroups,_.each(o,function(e){var n;return n=t.extractID(e),__indexOf.call(f,n)>=0||f.push(n),null}),c=0,_.each(f,function(e){return c+=p(e),null});if(c>100)return s=r.name,l=sprintf(i.WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM,s,100),{level:e.TA.WARNING,info:l,uid:n}}return null},o=function(n){var r,s,o,u,a,f,l;return s=t.canvas_data.component,u=s[n],a=t.genResRef(n,"resource.InstanceId"),r="",f=_.some(s,function(t){if(t.type===e.RESTYPE.RT)return _.some(t.resource.RouteSet,function(e){if(e.InstanceId===a)return r=t,!0})}),o=_.some(s,function(t){if(t.type===e.RESTYPE.EIP&&t.resource.InstanceId===a)return!0}),!f||o?null:(l=sprintf(i.NOTICE_INSTANCE_HAS_RTB_NO_ELB,r.name,u.name,u.name),{level:e.TA.NOTICE,info:l,uid:n})},h=function(e){var t,s,o,u;u=n.instance().component(e);if(!u)return null;t=u.connectionTargets("RTB_Route");if(t&&t.length){s=u.connectionTargets("EniAttachment"),s.push(u.getEmbedEni()),o=_.some(s,function(e){return!e.get("sourceDestCheck")});if(!o)return r.message.error(e,i.ERROR_INSTANCE_NAT_CHECKED_SOURCE_DEST,u.get("name"));null}return null},f=function(){var t,s;return n.instance().opsModel().isMesos()?(t=n.modelClassForType(e.RESTYPE.INSTANCE).some(function(e){return e.isMesosSlave()}),s=n.modelClassForType(e.RESTYPE.LC).some(function(e){return e.isMesosSlave()}),t||s?null:r.message.error(null,i.MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST)):null},l=function(){var t,s;return n.instance().opsModel().isMesos()?(t=[],s=n.modelClassForType(e.RESTYPE.INSTANCE).reduce(function(e,t){return t.isMesosMaster()?e+1:e},0),s<3&&t.push(r.message.error("IS_MESOS_MASTER_MORE_THAN_3",i.IS_MESOS_MASTER_MORE_THAN_3)),s%2===0&&t.push(r.message.error("MASTER_NUMBER_MUST_BE_ODD",i.MASTER_NUMBER_MUST_BE_ODD)),t):null},c=function(){var t,s,o,u,a;o=n.modelClassForType(e.RESTYPE.INSTANCE).filter(function(e){return e.isMesosMaster()&&!e.parent().isPublic()});if(!o.length)return null;s="";for(u=0,a=o.length;u<a;u++)t=o[u],s+="<span class='validation-tag tag-mesos-master'>"+t.get("name")+"</span>, ";return s=s.slice(0,-2),r.message.error(null,i.MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET,s)},a=function(){var t,s,o,u,a;t=[],n.modelClassForType(e.RESTYPE.INSTANCE).each(function(e){var n;n=e.parent();if(e.isPublic()&&!n.isPublic())return t.push(n)}),n.modelClassForType(e.RESTYPE.LC).each(function(e){var n,r,i,s,o,u;if(e.isPublic()&&!e.get("appId")){r=e.getAsgsIncludeExpanded(),u=[];for(s=0,o=r.length;s<o;s++)n=r[s],i=n.parent(),i.isPublic()?u.push(void 0):u.push(t.push(i));return u}}),n.modelClassForType(e.RESTYPE.ENI).each(function(e){var n;if(!e.embedInstance()&&e.hasEip()){n=e.parent();if(!n.isPublic())return t.push(n)}}),t=_.uniq(t);if(!t.length)return null;s="";for(u=0,a=t.length;u<a;u++)o=t[u],s+="Subnet <span class='validation-tag tag-subnet'>"+o.get("name")+"</span>, ";return s=s.slice(0,-2),r.message.error(null,i.SUBNET_CONNECTIVITY,s)},{isEBSOptimizedForAttachedProvisionedVolume:u,isAssociatedSGRuleExceedFitNum:s,isConnectRoutTableButNoEIP:o,isNatCheckedSourceDest:h,isMesosHasSlave:f,isMesosMasterCountLegal:l,isMesosMasterPlacedInPublicSubnet:c,isInstanceOrLcConnectable:a}}),define("component/trustedadvisor/validation/aws/vpc/subnet",["constant","jquery","MC","i18n!/nls/lang.js","TaHelper"],function(e,t,n,r,i){return{getAllAWSENIForAppEditAndDefaultVPC:function(e){return e(null)},isCidrConflict:function(){var t,n,s;return t=Design.modelClassForType(e.RESTYPE.SUBNET),s=t.allObjects(),n=[],s.sort(function(e,s){var o;o=t.isCidrConflict(e.get("cidr"),s.get("cidr"));if(o)return n.push(i.message.error(null,r.TA.ERROR_CIDR_CONFLICT,e.get("name"),e.get("cidr"),s.get("name"),s.get("cidr")))}),n}}}),define("component/trustedadvisor/validation/aws/vpc/vpc",["constant","MC","i18n!/nls/lang.js","Design","CloudResources","TaHelper"],function(e,t,n,r,i,s){var o,u,a,f,l,c,h,p;return o=s.i18n.short(),p=function(e){var t,n,i;return r.instance().get("agent").enabled===!1?!1:e?(t=r.instance().component(e),t?(i=t.get("state"),i&&i.length):!1):(n=!1,r.instance().eachComponent(function(e){if(p(e.id))return n=!0,!1}),n)},u=function(){var r,i,s,o;return s=!1,r=!1,i=!1,_.each(t.canvas_data.component,function(t){var n;return n=t.type,n===e.RESTYPE.VPN&&(s=!0),n===e.RESTYPE.EIP&&(r=!0),n===e.RESTYPE.ENI&&t.index===0&&t.resource.AssociatePublicIpAddress&&(i=!0),n===e.RESTYPE.LC&&t.resource.AssociatePublicIpAddress&&(i=!0),null}),s||r||i?null:(o=sprintf(n.TA.WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE),{level:e.TA.WARNING,info:o})},a=function(t){var n,i;return p()?(i=r.modelClassForType(e.RESTYPE.VPC).theVPC(),n=i.get("dhcp").get("appId"),n!=="default"?null:s.message.warning(i.id,o.WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS)):null},f=function(t){var n,u,a;a=r.modelClassForType(e.RESTYPE.VPC).theVPC(),u=a.get("dhcp").get("appId");if(!u||u==="default"){t(null);return}return n=i(r.instance().credentialId(),e.RESTYPE.DHCP,r.instance().region()),n.fetchForce().fin(function(){return n.get(u)?t(null):t(s.message.error(a.id,o.ERROR_VPC_DHCP_NONEXISTENT))}),null},h=function(t){var n,i;return i=r.instance().component(t),n=!!r.modelClassForType(e.RESTYPE.DBINSTANCE).size(),n&&i.get("tenancy")!=="default"?s.message.error(t,o.ERROR_RDS_TENANCY_MUST_DEFAULT):null},c=function(t){var n,i;return i=r.instance().component(t),n=r.modelClassForType(e.RESTYPE.DBINSTANCE).some(function(e){return e.get("accessible")}),n?_.some(i.children(),function(t){return t.type===e.RESTYPE.IGW})?null:s.message.error(t,o.ERROR_RDS_ACCESSIBLE_NOT_HAVE_IGW):null},l=function(t){var n,i;return i=r.instance().component(t),n=r.modelClassForType(e.RESTYPE.DBINSTANCE).some(function(e){return e.get("accessible")}),n?i.get("dnsSupport")&&i.get("dnsHostnames")?null:s.message.error(t,o.ERROR_RDS_ACCESSIBLE_NOT_HAVE_DNS):null},{isVPCAbleConnectToOutside:u,isVPCUsingNonexistentDhcp:f,isVPCUsingNoneDHCPAndVisualops:a,isVPCWithRdsTenancyDefault:h,isVPCWithRdsAccessibleHasNoIgw:c,isVPCWithRdsAccessibleEnableDNS:l}});var __indexOf=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/trustedadvisor/validation/aws/elb/elb",["constant","MC","i18n!/nls/lang.js","TaHelper","CloudResources"],function(e,t,n,r,i){var s,o,u,a,f,l,c,h,p,d,v,m,g,y,b,w;return s=r.i18n.short(),a=function(r){var i,s,o,u,a;return i=t.canvas_data.component[r],u=i.resource.Scheme==="internet-facing",o=!1,_.each(t.canvas_data.component,function(t){var n;return n=t.type,n===e.RESTYPE.IGW&&(o=!0),null}),!u||!!o?null:(s=i.name,a=sprintf(n.TA.ERROR_VPC_HAVE_INTERNET_ELB_AND_NO_HAVE_IGW,s),{level:e.TA.ERROR,info:a,uid:r})},f=function(r){var i,s,o,u,a,f;return o=t.canvas_data.component[r],s=o.resource.Instances.length,i=0,a=t.genResRef(r,"resource.LoadBalancerName"),_.each(t.canvas_data.component,function(t){var n,r;return r=t.type,r===e.RESTYPE.ASG&&(n=t.resource.LoadBalancerNames,__indexOf.call(n,a)>=0&&i++),null}),s!==0||i!==0?null:(u=o.name,f=sprintf(n.TA.ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG,u),{level:e.TA.WARNING,info:f,uid:r})},h=function(t){var r;return r=Design.instance().component(t),r.connections("ElbSubnetAsso").length===0?{level:e.TA.ERROR,info:sprintf(n.TA.ERROR_ELB_NO_ATTACH_SUBNET,r.get("name")),uid:t}:null},o=function(r){var i,s,o,u;return s=t.canvas_data.component[r],i=s.resource.AvailabilityZones,i.length!==1?null:(o=s.name,u=sprintf(n.TA.WARNING_ELB_NO_ATTACH_TO_MULTI_AZ,o),{level:e.TA.WARNING,info:u,uid:r})},v=function(r){var i,s,o,u,a;return i=t.canvas_data.component[r],o=!1,u=i.resource.ListenerDescriptions,_.each(u,function(e){var t,n,r;return r=e.Listener,t=r.LoadBalancerPort,n=r.InstancePort,(t===443||t==="443")&&(n===443||n==="443")&&(o=!0),null}),o?(s=i.name,a=sprintf(n.TA.NOTICE_ELB_REDIRECT_PORT_443_TO_443,s),{level:e.TA.NOTICE,info:a,uid:r}):null},l=function(r){var i,s,o,u,a,f;return i=t.canvas_data.component[r],u=i.resource.ListenerDescriptions,a={},o=!1,_.each(u,function(e){var t,n;return n=e.Listener,t=n.LoadBalancerPort,a[t]?o=!0:a[String(t)]=!0,null}),o?(s=i.name,f=sprintf(n.TA.ERROR_ELB_HAVE_REPEAT_LISTENER_ITEM,s),{level:e.TA.ERROR,info:f,uid:r}):null},c=function(r){var i,s,o,u,a;return i=t.canvas_data.component[r],u=i.resource.ListenerDescriptions,o=!0,_.each(u,function(e){var t,n;n=e.Listener,t=n.Protocol;if(t==="HTTPS"||t==="SSL")n.SSLCertificateId||(o=!1);return null}),o?null:(s=i.name,a=sprintf(n.TA.ERROR_ELB_HAVE_NO_SSL_CERT,s),{level:e.TA.ERROR,info:a,uid:r})},g=function(i){var s,o,u,a,f,l,c,h,p,d,v,m,g,y,b;s=t.canvas_data.component[i],o=s.name,m=r.sg.get(s),p=r.sg.port(m),l=s.resource.ListenerDescriptions,d=!0,v=[];for(y=0,b=l.length;y<b;y++)c=l[y],h=c.Listener,a=h.Protocol,u=h.LoadBalancerPort,f=r.sg.isInRange("tcp",u,p,"in"),f||(d=!1,v.push(a+' <span class="validation-tag tag-port">'+u+"</span>"));return d?null:(o=s.name,g=sprintf(n.TA.ERROR_ELB_RULE_NOT_INBOUND_TO_ELB_LISTENER,o,v.join(", ")),{level:e.TA.WARNING,info:g,uid:i})},b=function(i){var s,o,u,a,f,l,c,h,p,d,v,m,g,y,b;s=t.canvas_data.component[i],m=r.sg.get(s),p=r.sg.port(m),l=s.resource.ListenerDescriptions,d=!0,v=[];for(y=0,b=l.length;y<b;y++)c=l[y],h=c.Listener,a=h.InstanceProtocol,u=h.InstancePort,f=r.sg.isInRange("tcp",u,p,"out"),f||(d=!1,v.push(a+' <span class="validation-tag tag-port">'+u+"</span>"));return d?null:(o=s.name,g=sprintf(n.TA.ERROR_ELB_RULE_NOT_OUTBOUND_TO_INSTANCE_LISTENER,o,v.join(", ")),{level:e.TA.WARNING,info:g,uid:i})},m=function(i){var s,o,u,a,f,l;return o=t.canvas_data.component[i],u=o.name,a=o.resource.Instances,f=o.resource.ListenerDescriptions,l=[],_.each(a,function(s){var o,a,c,h,p,d,v,m,g,y,b,w,E,S,x,T;h=t.extractID(s.InstanceId);if(h){y=[],o=t.canvas_data.component[h];if(o.index!==0)return;b=r.sg.get(o),m=r.sg.port(b);for(x=0,T=f.length;x<T;x++)d=f[x],v=d.Listener,c=v.InstanceProtocol,a=v.InstancePort,p=r.sg.isInRange("tcp",a,m,"in"),p||y.push(c+' <span class="validation-tag tag-port">'+a+"</span>");if(y.length)return E="Instance",w=o.serverGroupName,g=y.join(", "),S=sprintf(n.TA.ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER,E,w,g,u),l.push({level:e.TA.WARNING,info:S,uid:i})}}),s=[],_.each(t.canvas_data.component,function(n){var r;return n.type===e.RESTYPE.ASG&&(r=n.resource.LoadBalancerNames,_.each(r,function(e){var r;return r=t.extractID(e),i===r&&s.push(n.uid),null})),null}),_.each(s,function(s){var o,a,c,h,p,d,v,m,g,y,b,w,E,S,x,T,N,C;w=[],o=t.canvas_data.component[s],d=o.resource.LaunchConfigurationName;if(!d)return;v=t.extractID(d),p=t.canvas_data.component[v],E=r.sg.get(p),y=r.sg.port(E);for(N=0,C=f.length;N<C;N++)m=f[N],g=m.Listener,c=g.InstanceProtocol,a=g.InstancePort,h=r.sg.isInRange("tcp",a,y,"in"),h||w.push(c+' <span class="validation-tag tag-port">'+a+"</span>");if(w.length)return x="Launch Configuration",S=p.name,b=w.join(", "),T=sprintf(n.TA.ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER,x,S,b,u),l.push({level:e.TA.WARNING,info:T,uid:i})}),l},y=function(i){var s,o,u,a,f,l,c,h;s=t.canvas_data.component[i],o=s.name,c=r.sg.get(s),l=r.sg.port(c),f=null;try{f=s.resource.HealthCheck.Target,f=f.split(":")[1],f=f.split("/")[0]}catch(p){return u=p,null}return a=r.sg.isInRange("tcp",f,l,"in"),a?null:(o=s.name,h=sprintf(n.TA.WARNING_ELB_RULE_NOT_INBOUND_TO_ELB_PING_PORT,o,f),{level:e.TA.WARNING,info:h,uid:i})},u=function(r){var i,s,o,u;return i=t.canvas_data.component[r],o=i.resource.Subnets,s=i.name,u=[],_.each(o,function(r){var i,o,a,f,l,c;return f=t.extractID(r),o=t.canvas_data.component[f],o&&(a=o.name,f=o.uid,i=o.resource.CidrBlock,l=Number(i.split("/")[1]),l>27&&(c=sprintf(n.TA.ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27,s,a),u.push({level:e.TA.ERROR,info:c,uid:f}))),null}),u},w=function(r){var s,o,u,a,f,l,c,h;try{return r||(r=function(){}),u={},o=function(n){return _.each(t.canvas_data.component,function(r){var i,s,o,a,f,l,c,h,p,d;if(r.type===e.RESTYPE.ELB){i=r.name,u[i]=r.uid,s=r.resource.ListenerDescriptions;for(p=0,d=s.length;p<d;p++){f=s[p],l=f.Listener,o=l.SSLCertificateId;if(!o)continue;a=t.extractID(o),c=t.canvas_data.component[a],c&&(h=c.name,n(i,h))}}return null})},a={},s=[],h=[],l=!1,o(function(){return l=!0}),l?(c=i(Design.instance().credentialId(),e.RESTYPE.IAM,Design.instance().region()),c.fetchForce().then(function(t){var i;i=c.toJSON(),_.each(i,function(e){return s.push(e.Name)}),o(function(e,t){if(__indexOf.call(s,t)<0)return a[e]||(a[e]=[]),a[e].push(t)}),_.each(a,function(t,r){var i,s;return s=_.uniq(t),i=sprintf(n.TA.ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS,r,s.join(", ")),h.push({level:e.TA.ERROR,info:i,uid:u[r]})});if(h.length){r(h);return}return r(null)},function(){return r(null)})):r(null)}catch(p){return f=p,r(null)}},p=function(t){var n,i,o;return n=Design.instance().component(t),n.get("internal")?null:(o=n.connectionTargets("ElbSubnetAsso"),i=_.map(o,function(e){return e.connectionTargets("RTB_Asso")[0]}),_.some(i,function(t){var n,r;return r=t.connectionTargets("RTB_Route"),n=_.where(r,{type:e.RESTYPE.IGW}),n.length>0})?null:r.message.error(t,s.ERROR_ELB_INTERNET_SHOULD_ATTACH_TO_PUBLIC_SB,n.get("name")))},d=function(e){var t,n,i;return i=23,t=Design.instance().component(e),t.get("appId")?null:(n=t.get("name"),n&&n.length>i?r.message.error(e,s.ERROR_ELB_NAME_EXCEED_LIMIT,n,i):null)},{isHaveIGWForInternetELB:a,isHaveInstanceAttached:f,isAttachELBToMultiAZ:o,isRedirectPortHttpsToHttp:v,isHaveRepeatListener:l,isHaveSSLCert:c,isRuleInboundToELBListener:g,isRuleOutboundToInstanceListener:b,isRuleInboundInstanceForELBListener:m,isRuleInboundToELBPingPort:y,isELBSubnetCIDREnough:u,isSSLCertExist:w,isInternetElbRouteOut:p,isNameExceedLimit:d,isHaveSubnetAttached:h}});var __indexOf=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/trustedadvisor/validation/aws/ec2/securitygroup",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r,i,s,o,u,a,f,l,c;return r=function(e){var n,r,i;return r=0,i=[],n=[],_.each(t.canvas_data.component,function(r){var s,o;s=r.type;if(s==="AWS.ELB"||s==="AWS.AutoScaling.LaunchConfiguration")i=r.resource.SecurityGroups,i=_.map(i,function(e){var n;return n=t.extractID(e),n}),__indexOf.call(i,e)>=0&&n.push(r);return s==="AWS.EC2.Instance"&&(i=r.resource.SecurityGroupId,i=_.map(i,function(e){var n;return n=t.extractID(e),n}),__indexOf.call(i,e)>=0&&n.push(r)),s==="AWS.VPC.NetworkInterface"&&(o=[],_.each(r.resource.GroupSet,function(e){return o.push(e.GroupId),null}),i=o,i=_.map(i,function(e){var n;return n=t.extractID(e),n}),__indexOf.call(i,e)>=0&&n.push(r)),null}),n},s=function(e){var n;return n=t.canvas_data.component[e],n&&n.name.indexOf("elbsg-")===0},l=function(r){var i,s,o,u,a,f;return i=t.canvas_data.component[r],s=i.resource.IpPermissions,u=i.resource.IpPermissionsEgress,a=0,s&&(a+=s.length),u&&(a+=u.length),a>50?(o=i.name,f=sprintf(n.TA.WARNING_SG_RULE_EXCEED_FIT_NUM,o,50),{level:e.TA.WARNING,info:f,uid:r}):null},c=function(){var i,s;return i=0,_.each(t.canvas_data.component,function(t){var n,s;return t.type===e.RESTYPE.SG&&(s=t.uid,n=r(s),n.length>0&&i++),null}),i===1?(s=sprintf(n.TA.NOTICE_STACK_USING_ONLY_ONE_SG),{level:e.TA.NOTICE,info:s}):null},a=function(i){var o,u,a,f,l,c,h;return o=r(i),o.length===0?null:s(i)?null:(a=t.canvas_data.component[i],f=a.resource.IpPermissions,c=a.resource.IpPermissionsEgress,u=!1,_.each(f,function(e){var t;t=e.IpProtocol;if(t==="-1"||t===-1)u=!0;return null}),u||_.each(c,function(e){var t;t=e.IpProtocol;if(t==="-1"||t===-1)u=!0;return null}),u?(l=a.name,h=sprintf(n.TA.WARNING_SG_USING_ALL_PROTOCOL_RULE,l),{level:e.TA.WARNING,info:h,uid:i}):null)},u=function(i){var o,u,a,f,l,c,h,p;return o=r(i),o.length===0?null:s(i)?null:(a=t.canvas_data.component[i],f=a.resource.IpPermissions,u=!1,h=[80,"80"],p=[443,"443"],_.each(f,function(e){var t,n,r,i;return e.IpRanges==="0.0.0.0/0"&&((t=e.FromPort,__indexOf.call(h,t)>=0)&&(n=e.ToPort,__indexOf.call(h,n)>=0)||(r=e.FromPort,__indexOf.call(p,r)>=0)&&(i=e.ToPort,__indexOf.call(p,i)>=0)||(u=!0)),null}),u?(l=a.name,c=sprintf(n.TA.WARNING_SG_RULE_FULL_ZERO_SOURCE_TARGET_TO_OTHER_PORT,l),{level:e.TA.WARNING,info:c,uid:i}):null)},f=function(i){var o,u,a,f,l,c,h,p;return o=r(i),o.length===0?null:s(i)?null:(a=t.canvas_data.component[i],f=a.resource.IpPermissions,c=a.resource.IpPermissionsEgress,u=!1,p=[22,"22"],_.each(f,function(e){var t,n;return(t=e.FromPort,__indexOf.call(p,t)>=0)&&(n=e.ToPort,__indexOf.call(p,n)>=0)&&(u=!0),null}),u?(l=a.name,h=sprintf(n.TA.NOTICE_SG_RULE_USING_PORT_22,l),{level:e.TA.NOTICE,info:h,uid:i}):null)},o=function(i){var o,u,a,f,l,c;return o=r(i),o.length===0?null:s(i)?null:(a=t.canvas_data.component[i],l=a.resource.IpPermissionsEgress,u=!1,_.each(l,function(e){return e.IpRanges==="0.0.0.0/0"&&(u=!0),null}),u?(f=a.name,c=sprintf(n.TA.WARNING_SG_RULE_HAVE_FULL_ZERO_OUTBOUND,f),{level:e.TA.WARNING,info:c,uid:i}):null)},i=function(){var r,i;return r=5,i=[],_.each(t.canvas_data.component,function(s){var o,u,a,f,l,c,h,p,d,v,m,g,y,b;u=s.type,o=s.name,a=s.uid,p=!1,v=[],d="",g="",u===e.RESTYPE.ELB&&(v=s.resource.SecurityGroups,d="Load Balancer",g="elb");if(u===e.RESTYPE.LC)v=s.resource.SecurityGroups,d="Launch Configuration",g="lc";else if(u===e.RESTYPE.INSTANCE)v=s.resource.SecurityGroupId,d="Instance",g="instance";else if(u===e.RESTYPE.ENI){_.each(s.resource.GroupSet,function(e){return v.push(e.GroupId),null}),d="Network Interface",g="eni";if((b=s.resource.Attachment.DeviceIndex)===0||b==="0")h=s.resource.Attachment.InstanceId,h&&(c=t.extractID(h),f=t.canvas_data.component[c],f&&(l=f.name,d="Instance",g="instance",o=l))}return v.length>r&&(y=sprintf(n.TA.ERROR_RESOURCE_ASSOCIATED_SG_EXCEED_LIMIT,d,g,o,r),m={level:e.TA.WARNING,info:y,uid:a},i.push(m)),null}),i.length>0?i:null},{isSGRuleExceedFitNum:l,isStackUsingOnlyOneSG:c,isHaveUsingAllProtocolRule:a,isHaveFullZeroSourceToHTTPRule:u,isHaveUsingPort22Rule:f,isHaveFullZeroOutboundRule:o,isAssociatedSGNumExceedLimit:i}}),define("component/trustedadvisor/validation/aws/asg/asg",["constant","MC","i18n!/nls/lang.js","TaHelper","CloudResources"],function(e,t,n,r,i){var s,o,u,a,f;return s=r.i18n.short(),o=function(r){var i,s;return i=t.canvas_data.component[r],i.resource.LaunchConfigurationName?null:(s=sprintf(n.TA.ERROR_ASG_HAS_NO_LAUNCH_CONFIG,i.name),{level:e.TA.ERROR,info:s,uid:r})},u=function(e){var t,n,i;return t=Design.instance().component(e),n=t.getNotiObject(),!n||!n.isEffective()?null:(i=n.getTopic(),i&&i.get("appId")?null:r.message.error(e,s.ERROR_ASG_NOTIFICATION_NO_TOPIC,t.get("name")))},a=function(e){var t,n,i,o,u,a;t=Design.instance().component(e),i=t.get("policies")||[],o=[];for(u=0,a=i.length;u<a;u++){n=i[u];if(!n.isNotificate()||n.getTopic())continue;o.push(r.message.error(n.id,s.ERROR_ASG_POLICY_NO_TOPIC,t.get("name"),n.get("name")))}return o},f=function(t){var n,o,u,a,f,l,c,h,p,d,v,m,g,y,b;n=Design.modelClassForType(e.RESTYPE.ASG).allObjects(),u=[];for(m=0,y=n.length;m<y;m++){o=n[m],f=o.getNotiObject(),a=!1,!f||!f.isEffective()?a=!0:(d=f.getTopic(),d||(a=!0)),a||u.push([d,o,f]),c=o.get("policies")||[];for(g=0,b=c.length;g<b;g++)l=c[g],d=l.getTopic(),l.isNotificate()&&d&&u.push([d,o,l])}if(_.isEmpty(u)){t(null);return}return h=Design.instance().region(),v=i(Design.instance().credentialId(),e.RESTYPE.TOPIC,h),p=[],v.fetchForce().fin(function(){var n,i,a,f;for(a=0,f=u.length;a<f;a++)i=u[a],d=i[0],o=i[1],n=i[2],v.get(d.get("appId"))||(n.type===e.RESTYPE.SP?p.push(r.message.error(n.id,s.ERROR_ASG_POLICY_TOPIC_NONEXISTENT,o.get("name"),n.get("name"),d.get("name"))):n.type===e.RESTYPE.NC&&p.push(r.message.error(n.id,s.ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT,o.get("name"),d.get("name"))));return t(p)})},{isHasLaunchConfiguration:o,isNotificationNotHasTopic:u,isPolicyNotHasTopic:a,isTopicNonexist:f}}),define("component/trustedadvisor/validation/aws/ec2/eip",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r,i;return r=function(){var t;return!i(e.RESTYPE.EIP)||i(e.RESTYPE.IGW)?null:(t=n.TA.ERROR_HAS_EIP_NOT_HAS_IGW,{level:e.TA.ERROR,info:t})},i=function(e){var n;return n=t.canvas_data.component,_.some(n,function(t){return t.type===e})},{isHasIGW:r}}),define("component/trustedadvisor/validation/aws/ec2/az",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r;return r=function(){var r,i,s;return i=_.countBy(t.canvas_data.component,function(t){var n;return(n=t.type)===e.RESTYPE.INSTANCE||n===e.RESTYPE.LC?"instance":"others"}),i.instance?(r=_.countBy(t.canvas_data.component,function(t){return t.type===e.RESTYPE.AZ?"az":"others"}),r.az>1?null:(s=n.TA.WARNING_SINGLE_AZ,{level:e.TA.WARNING,info:s})):null},{isAZAlone:r}}),define("component/trustedadvisor/validation/aws/vpc/vgw",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r;return r=function(r){var i,s,o,u,a;return i=t.canvas_data.component,u=i[r],a=t.genResRef(r,"resource.VpnGatewayId"),s=_.some(i,function(t){if(t.type===e.RESTYPE.RT)return _.some(t.resource.RouteSet,function(e){var n;if(e.GatewayId===a)return n=t,!0})}),s?null:(o=n.TA.WARNING_NO_RTB_CONNECT_VGW,{level:e.TA.WARNING,info:o,uid:r})},{isConnectToRTB:r}}),define("component/trustedadvisor/validation/aws/vpc/vpn",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r,i;return r=function(r){var i,s,o,u,a,f,l,c,h,p,d,v,m,g,y;return c=null,y=t.canvas_data.component[r],u=y.resource.CustomerGatewayId,m=y.resource.VpnGatewayId,a="",u&&(a=t.extractID(u)),g="",m&&(g=t.extractID(m)),a&&g&&(s=t.canvas_data.component[a],d=t.canvas_data.component[g],s&&(l=!0,i=s.resource.BgpAsn,i&&_.isNumber(Number(i))&&(l=!1),l&&(h=y.resource.Routes,f=!0,h.length||(f=!1),_.isArray(h)&&_.each(h,function(e){return e.DestinationCidrBlock||(f=!1),null}),l&&!f&&(v=d.name,o=s.name,p=sprintf(n.TA.ERROR_VPN_NO_IP_FOR_STATIC_CGW,o,v),c={level:e.TA.ERROR,info:p,uid:r})))),c},i=function(r){var i,s,o,u,a,f;return s=null,a=t.canvas_data.component[r],f=a.name,o=a.resource.Routes,i=[],_.each(o,function(n){var r,s,o,u,a,f;o=n.DestinationCidrBlock;if(o){f=Design.modelClassForType(e.RESTYPE.SUBNET).isValidSubnetCIDR(o);if(!f)return i.push(o);u=o.split("/")[0],a=o.split("/")[1],s=t.aws.aws.isValidInIPRange(u,"public"),r=t.aws.aws.isValidInIPRange(u,"private");if(s&&!r||Number(a)===0)return i.push(o)}}),i.length&&(u=sprintf(n.TA.ERROR_VPN_NOT_PUBLIC_IP,f,i.join(", ")),s={level:e.TA.ERROR,info:u,uid:r}),s},{isVPNHaveIPForStaticCGW:r,isVPNPrefixIPNotValid:i}}),define("component/trustedadvisor/validation/aws/vpc/igw",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r;return r=function(r){var i,s,o,u,a;return i=t.canvas_data.component,s=i[r],o=t.genResRef(r,"resource.InternetGatewayId"),u=_.some(i,function(t){if(t.type===e.RESTYPE.RT)return _.some(t.resource.RouteSet,function(e){var n;if(e.GatewayId===o)return n=t,!0})}),u?null:(a=n.TA.WARNING_NO_RTB_CONNECT_IGW,{level:e.TA.WARNING,info:a,uid:r})},{isConnectToRTB:r}}),define("component/trustedadvisor/validation/aws/vpc/networkacl",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r;return r=function(r){var i,s,o,u,a;return o=t.canvas_data.component,s=o[r],u=_.some(s.resource.AssociationSet,function(e){if(e.SubnetId)return!0}),i=_.some(s.resource.EntrySet,function(e){return e.RuleAction==="allow"}),!u||i?null:(a=sprintf(n.TA.NOTICE_ACL_HAS_NO_ALLOW_RULE,s.name),{level:e.TA.NOTICE,info:a,uid:r})},{isConnectSubnetButNoAllowRule:r}}),define("component/trustedadvisor/validation/aws/vpc/cgw",["constant","jquery","MC","i18n!/nls/lang.js","TaHelper","CloudResources"],function(e,t,n,r,i,s){var o,u,a,f;return o=i.i18n.short(),a=function(t){var i,o,u,a,f,l,c,h;try{return t||(t=function(){}),a=l=c=f=null,_.each(n.canvas_data.component,function(t){return t.type===e.RESTYPE.CGW&&(f=t.resource.CustomerGatewayId,a=t.resource.IpAddress,l=t.name,c=t.uid),null}),a&&l&&c&&!f?(i=s(Design.instance().credentialId(),e.RESTYPE.CGW,Design.instance().region()),u=function(){return t(null)},h=function(){var n,s;return s=i.where({state:"available",ipAddress:a})[0],s&&(n={level:e.TA.ERROR,info:sprintf(r.TA.ERROR_CGW_IP_CONFLICT,l,a,s.id,a)},void 0),t(n||null),null},i.fetchForce().then(h,u),{level:e.TA.ERROR,info:sprintf(r.TA.ERROR_CGW_CHECKING_IP_CONFLICT)}):t(null)}catch(p){return o=p,t(null)}},f=function(t){var i,s,o,u,a;return i=n.canvas_data.component[t],o=i.name,s=i.resource.IpAddress,u=n.aws.aws.isValidInIPRange(s,"private"),u?(a=sprintf(r.TA.WARNING_CGW_IP_RANGE_ERROR,o,s),{level:e.TA.WARNING,info:a,uid:t}):null},u=function(t){var n,r;return n=Design.instance().component(t),r=n.connections(e.RESTYPE.VPN).length,r?null:i.message.error(t,o.ERROR_CGW_MUST_ATTACH_VPN,n.get("name"))},{isCGWHaveIPConflict:a,isValidCGWIP:f,isAttachVGW:u}}),define("component/trustedadvisor/validation/aws/vpc/eni",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r;return r=function(r){var i,s,o,u;return s=t.canvas_data.component[r],i=s.resource.Attachment.InstanceId,i?null:(o=s.name,u=sprintf(n.TA.ERROR_ENI_NOT_ATTACH_TO_INSTANCE,o),{level:e.TA.WARNING,info:u,uid:r})},{isENIAttachToInstance:r}}),define("component/trustedadvisor/validation/aws/vpc/rtb",["constant","MC","TaHelper","Design"],function(e,t,n,r){var i,s,o,u;return i=n.i18n.short(),s=function(t){var s,o,u,a,f,l,c,h,p,d,v;l=r.instance().component(t),c=l.get("name"),p=l.connectionTargets("RTB_Route"),h=l.connectionTargets("RTB_Asso"),a="",s=_.filter(p,function(t){return t.type===e.RESTYPE.INSTANCE}),f=[];if(h.length){for(d=0,v=s.length;d<v;d++)o=s[d],u=o.get("name"),f.push(n.message.notice(t+o.id,i.NOTICE_RT_ROUTE_NAT,u,c,u,c));return f}return null},o=function(n){var s,o,u,a,f;return a=t.canvas_data.component[n],u=a.resource.RouteSet,f=a.name,o=[],s=[],_.each(u,function(t,u){var a;return a=t.DestinationCidrBlock,_.each(o,function(t){var o,u;o=r.modelClassForType(e.RESTYPE.SUBNET);if(a===t||o.isCidrConflict(a,t))return u=sprintf(i.ERROR_RT_HAVE_CONFLICT_DESTINATION,f),s.push({level:e.TA.ERROR,info:u,uid:n})}),o.push(a)}),s.length?s:null},u=function(n){var s,o,u,a;if(r.instance().mode()==="stack"){u=t.canvas_data.component[n],o=u.resource.RouteSet,a=u.name,s=[],_.each(o,function(t,r){var o,u;u=t.VpcPeeringConnectionId;if(u&&u!=="")return o=sprintf(i.ERROR_RT_HAVE_VPC_PEERING_ROUTE,a,u),s.push({level:e.TA.ERROR,info:o,uid:n})});if(s.length)return s}return null},{isRtbConnectedNatAndItConnectedSubnet:s,isRtbHaveConflictDestination:o,isRtbHaveVPCPeeringRoute:u}}),define("component/trustedadvisor/validation/aws/stateeditor/validation/reference",["constant","MC","i18n!/nls/lang.js"],function(e,t,n){var r,i,s,o,u,a,f,l,c,h,p,d,v;return o={"AWS.EC2.Instance":n.TA.ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,"AWS.AutoScaling.Group":n.TA.ERROR_STATE_EDITOR_INEXISTENT_ASG,"OS::Nova::Server":n.TA.ERROR_STATE_EDITOR_INEXISTENT_OSSERVER},l=function(e,t,n,r){var i,s;return s=arguments[0],s==="AWS.AutoScaling.LaunchConfiguration"&&(s="AWS.AutoScaling.Group"),i=o[s],sprintf.apply(this,[].concat(i,Array.prototype.slice.call(arguments,1)))},a=function(t,n){return{level:e.TA.ERROR,info:t,uid:"refinexsit:"+n}},u=function(t){var n,r,i,s;r=e.REGEXP.stateEditorOriginReference,s=[];while((i=r.exec(t))!==null)n={attr:i[3],uid:i[2],ref:i[1],str:i[0]},s.push(n);return s},h=function(t){return e.REGEXP.uid.lastIndex=0,e.REGEXP.uid.test(t)},f=function(e){var n;return n=t.canvas_data.component[e],n},c=function(e,t){var n,r,i;r=[];if(_.isString(e)){if(e.length===0)return[];r=r.concat(u(e))}else for(n in e)i=e[n],r=r.concat(c(i,t));return r},p=function(e,t){return _.some(e,function(e){return e.ref===t.ref})},d=function(e){var t,n,r,i;return t=e.attr.split("."),r=t[0],i=t[1],n=f(e.uid),n&&n[r]&&_.where(n[r],{id:i}).length?!0:!1},v=function(e){return e.attr.indexOf(".")!==-1},r={illegal:function(e){var t,n;return t=f(e.uid),t?n=""+(t.serverGroupName||t.name)+"."+e.attr:h(e.uid)?n="unknown."+e.attr:n=e.ref,n},state:function(e){var t,n;return n=r.illegal(e),t=n.split("."),t[2].length===42&&(t[2]="unknown"),t.join(".")}},i=function(e,n){var i,s,o,u,f,h,m,g,y;u=c(e,n),i=[],h=[],u.length&&(s=t.aws.aws.genAttrRefList(n.comp,t.canvas_data.component));for(g=0,y=u.length;g<y;g++)o=u[g],f="",v(o)?d(o)||(f=r.state(o)):p(s,o)||(f=r.illegal(o)),f&&h.push("<span class='validation-tag tag-state-ref'>"+f+"</span>");return h.length&&(m=l(n.type,n.name,n.stateId,h.join(", ")),i.push(a(m,n.stateId))),i},s=function(){return null},i});var __indexOf=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/trustedadvisor/validation/aws/stateeditor/validation/format",["Design","constant","i18n!/nls/lang.js","jquery","underscore","MC"],function(e,t,n){var r,i,s,o,u;return i={},s={command:function(e,t,n,i){var s;return e=r.trim(e),s=t.dataMap,this.required(e)?this.stateAllowed(e,s)?null:'Command "'+e+'" is not supported.':"Command name is required."},parameter:function(e,t,n,r){var i,s;return s=["required","type"],i=null,this[t.constraint.type]&&(i=this[t.constraint.type](e,t,n,r)),i||(i=this.componentExist(e)),i},dict:function(e,t,n,r){var i,s;return s=t.subType,i=null,t.constraint.required&&s==="key"&&!this.required(e)&&(i="dict key is required"),i},array:function(e,t,n,r){var i;return i=null,t.constraint.required&&!this.required(e)&&(i="array value is required"),i},line:function(e,t,n,r){var i;return i=null,t.constraint.required&&!this.required(e)&&(i="line value is required"),i},text:function(e,t,n,r){var i;return i=null,t.constraint.required&&!this.required(e)?i="text value is required":i=this.componentExist(e),i},bool:function(e,t,n,r){var i;return i=null,t.constraint.required&&!this.required(e)?i="line value is required":!this.isBool(e)&&!this.isStringBool(e,!0)&&(i='invalid boolean value: "'+e+'"'),i},componentExist:function(e){var t,n,i,s,o;i=r.getRefName(e),t=0;for(s=0,o=i.length;s<o;s++)n=i[s],r.nameExist(n.name)||t++;return t?"Reference 'unknown' doesn't exist.":null},required:function(e){return _.isArray(e)||_.isObject(e)?!!_.size(e):this.notnull(e)&&this.notblank(e)},isRef:function(e){return _.isArray(e)||(e=[e]),_.every(e,function(e){return t.REGEXP.stateEditorRefOnly.test(e)})},notnull:function(e){return e.length>0},notblank:function(e){return"string"==typeof e&&""!==e.replace(/^\s+/g,"").replace(/\s+$/g,"")},isBool:function(e){return _.isBoolean(e)},isStringBool:function(e,t){return/^(true|false)$/i.test(e||t&&e==="")},stateAllowed:function(e,t){return __indexOf.call(r.getAllowCommands(t),e)>=0}},r={getAllowCommands:function(e){return _.keys(e)},trim:function(e){return $.trim(e)},nameExist:function(t){var n,r,i;n=e.instance().serialize().component;for(i in n){r=n[i];if(r.name===t)return!0}return!1},getRefName:function(e){var n,r,i;n=t.REGEXP.stateEditorOriginReference,i=[];while((r=n.exec(e))!==null)i.push({name:r[1],ref:r[0]});return i},buildError:function(e,n,r){return{level:t.TA.ERROR,info:e,uid:"format_"+r+":"+n}},getModule:function(){var t,n,r;return r=e.instance().get("agent").module,n=App.model.getStateModule(r.repo,r.tag),t={},_.each(n,function(e,n){return _.extend(t,e)}),t},getCommand:function(e,t){return _.findWhere(e,{module:t})}},u=function(e,t){var i,o,u,a,f,l,c,h;u=r.getModule(),i=r.getCommand(u,e.module);if(i){o=[],h=i.parameter;for(a in h)f=h[a],f.required===!0&&!s.required(e.parameter[a])?(l=sprintf(n.TA.ERROR_STATE_EDITOR_EMPTY_REQUIED_PARAMETER,t.name,t.stateId,a),c="requiredParameter",o.push(r.buildError(l,t.stateId,c))):i.module==="meta.wait"&&a==="state"&&!s.isRef(e.parameter[a])&&(l=sprintf(n.TA.ERROR_STATE_EDITOR_INVALID_FORMAT,t.name,t.stateId,"wait"),c="invalidFormat",o.push(r.buildError(l,t.stateId,c)));return o}},o=function(e,t){return u(e,t)},o}),define("component/trustedadvisor/validation/aws/stateeditor/register",["./validation/reference","./validation/format"],function(e,t){return[e,t]}),define("component/trustedadvisor/validation/aws/stateeditor/main",["./register","constant","MC","i18n!/nls/lang.js"],function(e,t,n,r){var i,s,o;return o=function(e,t,n){var r,i,s,o;if(e){_.isArray(e)||(e=[e]),o=e||[];for(i=0,s=o.length;i<s;i++)r=o[i],r.uid=""+t+":"+n+":"+r.uid}return e},s=function(t,n){var r,i,s,u;s=[];for(r in e)u=e[r],i=u(t,n),i=o(i,n.uid,r),s=s.concat(i);return s},i=function(e){var t,r,i,o;return t=n.canvas_data.component[e],!t||!t.state||t.index&&t.index>0?null:(o=t.state,r={uid:e,comp:t,type:t.type,name:t.name,stateId:null},i=[],_.each(o,function(e,t){return i=i.concat(s(e,_.extend({},r,{stateId:t+1}))),null}),i.length||(i=null),i)},i}),define("component/trustedadvisor/validation/aws/state/state",["constant","MC","Design","TaHelper"],function(e,t,n,r){var i,s,o,u,a,f,l,c,h,p,d,v,m,g,y,b,w,E,S,x,T,N,C;return i=r.i18n.short(),C=function(e){return function(t){return v(t)?e(t):null}},l=function(e,r){return r?n.instance().component(e):t.canvas_data.component[e]},v=function(e){var t,r,i;return n.instance().get("agent").enabled===!1?!1:e?(t=l(e,!0),t?(i=t.get("state"),i&&i.length):!1):(r=!1,n.instance().eachComponent(function(e){if(v(e.id))return r=!0,!1}),r)},m=function(e){return n.modelClassForType(e).allObjects().length},c=function(n){return _.filter(t.canvas_data.component,function(r){if(r.type===e.RESTYPE.ENI&&t.extractID(r.resource.Attachment.InstanceId)===n.uid)return!0})},h=function(n){var r,i,s,o,u,a,f,h,p,d,v,m,g;u=[];if(n.type===e.RESTYPE.LC){m=n.resource.SecurityGroups;for(a=0,p=m.length;a<p;a++)o=m[a],u.push(l(t.extractID(o)))}else if(n.type===e.RESTYPE.INSTANCE){i=c(n);for(f=0,d=i.length;f<d;f++){r=i[f],g=r.resource.GroupSet;for(h=0,v=g.length;h<v;h++)s=g[h],u.push(l(t.extractID(s.GroupId)))}}return _.uniq(_.compact(u))},E=function(e,t){var n,r,i,s;r=!1;if((s=e.IpProtocol)==="-1"||s==="6"||s==="tcp")n=+e.FromPort,i=+e.ToPort,n===i&&i===t?r=!0:+e.FromPort<=t&&e.ToPort>=t&&(r=!0);return r},N=function(e,t){var n,r,i,s,o,u,a,f,l;s=i=0;for(o=0,a=e.length;o<a;o++){r=e[o],l=r.resource.IpPermissionsEgress;for(u=0,f=l.length;u<f;u++){n=l[u];if(t&&n.IpRanges==="0.0.0.0/0"||!t)E(n,80)&&s++,E(n,443)&&i++}}return s>0&&i>0},d=function(t){var n,r;if(t.type===e.RESTYPE.LC)return t.get("publicIp")===!0;if(t.type===e.RESTYPE.INSTANCE)return n=t.connectionTargets("EniAttachment"),n.push(t.getEmbedEni()),r=_.some(n,function(e){return e.hasEip()}),t.hasAutoAssignPublicIp()||r},p=function(e){return e.parent().connectionTargets("RTB_Asso")[0]},S=function(t){var r,i,s,o,u,a;o=t.uid||t.id,t=n.instance().component(o),s=[],s.push(p(t)),i=t.connectionTargets("EniAttachment");for(u=0,a=i.length;u<a;u++)r=i[u],s.push(p(r));return _.some(s,function(t){var n,r;return r=t.connectionTargets("RTB_Route"),n=_.where(r,{type:e.RESTYPE.IGW}),n.length>0})},x=function(t){var n,r,i;if((i=t.type)===e.RESTYPE.INSTANCE||i===e.RESTYPE.ASG||i==="ExpandedAsg"){r=p(t);if(r)return n=_.where(r.connectionTargets("RTB_Route"),{type:e.RESTYPE.INSTANCE}),_.some(n,function(e){return b(e)})}return!1},b=function(e){return S(e)&&g(e)},g=function(e){var t;return t=e.connectionTargets("EniAttachment"),t.push(e.getEmbedEni()),_.some(t,function(e){return!e.get("sourceDestCheck")})},T=function(t,n,s){var o,u,a;return(a=t.type)===e.RESTYPE.ASG||a==="ExpandedAsg"?o=t.getLc():o=t,d(o)?S(t)?!0:!1:(u=o.get("name"),n.push(r.message.error(o.id,i.ERROR_NO_EIP_OR_PIP,u,u,s)),!0)},f=function(e,t){return r.message.error(t,i.ERROR_NOT_CONNECT_OUT,e)},w=function(t){var r,i,s,o,u,a,c,h,p,d,v,m;o=l(t,!0),u=[],s=[],d=[],i=n.modelClassForType(e.RESTYPE.ASG).filter(function(e){if(e.getLc()===o)return s=s.concat(e.get("expandedList")),d.push(e.parent().get("name")),!0}),i=i.concat(s),p=_.uniq(d).join(",");for(v=0,m=i.length;v<m;v++)r=i[v],!x(r)&&!T(r,u,p)&&(a=r.parent(),h=a.get("name"),c=a.id,u.push(f(h,c)));return u},y=function(e){var t,n,r,i,s;return t=l(e,!0),n=[],r=t.parent(),s=r.get("name"),i=r.id,x(t)||T(t,n,s)?n:(n.push(f(s,i)),n)},o=function(t){return m(e.RESTYPE.IGW)?null:r.message.error(t,i.ERROR_NO_CGW)},u=function(e){var t,n;return t=l(e),n=h(t),N(n)?null:r.message.error(e,i.ERROR_NO_OUTBOUND_RULES,t.name)},a=function(e){var t,n;return t=l(e),n=h(t),u(e)||N(n,!0)?null:r.message.warning(e,i.WARNING_OUTBOUND_NOT_TO_ALL,t.name)},s=function(t){var n,r;return r=[],n=l(t),n.type===e.RESTYPE.LC?w(t):y(t)},{isHasIgw:C(o),isHasOutPort80and443:C(u),isHasOutPort80and443Strict:C(a),isConnectedOut:C(s)}}),define("component/trustedadvisor/validation/aws/ec2/ebs",["constant","jquery","MC","i18n!/nls/lang.js","CloudResources"],function(e,t,n,r,i){var s;return s=function(t){var s,o,u,a,f,l;try{return t||(t=function(){}),a=[],f={},_.each(n.canvas_data.component,function(t){var r,i;return t.type===e.RESTYPE.VOL&&(i=t.resource.SnapshotId,r=t.resource.AttachmentSet.InstanceId,i&&r&&(f[i]||(f[i]=[]),r=n.extractID(r),f[i]=_.union(f[i],[r]))),t.type===e.RESTYPE.LC&&_.each(t.resource.BlockDeviceMapping,function(e,n){if(n>0){i=e.Ebs.SnapshotId,r=t.uid;if(i&&r)return f[i]||(f[i]=[]),f[i]=_.union(f[i],[r])}}),null}),a=_.keys(f),a.length?(s=i(Design.instance().credentialId(),e.RESTYPE.SNAP,Design.instance().region()),u=function(){return t(null)},l=function(){var i,o,u,l,c,h,p,d,v,m,g,y,b,w,E,S;d=[],h=[];for(v=0,y=a.length;v<y;v++)i=a[v],s.get(i)||h.push(i);if(!h.length)return t(null);S=[];for(m=0,b=h.length;m<b;m++){p=h[m],E=f[p]||[];for(g=0,w=E.length;g<w;g++)c=E[g],l=n.canvas_data.component[c],l.type===e.RESTYPE.LC?(u=l.resource.LaunchConfigurationARN,o=r.PROP.LC_TITLE):(u=l.resource.InstanceId,o=r.PROP.ELB_INSTANCES),u||d.push({level:e.TA.ERROR,uid:c,info:sprintf(r.TA.ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT,p,o,l.name)}),null;d.length?(t(d),S.push(void 0)):S.push(t(null))}return S},s.fetch().then(l,u),null):t(null)}catch(c){return o=c,t(null)}},{isSnapshotExist:s}}),define("component/trustedadvisor/validation/aws/ec2/kp",["constant","MC","Design","TaHelper","underscore","CloudResources"],function(e,t,n,r,i,s){var o,u,a,f;return o=r.i18n.short(),a=function(t){var i,s,u,a,f,l,c,h,p;a=n.instance().component(t),u=a.connectionTargets("KeypairUsage");if(a.isDefault()||!u.length)return null;f="",s="",l="";for(h=0,p=u.length;h<p;h++)i=u[h],c=i.type===e.RESTYPE.LC?"lc":"instance",i.type===e.RESTYPE.LC?(c="lc",f+="<span class='validation-tag tag-"+c+"'>"+i.get("name")+"</span>, "):(c="instance",s+="<span class='validation-tag tag-"+c+"'>"+i.get("name")+"</span>, ");return s&&(l+=o.INSTANCE+" "+s),f&&(l+=o.LAUNCH_CONFIGURATION+" "+f),l=l.slice(0,-2),r.message.error(t,o.ERROR_INSTANCE_REF_OLD_KEYPAIR,l,a.get("name"))},f=function(){return r.message.notice(null,o.NOTICE_KEYPAIR_LONE_LIVE)},u=function(t){var u,a,f,l,c,h,p,d,v,m,g,y,b;u=n.modelClassForType(e.RESTYPE.INSTANCE).allObjects(),a=n.modelClassForType(e.RESTYPE.LC).allObjects(),c=u.concat(a),v=[],h=[],f={},g=[];for(y=0,b=c.length;y<b;y++){l=c[y];if(l.type===e.RESTYPE.INSTANCE&&l.get("appId")&&l.get("count")===l.groupMembers().length+1)continue;p=l.get("keyName"),p&&p[0]!=="@"&&!l.connectionTargets("KeypairUsage").length&&v.push(l)}return v.length?(m=n.instance().region(),d=s(n.instance().credentialId(),e.RESTYPE.KP,n.instance().get("region")),d.fetchForce().then(function(n){var s;return s=n.toJSON(),i.each(v,function(t){var n,r;n=i.every(s,function(e){return e.keyName!==t.get("keyName")});if(n)return p=t.get("keyName"),h.push(t),f[p]||(f[p]={lc:"",instance:""}),r=t.type===e.RESTYPE.LC?"lc":"instance",t.type===e.RESTYPE.LC?(r="lc",f[p].lc+="<span class='validation-tag tag-"+r+"'>"+t.get("name")+"</span>, "):(r="instance",f[p].instance+="<span class='validation-tag tag-"+r+"'>"+t.get("name")+"</span>, ")}),i.each(f,function(e,t){var n;return n="",e.instance&&(n+="Instance "+e.instance),e.lc&&(n+="Launch Configuration"+e.lc),n=n.slice(0,-2),g.push(r.message.error(t,o.ERROR_INSTANCE_REF_OLD_KEYPAIR,n,t))}),t(g)},function(){return t(null)})):t(null)},{isNotDefaultAndRefInstance:a,longLiveNotice:f,isKeyPairExistInAws:u}}),define("component/trustedadvisor/validation/aws/rds/dbinstance",["constant","MC","Design","TaHelper","CloudResources"],function(e,t,n,r,i){var s,o,u,a,f,l,c,h,p,d;return o=r.i18n.short(),s=function(e,t){return!_.isEqual(e,t)},p=function(){var t,i,s,u,a,f;i=n.modelClassForType(e.RESTYPE.DBINSTANCE).filter(function(e){return e.get("instanceClass")==="db.t1.micro"&&!e.getOptionGroup().isDefault()});if(!i.length)return null;u="",s="";for(a=0,f=i.length;a<f;a++)t=i[a],s+="<span class='validation-tag'>"+t.get("name")+"</span>, ",u+=t.id;return s=s.slice(0,-2),r.message.error(u,o.ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION,s)},u=function(e){var t,i,s;return i=n.instance().component(e),t=i.get("az"),t?(s=i.parent(),_.some(s.connectionTargets("SubnetgAsso"),function(e){return e.parent().get("name")===t})?null:r.message.error(e,o.ERROR_RDS_AZ_NOT_CONSISTENT,i.get("name"),t)):null},l=function(t){var r,i,s,u;return u=function(e){var t,n;return n=e.get("cidr"),t=e.getAvailableIPCountInSubnet(),t},s={},i=[],r=n.modelClassForType(e.RESTYPE.DBINSTANCE).allObjects(),_.each(r,function(t){var n,r;return r=t.get("__parent"),n=r.get("__connections"),_.each(n,function(n){var r;return r=n.getTarget(e.RESTYPE.SUBNET),s[r.id]||(s[r.id]=[]),s[r.id]=_.union(s[r.id],[t.get("id")]),null}),null}),_.each(s,function(e,t){var r,s;return s=n.instance().component(t),r=u(s),r<e.length&&i.push(s.get("name")),null}),i=_.map(i,function(e){return"<span class='validation-tag tag-vpn'>"+e+"</span>"}),i.length?{level:e.TA.ERROR,info:sprintf(o.ERROR_HAVE_NOT_ENOUGH_IP_FOR_DB,i.join(", "))}:null},c=function(t){var r,i,s;return r=n.instance().component(t),r.master()?(s=r.get("allocatedStorage"),i=r.master().get("allocatedStorage"),s<i?{uid:t,level:e.TA.ERROR,info:sprintf(o.ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN,r.get("name"),r.master().get("name"))}:null):null},d=function(e){var t,i,s,u;return i=n.instance().component(e),s=i.getOptionGroup(),i.isSqlserver()?s.isDefault()?null:_.every(s.get("options"),function(e){return e.OptionName!=="Mirroring"})?null:(u=i.parent(),t=_.map(u.connectionTargets("SubnetgAsso"),function(e){return e.parent()}),_.uniq(t).length>2?null:r.message.error(e,o.ERROR_RDS_SQL_SERVER_MIRROR_MUST_HAVE3SUBNET,i.get("name"))):null},a=function(t){var s,u,a,f,l,c,h,p,d,v,m;h=n.instance().component(t),u=h.get("appId"),c=h.get("backupWindow"),m=h.get("maintenanceWindow");if(!c||!m)return null;u&&(s=i(n.instance().credentialId(),e.RESTYPE.DBINSTANCE,n.instance().region()).get(u),c=c||s.get("PreferredBackupWindow"),m=m||s.get("PreferredMaintenanceWindow")),l=c.replace(/:/g,"").split("-"),v=m.replace(/:/g,"").split("-"),f=+l[0],a=+l[1],d=+v[0].slice(3),p=+v[1].slice(3);if(p<=d&&f<=a){if(p<=f&&f<=d&&a<=d)return null}else if(a<=f&&d<=p){if(a<=d&&d<=f&&p<f)return null}else if(!(a<=f&&p<=d))if(f>=p||a<=d)return null;return r.message.error(t,o.ERROR_RDS_BACKUP_MAINTENANCE_OVERLAP,h.get("name"))},h=function(e){var t,i,s;return t=n.instance().component(e),i=t.get("password"),i&&(i==="****"||8<=(s=i.length)&&s<=41)?null:r.message.error(e,o.ERROR_MASTER_PASSWORD_INVALID,t.get("name"))},f=function(e){var i,u,a,f,l,c,h;return i=n.instance().component(e),f=i.getOptionGroup(),!i.get("appId")||!f.get("appId")||f.isDefault()?null:(h=n.instance().__opsModel.getJsonData(),u=h.component[e],l=h.component[f.id],a=t.canvas_data.component[e],c=t.canvas_data.component[f.id],!s(u,a)||!s(l,c)?null:r.message.error(e,o.ERROR_OG_DB_BOTH_MODIFIED,i.get("name"),f.get("name")))},{isOgValid:p,isAzConsistent:u,isHaveEnoughIPForDB:l,isSqlServerCross3Subnet:d,isBackupMaintenanceOverlap:a,isMasterPasswordValid:h,isHaveReplicaStorageSmallThanOrigin:c,isDBandOgBothModified:f}}),define("component/trustedadvisor/validation/aws/rds/og",["constant","MC","Design","TaHelper","CloudResources"],function(e,t,n,r,i){var s,o,u;return s=r.i18n.short(),u=function(t){var i,o,u,a,f,l;u=n.modelClassForType(e.RESTYPE.DBOG).filter(function(e){return!e.isDefault()&&!e.connections().length});if(!u.length)return t(null),null;a="",i="";for(f=0,l=u.length;f<l;f++)o=u[f],i+="<span class='validation-tag'>"+o.get("name")+"</span>, ",a+=o.id;return i=i.slice(0,-2),t(r.message.warning(a,s.WARNING_RDS_UNUSED_OG_NOT_CREATE,i)),null},o=function(t){var o,u,a,f,l,c;try{return t||(t=function(){}),a=n.modelClassForType(e.RESTYPE.DBOG).allObjects(),o=_.filter(a,function(e){if(!e.get("default")&&!e.get("createdBy"))return!0}),o.length?(l=n.instance().get("region"),c=e.REGION_SHORT_LABEL[l],f=i(n.instance().credentialId(),e.RESTYPE.DBOG,l),f.fetchForce().then(function(e){var n;return n=e.filter(function(e){return e.get("id").indexOf("default:")!==0}),n.length+o.length>20?t(r.message.error("",s.ERROR_RDS_OG_EXCEED_20_LIMIT,c)):t(null)},function(e){return t(null)})):t(null)}catch(h){return u=h,t(null)}},{isOGExeedCountLimit:o}}),define("component/trustedadvisor/validation/aws/rds/sbg",["constant","MC","Design","TaHelper"],function(e,t,n,r){var i,s;return i=r.i18n.short(),s=function(e){var t,i,s,o,u,a,f;return u="Subnet Group %s must have subnets in at least 2 Availability Zones.",s=n.instance().component(e),o=s.connectionTargets("SubnetgAsso"),t=[],t=_.map(o,function(e){return e.parent()}),a=_.uniq(t).length,(f=n.instance().region())==="cn-north-1"?i=1:i=2,a>=i?null:r.message.error(e,sprintf(u,s.get("name")))},{isSbgHasSbin2Az:s}}),define("component/trustedadvisor/validation/os/osport",["constant","MC","i18n!/nls/lang.js","TaHelper"],function(e,t,n,r){var i,s;return i=r.i18n.short(),s=function(t){var n,s;return s=Design.instance().component(t),n=_.some(s.connectionTargets("OsPortUsage"),function(t){return t.type===e.RESTYPE.OSSERVER}),n?null:r.message.error(t,i.ERROR_PORT_MUST_CONNECT_WITH_SERVER,s.get("name"))},{isPortConnectwithServer:s}}),define("component/trustedadvisor/validation/os/ossubnet",["constant","MC","i18n!/nls/lang.js","TaHelper"],function(e,t,n,r){var i,s,o,u;return i=r.i18n.short(),u=function(t){var n,r;return r=_.filter(t.connectionTargets("OsRouterAsso"),function(t){return t.type===e.RESTYPE.OSRT}),n=r[0],!n||!n.get("extNetworkId")?!1:!0},o=function(){var t,n,s,o,a,f,l,c,h,p,d,v;t=[],f=Design.modelClassForType(e.RESTYPE.OSSUBNET).allObjects();for(l=0,h=f.length;l<h;l++){o=f[l],d=o.children();for(c=0,p=d.length;c<p;c++)n=d[c],s=null,(v=n.type)===e.RESTYPE.OSPORT||v===e.RESTYPE.OSLISTENER?s=n:n.type===e.RESTYPE.OSSERVER&&(s=n.embedPort()),s&&s.getFloatingIp()&&!u(o)&&t.push(o)}return a=_.map(_.uniq(t),function(e){return"<span class='validation-tag tag-ossubnet'>"+e.get("name")+"</span>"}).join(", "),a?r.message.error(null,i.ERROR_SUBNET_HAS_PORT_SHOULD_CONNECTED_OUT,a):null},s=function(){var t,n,s,o,u,a,f,l,c,h,p,d,v,m,g;p=Design.modelClassForType(e.RESTYPE.OSSUBNET).allObjects(),a=Design.modelClassForType(e.RESTYPE.SUBNET).isCidrConflict,s=null,o=null;for(d=0,m=p.length;d<m;d++){c=p[d];for(v=0,g=p.length;v<g;v++){h=p[v];if(c===h)continue;u=a(c.get("cidr"),h.get("cidr"));if(u){s=c,o=h;break}}if(s)break}if(s)return f=s.get("name"),l=o.get("name"),t=s.get("cidr"),n=o.get("cidr"),r.message.error(null,i.ERROR_SUBNET_HAS_CONFLICT_CIDR_WITH_OTHERS,f,t,l,n)},{subnetHasPortShouldConncectedOut:o,isSubnetCIDRConflict:s}}),define("component/trustedadvisor/validation/os/osrouter",["constant","MC","i18n!/nls/lang.js","TaHelper"],function(e,t,n,r){var i,s;return i=r.i18n.short(),s=function(e){var t;return t=Design.instance().component(e),t.connections("OsRouterAsso").length?null:r.message.error(e,i.ERROR_ROUTER_XXX_MUST_CONNECT_TO_AT_LEAST_ONE_SUBNET,t.get("name"))},{rtMustConnecteToOneSubnet:s}}),define("component/trustedadvisor/validation/os/ospool",["constant","MC","i18n!/nls/lang.js","TaHelper"],function(e,t,n,r){var i,s,o;return i=r.i18n.short(),o=function(e){var t;return t=Design.instance().component(e),t.connections("OsListenerAsso").length?null:r.message.error(e,i.ERROR_POOL_XXX_MUST_BE_CONNECTED_TO_A_LISTENER,t.get("name"))},s=function(e){var t,n,s,o;return o=Design.instance().component(e),n=o.connectionTargets("OsPoolMembership"),s=_.reject(n,function(e){var t,n;return e.parent()===o.parent()?!0:(t=e.parent().connectionTargets("OsRouterAsso")[0],n=o.parent().connectionTargets("OsRouterAsso")[0],t&&t===n?!0:!1)}),t=_.map(s,function(e){return"<span class='validation-tag tag-ospoolmember'>"+e.get("name")+"</span>"}).join(", "),t?r.message.error(e,i.ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED,o.get("name"),t):null},{isPoolConnectedwithListener:o,isMemberBelongsConnectedSubnet:s}}),define("component/trustedadvisor/validation/os/oslistener",["constant","MC","i18n!/nls/lang.js","TaHelper","CloudResources"],function(e,t,n,r,i){var s,o;return s=r.i18n.short(),o=function(e){var t;return t=Design.instance().component(e),t.connections("OsListenerAsso").length?null:r.message.error(e,s.ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL,t.get("name"))},{isListenerConnectedwithPool:o}}),define("component/trustedadvisor/validation/os/osstack",["constant","MC","i18n!/nls/lang.js","TaHelper","CloudResources"],function(e,t,n,r,i){var s,o;return s=r.i18n.short(),o=function(){var t,n,o,u,a,f,l,c,h,p;return c=Design.instance().region(),f=App.user.get("default_provider"),l=App.model.getOpenstackQuotas(f),o=function(e){return _.filter(Design.modelClassForType(e).allObjects(),function(e){return!e.get("appId")}).length},h={},n={},a={},u={},t=Design.instance().credentialId(),_.each([e.RESTYPE.OSPORT,e.RESTYPE.OSFIP,e.RESTYPE.OSRT,e.RESTYPE.OSSG,e.RESTYPE.OSSUBNET],function(e){return h[e]=n[e]=i(t,e,c).length,a[e]=o(e)}),u[e.RESTYPE.OSPORT]=l["Neutron::port"],u[e.RESTYPE.OSFIP]=l["Neutron::floatingip"],u[e.RESTYPE.OSRT]=l["Neutron::router"],u[e.RESTYPE.OSSG]=l["Neutron::security_group"],u[e.RESTYPE.OSSUBNET]=l["Neutron::subnet"],p=[],_.each(n,function(t,i){var o,f,l;return l=n[i]+a[i],o=u[i],f=e.RESNAME[i],l>o&&f&&p.push(r.message.error(null,s.ERROR_STACK_RESOURCE_EXCCED_LIMIT,f,l,o)),null}),p},{isResExtendQuotaLimit:o}}),define("component/trustedadvisor/lib/TA.Bundle",["MC","../validation/aws/stack/stack","../validation/aws/ec2/instance","../validation/aws/vpc/subnet","../validation/aws/vpc/vpc","../validation/aws/elb/elb","../validation/aws/ec2/securitygroup","../validation/aws/asg/asg","../validation/aws/ec2/eip","../validation/aws/ec2/az","../validation/aws/vpc/vgw","../validation/aws/vpc/vpn","../validation/aws/vpc/igw","../validation/aws/vpc/networkacl","../validation/aws/vpc/cgw","../validation/aws/vpc/eni","../validation/aws/vpc/rtb","../validation/aws/stateeditor/main","../validation/aws/state/state","../validation/aws/ec2/ebs","../validation/aws/ec2/kp","../validation/aws/rds/dbinstance","../validation/aws/rds/og","../validation/aws/rds/sbg","../validation/os/osport","../validation/os/ossubnet","../validation/os/osrouter","../validation/os/ospool","../validation/os/oslistener","../validation/os/osstack"],function(e,t,n,r,i,s,o,u,a,f,l,c,h,p,d,v,m,g,y,b,w,E,S,x,T,N,C,k,L,A){return{stack:t,instance:n,subnet:r,vpc:i,elb:s,sg:o,asg:u,eip:a,az:f,vgw:l,vpn:c,igw:h,acl:p,cgw:d,eni:v,rtb:m,stateEditor:g,state:y,ebs:b,kp:w,dbinstance:E,og:S,sbg:x,osport:T,ossubnet:N,osrouter:C,ospool:k,oslistener:L,osstack:A}}),define("component/trustedadvisor/lib/TA.Core",["event","MC","Design","underscore"],function(e,t,n){var r,i,s,o,u,a,f,l,c,h;return c=function(e){var t;return t=0,e.length===0?t:(_.each(e,function(n,r){var i;return i=e.charCodeAt(r),t=(t<<5)-t+i,t&=t,null}),"k"+t)},f=function(e,t){return c(""+e+"|"+t)},l=function(e,t,n){return n=n||t&&t.uid||null,_.extend({},t,{key:f(e,n),type:e})},u=function(n){var r;return r={},_.map(t.ta.list,function(e){return e.key===n&&(r=e),null}),r&&(t.ta.list=_.without(t.ta.list,r),r.level&&e.trigger(e.UPDATE_TA_MODAL,"delete",r.level)),null},o=function(n){return t.ta.list.push(n),e.trigger(e.UPDATE_TA_MODAL,"add",n.level)},h=function(e){return t.ta.list=_.map(t.ta.list,function(t){return t.key===e.key?e:t}),t.ta.list},a=function(e){return _.contains(_.pluck(t.ta.list,"key"),e)},s=function(e,n,r){var i,f;return f=l(e,n,r),i=f.key,_.isArray(n)?_.each(n,function(t){if(t)return s(e,t,t.uid)}):n?a(i)?h(f):o(f):u(i),t.ta.list},r=function(){return t.ta.list=[],t.canvas_data=n.instance().serialize(),null},i=function(){return t.ta.list},{set:s,reset:r,result:i}}),define("validation",["constant","event","component/trustedadvisor/lib/TA.Config","component/trustedadvisor/lib/TA.Bundle","component/trustedadvisor/lib/TA.Core","jquery","underscore","MC"],function(e,t,n,r,i){var s,o,u,a,f,l,c,h,p,d,v,m,g,y,b,w,E;return h=function(){return i.reset()},d=function(e,t){return n.get("globalList")[e]&&_.contains(n.get("globalList")[e],t)},p=function(e,t){return n.get("asyncList")[e]&&_.contains(n.get("asyncList")[e],t)},l=function(e){var t;return n.get("componentTypeToFileMap")[e]?n.get("componentTypeToFileMap")[e]:(t=_.last(e.split(".")),t=t.toLowerCase(),[t])},v=function(e,t,n,r){return i.set(""+n+"."+t,e,r)},g=function(){return t.trigger(t.TA_SYNC_START)},m=function(){return t.trigger(t.TA_SYNC_FINISH)},f=function(e){return _.after(e,function(){return m()})},a=function(e,t,r){var i;return i=!1,_.delay(function(){if(!i)return i=!0,v(null,e,t),r(),void 0},n.syncTimeout),function(n){if(!i)return i=!0,v(n,e,t),r()}},c=function(e){return void 0},w=function(e){return _.each(n.get("globalList"),function(t,n){return _.each(t,function(t){var i,s;try{if(t.indexOf("~")===0){if(e!=="all")return;t=t.slice(1)}return s=r[n][t](),v(s,t,n)}catch(o){return i=o,c(i)}})}),null},b=function(){var e;return e=MC.canvas_data.component,_.each(e,function(e,t){var n,i;i=l(e.type),_.each(i,function(e){return _.each(r[e],function(n,i){var s,o;if(!d(e,i)&&!p(e,i))try{return o=r[e][i](t),v(o,i,e,t)}catch(u){return s=u,c(s)}})});try{return E(r,t)}catch(s){return n=s,c(n)}}),null},E=function(e,t){var n;return Design.instance().get("agent").enabled===!0&&(n=e.stateEditor(t),v(n,"stateEditor","stateEditor",t)),null},y=function(e){var t,i,s;t=n.get("asyncList");if(!t||!_.size(t)){m();return}return i=_.reduce(t,function(e,t){return e+t.length},0),g(),s=f(i),_.each(t,function(t,n){return _.each(t,function(t){var i,o;try{return o=r[n][t](a(t,n,s),e),v(o,t,n)}catch(u){return i=u,c(i)}})}),null},o=function(e){var t,n,s,o,u,a,f;try{MC.ta.resultVO=i,f=e.split("."),s=f[0],u=f[1],o=r[s][u];if(_.isFunction(o))return t=Array.prototype.slice.call(arguments,1),a=o.apply(r[s],t),i.set(e,a),a;void 0}catch(l){n=l,c(n)}return null},u=function(e){return h(),b(),w("run"),y(e),i.result()},s=function(){return h(),b(),w("all"),i.result()},MC.ta={validComp:o,validAll:s,validRun:u,stateEditor:r.stateEditor,list:[],state_list:{}},MC.ta}),define("component/trustedadvisor/gui/tpl/template",["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){return"no-item"}function c(e,t){var n="",r;n+='\n					<div class="title" data-key="'+a((r=e&&e.key,typeof r===u?r.apply(e):r))+'" data-type="'+a((r=e&&e.type,typeof r===u?r.apply(e):r))+'">\n						',r=(r=e&&e.info,typeof r===u?r.apply(e):r);if(r||r===0)n+=r;return n+="\n					</div>\n\n				",n}function h(e,t){var r="",i;return r+='\n					<div class="title empty" data-key="'+a((i=e&&e.key,typeof i===u?i.apply(e):i))+'" data-type="'+a((i=e&&e.type,typeof i===u?i.apply(e):i))+'">\n						'+a(n.i18n.call(e,"IDE.GOOD_JOB_NO_ERROR_HERE",{hash:{},data:t}))+"\n					</div>\n				",r}function p(e,t){var n="",r;n+='\n					<div class="title" data-key="'+a((r=e&&e.key,typeof r===u?r.apply(e):r))+'" data-type="'+a((r=e&&e.type,typeof r===u?r.apply(e):r))+'">\n						',r=(r=e&&e.info,typeof r===u?r.apply(e):r);if(r||r===0)n+=r;return n+="\n					</div>\n				",n}function d(e,t){var r="",i;return r+='\n					<div class="title empty" data-key="'+a((i=e&&e.key,typeof i===u?i.apply(e):i))+'" data-type="'+a((i=e&&e.type,typeof i===u?i.apply(e):i))+'">\n						'+a(n.i18n.call(e,"IDE.GOOD_JOB_NO_WARNING_HERE",{hash:{},data:t}))+"\n					</div>\n				",r}function v(e,t){var r="",i;return r+='\n					<div class="title empty" data-key="'+a((i=e&&e.key,typeof i===u?i.apply(e):i))+'" data-type="'+a((i=e&&e.type,typeof i===u?i.apply(e):i))+'">\n						'+a(n.i18n.call(e,"IDE.GOOD_JOB_NO_NOTICE_HERE",{hash:{},data:t}))+"\n					</div>\n				",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div class="validation-content mgt10">\n	<ul class="tab">\n		<li class="active ',o=n.unless.call(t,(o=t&&t.error_list,o==null||o===!1?o:o.length),{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+='" data-tab-target="#item-error-'+a((o=t&&t.timestamp,typeof o===u?o.apply(t):o))+'">'+a(n.i18n.call(t,"PROP.LBL_ERROR",{hash:{},data:i}))+'<span class="validation-counter validation-counter-error">'+a((o=(o=t&&t.error_list,o==null||o===!1?o:o.length),typeof o===u?o.apply(t):o))+'</span></li>\n		<li data-tab-target="#item-warning-'+a((o=t&&t.timestamp,typeof o===u?o.apply(t):o))+'" class="',o=n.unless.call(t,(o=t&&t.warning_list,o==null||o===!1?o:o.length),{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+='">'+a(n.i18n.call(t,"PROP.LBL_WARNING",{hash:{},data:i}))+'<span class="validation-counter validation-counter-warning">'+a((o=(o=t&&t.warning_list,o==null||o===!1?o:o.length),typeof o===u?o.apply(t):o))+'</span></li>\n		<li data-tab-target="#item-notice-'+a((o=t&&t.timestamp,typeof o===u?o.apply(t):o))+'" class="',o=n.unless.call(t,(o=t&&t.notice_list,o==null||o===!1?o:o.length),{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+='">'+a(n.i18n.call(t,"PROP.LBL_NOTICE",{hash:{},data:i}))+'<span class="validation-counter validation-counter-notice">'+a((o=(o=t&&t.notice_list,o==null||o===!1?o:o.length),typeof o===u?o.apply(t):o))+'</span></li>\n	</ul>\n	<div class="scroll-wrap scroll-wrap-validation">\n		<div class="scrollbar-veritical-wrap" style="display: block;"><div class="scrollbar-veritical-thumb"></div></div>\n		<div class="pos-r scroll-content">\n\n			<div id="item-error-'+a((o=t&&t.timestamp,typeof o===u?o.apply(t):o))+'" class="content active">\n\n				',o=n.each.call(t,t&&t.error_list,{hash:{},inverse:f.program(5,h,i),fn:f.program(3,c,i),data:i});if(o||o===0)s+=o;s+='\n\n				<div class="item-error-tip"><i class="icon-info"></i>'+a(n.i18n.call(t,"IDE.SOME_ERROR_VALIDATION_ONLY_HAPPENS_AT_THE_TIME_TO_RUN_STACK",{hash:{},data:i}))+'</div>\n\n			</div>\n			<div id="item-warning-'+a((o=t&&t.timestamp,typeof o===u?o.apply(t):o))+'" class="content">\n				',o=n.each.call(t,t&&t.warning_list,{hash:{},inverse:f.program(9,d,i),fn:f.program(7,p,i),data:i});if(o||o===0)s+=o;s+='\n			</div>\n			<div id="item-notice-'+a((o=t&&t.timestamp,typeof o===u?o.apply(t):o))+'" class="content">\n				',o=n.each.call(t,t&&t.notice_list,{hash:{},inverse:f.program(11,v,i),fn:f.program(7,p,i),data:i});if(o||o===0)s+=o;return s+="\n			</div>\n		</div>\n	</div>\n</div>",s};return e.template(t)}),define("component/trustedadvisor/gui/tpl/modal_template",["handlebars"],function(e){var t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="modal-header">\n	<h3>'+o(n.i18n.call(t,"PROP.LBL_VALIDATION",{hash:{},data:i}))+'</h3>\n	<i class="modal-close">×</i>\n</div>\n<div class="modal-body">\n	<div class="modal-validation-statusbar">\n	</div>\n</div>',s};return e.template(t)}),define("component/trustedadvisor/gui/view",["event","i18n!/nls/lang.js","./tpl/template","./tpl/modal_template","backbone","jquery","handlebars"],function(e,t,n,r){var i;return i=Backbone.View.extend({events:{"click .modal-close":"closedPopup"},render:function(e,t){var i;return e==="stack"?($("#stack-run-validation-container").html(n(this.model.attributes)),$(".validating").hide(),this.processDetails(),$(".stack-validation details").show()):e==="statusbar"?(this.setElement($("#OpsEditor .status-bar-modal")),this.$el.html(r()),i=_.extend({timestamp:Date.now()},this.model.attributes),this.$(".modal-validation-statusbar").html(n(i)),this.processStatusBarDetails()):e==="openstack"&&($(".validating").hide(),!1),null},processStatusBarDetails:function(){var e,n,r,i;n=this.model.get("error_list"),i=this.model.get("warning_list"),r=this.model.get("notice_list"),e=this.$el.find(".tab li");if(!n.length)return i.length?e.eq(1).click():r.length?e.eq(2).click():(this.$el.find(".validation-content").text(t.IDE.GREAT_JOB_NO_ERROR_WARNING_NOTICE_HERE),this.$el.find(".validation-content").addClass("empty"))},processDetails:function(){var e,n,r,i,s,o,u,a;return s=this.model.get("error_list"),a=this.model.get("warning_list"),o=this.model.get("notice_list"),i=$(".modal-box .tab li"),n=$(".modal-box .nutshell"),e=$(".stack-validation details"),r=e.find("summary"),u=function(e){var i,u;return u=[],s.length&&(u.push(sprintf(t.IDE.LENGTH_ERROR,s.length)),_.defer(function(){return modal.position()})),a.length&&u.push(sprintf(t.IDE.LENGTH_WARNING,a.length)),o.length&&u.push(sprintf(t.IDE.LENGTH_NOTICE,o.length)),u.length?i=u.join(t.IDE.COMMA):i=t.IDE.NO_ERROR_WARNING_OR_NOTICE,n.find("label").text(i),n.click(function(){return r.click()})},s.length?u(!0):a.length?(i.eq(1).click(),e.removeAttr("open"),u()):o.length?(i.eq(2).click(),e.removeAttr("open"),u()):(e.removeAttr("open"),u(),$(".validation-content").text("Great job! No error, warning or notice here."))},restoreRun:function(){return $("#btn-confirm, #confirm-update-app").removeAttr("disabled")},_clickCurrentTab:function(e){void 0;if(!e)return;return _.each($(".tab").find("li"),function(t){if($(t).attr("data-tab-target")==="#item-"+e)return $(t).trigger("click")})},closedPopup:function(){if(this.$el.html())return this.$el.empty(),this.trigger("CLOSE_POPUP")}}),i}),define("component/trustedadvisor/gui/model",["backbone","jquery","underscore","MC"],function(){var e;return e=Backbone.Model.extend({defaults:{notice_list:null,warning_list:null,error_list:null},createList:function(){var e,t,n,r;void 0,t=[],r=[],e=[],n={},_.each(MC.ta.list,function(i){n={info:i.info,key:i.key,type:i.type};switch(i.level){case"NOTICE":return t.push(n);case"WARNING":return r.push(n);case"ERROR":return e.push(n)}}),this.set("notice_list",t),this.set("warning_list",r),this.set("error_list",e),MC.ta.state_list={notice_list:t,warning_list:r,error_list:e}}}),e}),define("TaGui",["jquery","event","component/trustedadvisor/gui/view","component/trustedadvisor/gui/model"],function(e,t,n,r){var i,s;return i=function(e,i,o){var u,a,f,l;return l=new n,u=new r,l.model=u,l.on("CLOSE_POPUP",function(){return s(l,u)}),a=function(){return t.onLongListen(t.UPDATE_TA_MODAL,function(){return void 0}),u.createList(),l.render(e,i)},f=function(n){var r;return r=Q.defer(),t.onListen(t.TA_SYNC_FINISH,function(){return void 0,u.createList(),l.render(e,i),u.get("error_list").length===0?r.resolve(u):r.reject(u)}),MC.ta.validRun(n),r.promise},t.onLongListen(t.UNLOAD_TA_MODAL,function(){return void 0,s(l,u)}),e==="stack"?(l.closedPopup(),f(o)):a()},s=function(e,n){return void 0,e.off(),n.off(),e.undelegateEvents(),e=null,n=null,t.offListen(t.UPDATE_TA_MODAL),t.offListen(t.UNLOAD_TA_MODAL)},{loadModule:i,unLoadModule:s}}),define("component/Validation",function(){});
+define('component/trustedadvisor/lib/TA.Config',{
+  validDebug: '',
+  syncTimeout: 10000,
+  componentTypeToFileMap: {
+    aws: {
+      'AWS.AutoScaling.Group': ['asg'],
+      'AWS.EC2.SecurityGroup': ['sg'],
+      'AWS.VPC.VPNGateway': ['vgw'],
+      'AWS.VPC.VPNConnection': ['vpn'],
+      'AWS.VPC.CustomerGateway': ['cgw'],
+      'AWS.VPC.InternetGateway': ['igw'],
+      'AWS.EC2.Instance': ['instance', 'state'],
+      'AWS.ELB': ['elb'],
+      'AWS.VPC.NetworkInterface': ['eni'],
+      'AWS.VPC.NetworkAcl': ['acl'],
+      'AWS.AutoScaling.LaunchConfiguration': ['state'],
+      'AWS.VPC.RouteTable': ['rtb'],
+      'AWS.EC2.EBS.Volume': ['ebs'],
+      'AWS.EC2.KeyPair': ['kp'],
+      'AWS.RDS.DBInstance': ['dbinstance'],
+      'AWS.RDS.OptionGroup': ['og'],
+      'AWS.RDS.DBSubnetGroup': ['sbg']
+    },
+    openstack: {
+      'OS::Neutron::Port': ['osport'],
+      'OS::Neutron::Subnet': ['ossubnet'],
+      'OS::Neutron::Router': ['osrouter'],
+      'OS::Neutron::Pool': ['ospool'],
+      'OS::Neutron::VIP': ['oslistener']
+    }
+  },
+  globalList: {
+    aws: {
+      eip: ['isHasIGW'],
+      az: ['isAZAlone'],
+      sg: ['isStackUsingOnlyOneSG', 'isAssociatedSGNumExceedLimit'],
+      vpc: ['isVPCAbleConnectToOutside'],
+      stack: ['~isHaveNotExistAMI'],
+      kp: ['longLiveNotice'],
+      dbinstance: ['isOgValid', 'isHaveEnoughIPForDB'],
+      instance: ['isMesosMasterCountLegal', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet', 'isInstanceOrLcConnectable'],
+      subnet: ['isCidrConflict']
+    },
+    openstack: {
+      ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
+      osstack: ['isResExtendQuotaLimit']
+    }
+  },
+  asyncList: {
+    aws: {
+      cgw: ['isCGWHaveIPConflict'],
+      stack: ['verify', 'isHaveNotExistAMIAsync', 'hasTerminateProtection'],
+      subnet: ['getAllAWSENIForAppEditAndDefaultVPC'],
+      ebs: ['isSnapshotExist'],
+      kp: ['isKeyPairExistInAws'],
+      elb: ['isSSLCertExist'],
+      asg: ['isTopicNonexist'],
+      vpc: ['isVPCUsingNonexistentDhcp'],
+      og: ['isOGExeedCountLimit']
+    },
+    openstack: {}
+  },
+  get: function(key, platform) {
+    var _ref;
+    if (Design.instance().type() === "AwsOps") {
+      platform = "aws";
+    } else {
+      platform = "openstack";
+    }
+    return ((_ref = this[key]) != null ? _ref[platform] : void 0) || this[key].aws;
+  }
+});
+
+define('TaHelper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'], function(CONST, MC, LANG, Design, _) {
+  var Helper, Inside;
+  Inside = {
+    taReturn: function(type, tip, uid) {
+      var ret;
+      ret = {
+        level: CONST.TA[type],
+        info: tip
+      };
+      if (uid) {
+        ret.uid = uid;
+      }
+      return ret;
+    },
+    genTip: function(args) {
+      var tip;
+      if (args.length > 2) {
+        tip = Function.call.apply(sprintf, args);
+      } else {
+        tip = args[1];
+      }
+      return tip;
+    }
+  };
+  Helper = {
+    map: {
+      protocal: {
+        '1': 'icmp',
+        '6': 'tcp',
+        '17': 'udp',
+        '-1': 'all'
+      }
+    },
+    protocal: {
+      get: function(code) {
+        return Helper.map.protocal[code.toString()] || code;
+      }
+    },
+    i18n: {
+      short: function() {
+        return LANG.TA;
+      }
+    },
+    component: {
+      get: function(uid, rework) {
+        if (rework) {
+          return Design.instance().component(uid);
+        } else {
+          return MC.canvas_data.component[uid];
+        }
+      }
+    },
+    message: {
+      error: function(uid, tip) {
+        tip = Inside.genTip(arguments);
+        return Inside.taReturn(CONST.TA.ERROR, tip, uid);
+      },
+      warning: function(uid, tip) {
+        tip = Inside.genTip(arguments);
+        return Inside.taReturn(CONST.TA.WARNING, tip, uid);
+      },
+      notice: function(uid, tip) {
+        tip = Inside.genTip(arguments);
+        return Inside.taReturn(CONST.TA.NOTICE, tip, uid);
+      }
+    },
+    eni: {
+      getByInstance: function(instance) {
+        return _.filter(MC.canvas_data.component, function(component) {
+          if (component.type === CONST.RESTYPE.ENI) {
+            if (MC.extractID(component.resource.Attachment.InstanceId) === instance.uid) {
+              return true;
+            }
+          }
+        });
+      }
+    },
+    sg: {
+      get: function(component) {
+        var eni, enis, sg, sgId, sgs, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+        sgs = [];
+        if (component.type === CONST.RESTYPE.LC) {
+          _ref = component.resource.SecurityGroups;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            sgId = _ref[_i];
+            sgs.push(Helper.component.get(MC.extractID(sgId)));
+          }
+        } else if (component.type === CONST.RESTYPE.INSTANCE) {
+          enis = Helper.eni.getByInstance(component);
+          for (_j = 0, _len1 = enis.length; _j < _len1; _j++) {
+            eni = enis[_j];
+            _ref1 = eni.resource.GroupSet;
+            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              sg = _ref1[_k];
+              sgs.push(Helper.component.get(MC.extractID(sg.GroupId)));
+            }
+          }
+        } else if (component.type === CONST.RESTYPE.ELB) {
+          _ref2 = component.resource.SecurityGroups;
+          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+            sgId = _ref2[_l];
+            sgs.push(Helper.component.get(MC.extractID(sgId)));
+          }
+        }
+        return _.uniq(_.compact(sgs));
+      },
+      port: function(sgs) {
+        var build, info, permission, sg, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        info = {
+          "in": {},
+          out: {}
+        };
+        if (!_.isArray(sgs)) {
+          sgs = [sgs];
+        }
+        build = function(permission, direction) {
+          var protocal, theInfo;
+          protocal = Helper.protocal.get(permission.IpProtocol);
+          if (!info[direction][protocal]) {
+            info[direction][protocal] = [];
+          }
+          theInfo = {
+            from: Number(permission.FromPort),
+            to: Number(permission.ToPort),
+            range: permission.IpRanges
+          };
+          if (_.where(info[direction][protocal], theInfo).length === 0) {
+            return info[direction][protocal].push(theInfo);
+          }
+        };
+        for (_i = 0, _len = sgs.length; _i < _len; _i++) {
+          sg = sgs[_i];
+          if (sg.type !== CONST.RESTYPE.SG) {
+            continue;
+          }
+          _ref = sg.resource.IpPermissionsEgress;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            permission = _ref[_j];
+            build(permission, 'out');
+          }
+          _ref1 = sg.resource.IpPermissions;
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            permission = _ref1[_k];
+            build(permission, 'in');
+          }
+        }
+        return info;
+      },
+      isInRange: function(protocal, port, portData, direction) {
+        var isInRangeResult, portCode, protocalCode;
+        isInRangeResult = false;
+        protocalCode = Helper.protocal.get(protocal.toLowerCase());
+        portCode = Number(port);
+        _.each(portData[direction], function(portAry, proto) {
+          if (proto === protocalCode || proto === 'all') {
+            _.each(portAry, function(portObj) {
+              if (portCode >= portObj.from && portCode <= portObj.to) {
+                isInRangeResult = true;
+              }
+              return null;
+            });
+          }
+          return null;
+        });
+        return isInRangeResult;
+      }
+    }
+  };
+  return Helper;
+});
+
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'CloudResources', 'TaHelper'], function(constant, $, MC, lang, ApiRequest, CloudResources, Helper) {
+  var getAZAryForDefaultVPC, hasTerminateProtection, i18n, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
+  i18n = Helper.i18n.short();
+  getAZAryForDefaultVPC = function(elbUID) {
+    var azNameAry, elbComp, elbInstances;
+    elbComp = MC.canvas_data.component[elbUID];
+    elbInstances = elbComp.resource.Instances;
+    azNameAry = [];
+    _.each(elbInstances, function(instanceRefObj) {
+      var instanceAZName, instanceRef, instanceUID;
+      instanceRef = instanceRefObj.InstanceId;
+      instanceUID = MC.extractID(instanceRef);
+      instanceAZName = MC.canvas_data.component[instanceUID].resource.Placement.AvailabilityZone;
+      if (!(__indexOf.call(azNameAry, instanceAZName) >= 0)) {
+        azNameAry.push(instanceAZName);
+      }
+      return null;
+    });
+    return azNameAry;
+  };
+  _getCompName = function(compUID) {
+    var compName, compObj;
+    compName = '';
+    compObj = MC.canvas_data.component[compUID];
+    if (compObj && compObj.name) {
+      compName = compObj.name;
+    }
+    return compName;
+  };
+  _getCompType = function(compUID) {
+    var compObj, compType;
+    compType = '';
+    compObj = MC.canvas_data.component[compUID];
+    if (compObj && compObj.type) {
+      compType = compObj.type;
+    }
+    return compType;
+  };
+  verify = function(callback) {
+    var err, tipInfo, validData;
+    try {
+      if (!callback) {
+        callback = function() {};
+      }
+      validData = MC.canvas_data;
+      ApiRequest('stack_verify', {
+        username: $.cookie('usercode'),
+        session_id: $.cookie('session_id'),
+        spec: validData
+      }).then(function(result) {
+        var checkResult, err, errCode, errCompName, errCompType, errCompUID, errInfoStr, errKey, errMessage, returnInfo, returnInfoObj, validResultObj;
+        checkResult = true;
+        returnInfo = null;
+        errInfoStr = '';
+        if (result !== true) {
+          checkResult = false;
+          try {
+            returnInfo = result;
+            returnInfoObj = JSON.parse(returnInfo);
+            errCompUID = returnInfoObj.uid;
+            errCode = returnInfoObj.code;
+            errKey = returnInfoObj.key;
+            errMessage = returnInfoObj.message;
+            errCompName = _getCompName(errCompUID);
+            errCompType = _getCompType(errCompUID);
+            errInfoStr = sprintf(lang.TA.ERROR_STACK_FORMAT_VALID_FAILED, errCompName, errMessage);
+            if (errCode === 'EMPTY_VALUE' && errKey === 'InstanceId' && errMessage === 'Key InstanceId can not empty' && errCompType === 'AWS.VPC.NetworkInterface') {
+              checkResult = true;
+            }
+            if (errCode === 'EMPTY_VALUE' && errKey === 'LaunchConfigurationName' && errMessage === 'Key LaunchConfigurationName can not empty' && errCompType === 'AWS.AutoScaling.Group') {
+              checkResult = true;
+            }
+            if (errCode === 'EMPTY_VALUE' && errKey === 'TopicARN' && errMessage === 'Key TopicARN can not empty' && errCompType === 'AWS.AutoScaling.NotificationConfiguration') {
+              checkResult = true;
+            }
+          } catch (_error) {
+            err = _error;
+            errInfoStr = lang.TA.ERROR_STACK_FORMAT_VALID_ERROR;
+          }
+        } else {
+          callback(null);
+        }
+        if (checkResult) {
+          return callback(null);
+        } else {
+          validResultObj = {
+            level: constant.TA.ERROR,
+            info: errInfoStr
+          };
+          callback(validResultObj);
+          return console.log(validResultObj);
+        }
+      }, function(result) {
+        return callback(null);
+      });
+      tipInfo = sprintf(lang.TA.ERROR_STACK_CHECKING_FORMAT_VALID);
+      return {
+        level: constant.TA.ERROR,
+        info: tipInfo
+      };
+    } catch (_error) {
+      err = _error;
+      return callback(null);
+    }
+  };
+  isHaveNotExistAMIAsync = function(callback) {
+    var amiAry, cr, err, failure, instanceAMIMap, success, tipInfoAry;
+    try {
+      if (!callback) {
+        callback = function() {};
+      }
+      tipInfoAry = [];
+      amiAry = [];
+      instanceAMIMap = {};
+      _.each(MC.canvas_data.component, function(compObj) {
+        var imageId, instanceId;
+        if (compObj.type === constant.RESTYPE.INSTANCE || compObj.type === constant.RESTYPE.LC) {
+          imageId = compObj.resource.ImageId;
+          instanceId = '';
+          if (compObj.type === constant.RESTYPE.INSTANCE) {
+            instanceId = compObj.resource.InstanceId;
+          } else if (compObj.type === constant.RESTYPE.LC) {
+            instanceId = compObj.resource.LaunchConfigurationARN;
+          }
+          if (imageId && (!instanceId)) {
+            if (!instanceAMIMap[imageId]) {
+              instanceAMIMap[imageId] = [];
+              amiAry.push(imageId);
+            }
+            instanceAMIMap[imageId].push(compObj.uid);
+          }
+        }
+        return null;
+      });
+      if (amiAry.length) {
+        cr = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, MC.canvas_data.region);
+        failure = function() {
+          return callback(null);
+        };
+        success = function(invalidAmiAry) {
+          var amiId, infoObjType, infoTagType, instanceObj, instanceUID, invalids, validIds, _i, _j, _len, _len1, _ref;
+          validIds = _.pluck(invalidAmiAry || [], 'id');
+          invalids = _.difference(amiAry, validIds);
+          for (_i = 0, _len = invalids.length; _i < _len; _i++) {
+            amiId = invalids[_i];
+            _ref = instanceAMIMap[amiId] || [];
+            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+              instanceUID = _ref[_j];
+              instanceObj = MC.canvas_data.component[instanceUID];
+              if (instanceObj.type === constant.RESTYPE.LC) {
+                infoTagType = 'lc';
+                infoObjType = lang.PROP.LC_TITLE;
+              } else {
+                infoTagType = "instance";
+                infoObjType = lang.PROP.ELB_INSTANCES;
+              }
+              tipInfoAry.push({
+                level: constant.TA.ERROR,
+                uid: instanceUID,
+                info: sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceObj.name, amiId)
+              });
+            }
+          }
+          if (tipInfoAry.length) {
+            callback(tipInfoAry);
+            return console.log(tipInfoAry);
+          } else {
+            return callback(null);
+          }
+        };
+        cr.fetchAmis(amiAry, true).then(success, failure);
+      } else {
+        return callback(null);
+      }
+    } catch (_error) {
+      err = _error;
+      return callback(null);
+    }
+  };
+  isHaveNotExistAMI = function() {
+    var amiAry, amiCollection, instanceAMIMap, tipInfoAry;
+    amiAry = [];
+    instanceAMIMap = {};
+    _.each(MC.canvas_data.component, function(compObj) {
+      var imageId, instanceId;
+      if (compObj.type === constant.RESTYPE.INSTANCE || compObj.type === constant.RESTYPE.LC) {
+        imageId = compObj.resource.ImageId;
+        instanceId = '';
+        if (compObj.type === constant.RESTYPE.INSTANCE) {
+          instanceId = compObj.resource.InstanceId;
+        } else if (compObj.type === constant.RESTYPE.LC) {
+          instanceId = compObj.resource.LaunchConfigurationARN;
+        }
+        if (imageId && (!instanceId)) {
+          if (!instanceAMIMap[imageId]) {
+            instanceAMIMap[imageId] = [];
+            amiAry.push(imageId);
+          }
+          instanceAMIMap[imageId].push(compObj.uid);
+        }
+      }
+      return null;
+    });
+    tipInfoAry = [];
+    amiCollection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, MC.canvas_data.region);
+    _.each(amiAry, function(amiId) {
+      var instanceUIDAry;
+      if (!amiCollection.get(amiId)) {
+        instanceUIDAry = instanceAMIMap[amiId];
+        _.each(instanceUIDAry, function(instanceUID) {
+          var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
+          instanceObj = MC.canvas_data.component[instanceUID];
+          instanceType = instanceObj.type;
+          instanceName = instanceObj.name;
+          infoObjType = lang.PROP.ELB_INSTANCES;
+          infoTagType = 'instance';
+          if (instanceType === constant.RESTYPE.LC) {
+            infoObjType = lang.PROP.LC_TITLE;
+            infoTagType = 'lc';
+          }
+          tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
+          tipInfoAry.push({
+            level: constant.TA.ERROR,
+            info: tipInfo,
+            uid: instanceUID
+          });
+          return null;
+        });
+      }
+      return null;
+    });
+    return tipInfoAry;
+  };
+  hasTerminateProtection = function(callback, differ) {
+    var design, removedInstanceIds;
+    design = Design.instance();
+    if (!design.modeIsAppEdit() || !differ) {
+      callback(null);
+      return;
+    }
+    removedInstanceIds = [];
+    _.each(differ.removedComps, function(comp) {
+      var AsgModel, asgMembers;
+      if (comp.type === constant.RESTYPE.INSTANCE) {
+        removedInstanceIds.push(comp.resource.InstanceId);
+      }
+      if (comp.type === constant.RESTYPE.ASG) {
+        AsgModel = Design.modelClassForType(constant.RESTYPE.ASG);
+        asgMembers = AsgModel.members(comp.resource.AutoScalingGroupARN);
+        return removedInstanceIds = removedInstanceIds.concat(_.pluck(asgMembers, 'appId'));
+      }
+    });
+    if (!removedInstanceIds.length) {
+      callback(null);
+      return;
+    }
+    return design.opsModel().checkTerminateProtection(removedInstanceIds).then(function(res) {
+      var id, iname, name, tipvarArray, tipvarStr;
+      if (_.size(res)) {
+        tipvarArray = [];
+        for (id in res) {
+          name = res[id];
+          if (_.isString(name)) {
+            iname = "<span class='validation-tag tag-instance'>" + name + "(" + id + ")</span>";
+          } else {
+            iname = "<span class='validation-tag tag-instance'>" + id + "</span>";
+          }
+          tipvarArray.push(iname);
+        }
+        tipvarStr = tipvarArray.join(', ');
+        return callback(Helper.message.error(null, i18n.TERMINATED_PROTECTION_CANNOT_TERMINATE, tipvarStr));
+      } else {
+        return callback(null);
+      }
+    }, function(err) {
+      console.log(err);
+      return callback(null);
+    });
+  };
+  return {
+    hasTerminateProtection: hasTerminateProtection,
+    isHaveNotExistAMIAsync: isHaveNotExistAMIAsync,
+    isHaveNotExistAMI: isHaveNotExistAMI,
+    verify: verify
+  };
+});
+
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
+  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isInstanceOrLcConnectable, isMesosHasSlave, isMesosMasterCountLegal, isMesosMasterPlacedInPublicSubnet, isNatCheckedSourceDest, _getSGCompRuleLength;
+  i18n = Helper.i18n.short();
+  isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
+    var amiId, haveProvisionedVolume, instanceComp, instanceName, instanceType, instanceUIDRef, isInstanceComp, lsgName, tipInfo, _ref;
+    instanceComp = MC.canvas_data.component[instanceUID];
+    instanceType = instanceComp.type;
+    isInstanceComp = instanceType === constant.RESTYPE.INSTANCE;
+    haveProvisionedVolume = false;
+    instanceUIDRef = lsgName = amiId = null;
+    if (instanceComp) {
+      instanceUIDRef = MC.genResRef(instanceUID, 'resource.InstanceId');
+    } else {
+      lsgName = instanceComp.resource.LaunchConfigurationName;
+      amiId = instanceComp.resource.ImageId;
+    }
+    _.each(MC.canvas_data.component, function(compObj) {
+      if (compObj.type === constant.RESTYPE.VOL) {
+        if (compObj.resource.VolumeType !== 'standard') {
+          if (isInstanceComp && (compObj.resource.AttachmentSet.InstanceId === instanceUIDRef)) {
+            haveProvisionedVolume = true;
+          } else if (!isInstanceComp && compObj.resource.ImageId === amiId && compObj.resource.LaunchConfigurationName === lsgName) {
+            haveProvisionedVolume = true;
+          }
+        }
+      }
+      return null;
+    });
+    if (!(haveProvisionedVolume && ((_ref = instanceComp.resource.EbsOptimized) === 'false' || _ref === false || _ref === ''))) {
+      return null;
+    } else {
+      instanceName = instanceComp.name;
+      tipInfo = sprintf(i18n.NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME, instanceName);
+      return {
+        level: constant.TA.NOTICE,
+        info: tipInfo,
+        uid: instanceUID
+      };
+    }
+  };
+  _getSGCompRuleLength = function(sgUID) {
+    var sgComp, sgInboundRuleAry, sgOutboundRuleAry, sgTotalRuleNum;
+    sgComp = MC.canvas_data.component[sgUID];
+    sgInboundRuleAry = sgComp.resource.IpPermissions;
+    sgOutboundRuleAry = sgComp.resource.IpPermissionsEgress;
+    sgTotalRuleNum = 0;
+    if (sgInboundRuleAry) {
+      sgTotalRuleNum += sgInboundRuleAry.length;
+    }
+    if (sgOutboundRuleAry) {
+      sgTotalRuleNum += sgOutboundRuleAry.length;
+    }
+    return sgTotalRuleNum;
+  };
+  isAssociatedSGRuleExceedFitNum = function(instanceUID) {
+    var instanceComp, instanceName, instanceSGAry, instanceType, isInstanceComp, sgUIDAry, tipInfo, totalSGRuleNum;
+    instanceComp = MC.canvas_data.component[instanceUID];
+    instanceType = instanceComp.type;
+    isInstanceComp = instanceType === constant.RESTYPE.INSTANCE;
+    sgUIDAry = [];
+    if (isInstanceComp) {
+      _.each(MC.canvas_data.component, function(compObj) {
+        var associatedInstanceRef, associatedInstanceUID, eniSGAry;
+        if (compObj.type === constant.RESTYPE.ENI) {
+          associatedInstanceRef = compObj.resource.Attachment.InstanceId;
+          associatedInstanceUID = MC.extractID(associatedInstanceRef);
+          if (associatedInstanceUID === instanceUID) {
+            eniSGAry = compObj.resource.GroupSet;
+            _.each(eniSGAry, function(sgObj) {
+              var eniSGUID, eniSGUIDRef;
+              eniSGUIDRef = sgObj.GroupId;
+              eniSGUID = MC.extractID(eniSGUIDRef);
+              if (!(__indexOf.call(sgUIDAry, eniSGUID) >= 0)) {
+                sgUIDAry.push(eniSGUID);
+              }
+              return null;
+            });
+          }
+        }
+        return null;
+      });
+      totalSGRuleNum = 0;
+      _.each(sgUIDAry, function(sgUID) {
+        totalSGRuleNum += _getSGCompRuleLength(sgUID);
+        return null;
+      });
+      if (totalSGRuleNum > 50) {
+        instanceName = instanceComp.name;
+        tipInfo = sprintf(i18n.WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM, instanceName, 50);
+        return {
+          level: constant.TA.WARNING,
+          info: tipInfo,
+          uid: instanceUID
+        };
+      }
+    } else {
+      sgUIDAry = [];
+      if (isInstanceComp) {
+        instanceSGAry = instanceComp.resource.SecurityGroup;
+      } else {
+        instanceSGAry = instanceComp.resource.SecurityGroups;
+      }
+      _.each(instanceSGAry, function(sgRef) {
+        var sgUID;
+        sgUID = MC.extractID(sgRef);
+        if (!(__indexOf.call(sgUIDAry, sgUID) >= 0)) {
+          sgUIDAry.push(sgUID);
+        }
+        return null;
+      });
+      totalSGRuleNum = 0;
+      _.each(sgUIDAry, function(sgUID) {
+        totalSGRuleNum += _getSGCompRuleLength(sgUID);
+        return null;
+      });
+      if (totalSGRuleNum > 100) {
+        instanceName = instanceComp.name;
+        tipInfo = sprintf(i18n.WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM, instanceName, 100);
+        return {
+          level: constant.TA.WARNING,
+          info: tipInfo,
+          uid: instanceUID
+        };
+      }
+    }
+    return null;
+  };
+  isConnectRoutTableButNoEIP = function(uid) {
+    var RTB, components, hasEIP, instance, instanceId, isConnectRTB, tipInfo;
+    components = MC.canvas_data.component;
+    instance = components[uid];
+    instanceId = MC.genResRef(uid, 'resource.InstanceId');
+    RTB = '';
+    isConnectRTB = _.some(components, function(component) {
+      if (component.type === constant.RESTYPE.RT) {
+        return _.some(component.resource.RouteSet, function(rt) {
+          if (rt.InstanceId === instanceId) {
+            RTB = component;
+            return true;
+          }
+        });
+      }
+    });
+    hasEIP = _.some(components, function(component) {
+      if (component.type === constant.RESTYPE.EIP && component.resource.InstanceId === instanceId) {
+        return true;
+      }
+    });
+    if (!isConnectRTB || hasEIP) {
+      return null;
+    }
+    tipInfo = sprintf(i18n.NOTICE_INSTANCE_HAS_RTB_NO_ELB, RTB.name, instance.name, instance.name);
+    return {
+      level: constant.TA.NOTICE,
+      info: tipInfo,
+      uid: uid
+    };
+  };
+  isNatCheckedSourceDest = function(uid) {
+    var connectedRt, enis, hasUncheck, instance;
+    instance = Design.instance().component(uid);
+    if (!instance) {
+      return null;
+    }
+    connectedRt = instance.connectionTargets('RTB_Route');
+    if (connectedRt && connectedRt.length) {
+      enis = instance.connectionTargets('EniAttachment');
+      enis.push(instance.getEmbedEni());
+      hasUncheck = _.some(enis, function(eni) {
+        return !eni.get('sourceDestCheck');
+      });
+      if (!hasUncheck) {
+        return Helper.message.error(uid, i18n.ERROR_INSTANCE_NAT_CHECKED_SOURCE_DEST, instance.get('name'));
+      }
+      null;
+    }
+    return null;
+  };
+  isMesosHasSlave = function() {
+    var hasSlave, hasSlaveLc;
+    if (!Design.instance().opsModel().isMesos()) {
+      return null;
+    }
+    hasSlave = Design.modelClassForType(constant.RESTYPE.INSTANCE).some(function(i) {
+      return i.isMesosSlave();
+    });
+    hasSlaveLc = Design.modelClassForType(constant.RESTYPE.LC).some(function(i) {
+      return i.isMesosSlave();
+    });
+    if (hasSlave || hasSlaveLc) {
+      return null;
+    }
+    return Helper.message.error(null, i18n.MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST);
+  };
+  isMesosMasterCountLegal = function() {
+    var errors, masterCount;
+    if (!Design.instance().opsModel().isMesos()) {
+      return null;
+    }
+    errors = [];
+    masterCount = Design.modelClassForType(constant.RESTYPE.INSTANCE).reduce(function(memo, i) {
+      if (i.isMesosMaster()) {
+        return memo + 1;
+      } else {
+        return memo;
+      }
+    }, 0);
+    if (masterCount < 3) {
+      errors.push(Helper.message.error('IS_MESOS_MASTER_MORE_THAN_3', i18n.IS_MESOS_MASTER_MORE_THAN_3));
+    }
+    if (masterCount % 2 === 0) {
+      errors.push(Helper.message.error('MASTER_NUMBER_MUST_BE_ODD', i18n.MASTER_NUMBER_MUST_BE_ODD));
+    }
+    return errors;
+  };
+  isMesosMasterPlacedInPublicSubnet = function() {
+    var master, nameStr, privateMasters, _i, _len;
+    privateMasters = Design.modelClassForType(constant.RESTYPE.INSTANCE).filter(function(i) {
+      return i.isMesosMaster() && !i.parent().isPublic();
+    });
+    if (!privateMasters.length) {
+      return null;
+    }
+    nameStr = '';
+    for (_i = 0, _len = privateMasters.length; _i < _len; _i++) {
+      master = privateMasters[_i];
+      nameStr += "<span class='validation-tag tag-mesos-master'>" + (master.get('name')) + "</span>, ";
+    }
+    nameStr = nameStr.slice(0, -2);
+    return Helper.message.error(null, i18n.MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET, nameStr);
+  };
+  isInstanceOrLcConnectable = function() {
+    var lonelySb, nameStr, sb, _i, _len;
+    lonelySb = [];
+    Design.modelClassForType(constant.RESTYPE.INSTANCE).each(function(i) {
+      var sb;
+      sb = i.parent();
+      if (i.isPublic() && !sb.isPublic()) {
+        return lonelySb.push(sb);
+      }
+    });
+    Design.modelClassForType(constant.RESTYPE.LC).each(function(lc) {
+      var asg, asgs, sb, _i, _len, _results;
+      if (lc.isPublic() && !lc.get('appId')) {
+        asgs = lc.getAsgsIncludeExpanded();
+        _results = [];
+        for (_i = 0, _len = asgs.length; _i < _len; _i++) {
+          asg = asgs[_i];
+          sb = asg.parent();
+          if (!sb.isPublic()) {
+            _results.push(lonelySb.push(sb));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    });
+    Design.modelClassForType(constant.RESTYPE.ENI).each(function(eni) {
+      var sb;
+      if (!eni.embedInstance() && eni.hasEip()) {
+        sb = eni.parent();
+        if (!sb.isPublic()) {
+          return lonelySb.push(sb);
+        }
+      }
+    });
+    lonelySb = _.uniq(lonelySb);
+    if (!lonelySb.length) {
+      return null;
+    }
+    nameStr = '';
+    for (_i = 0, _len = lonelySb.length; _i < _len; _i++) {
+      sb = lonelySb[_i];
+      nameStr += "Subnet <span class='validation-tag tag-subnet'>" + (sb.get('name')) + "</span>, ";
+    }
+    nameStr = nameStr.slice(0, -2);
+    return Helper.message.error(null, i18n.SUBNET_CONNECTIVITY, nameStr);
+  };
+  return {
+    isEBSOptimizedForAttachedProvisionedVolume: isEBSOptimizedForAttachedProvisionedVolume,
+    isAssociatedSGRuleExceedFitNum: isAssociatedSGRuleExceedFitNum,
+    isConnectRoutTableButNoEIP: isConnectRoutTableButNoEIP,
+    isNatCheckedSourceDest: isNatCheckedSourceDest,
+    isMesosHasSlave: isMesosHasSlave,
+    isMesosMasterCountLegal: isMesosMasterCountLegal,
+    isMesosMasterPlacedInPublicSubnet: isMesosMasterPlacedInPublicSubnet,
+    isInstanceOrLcConnectable: isInstanceOrLcConnectable
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, $, MC, lang, Helper) {
+  return {
+    getAllAWSENIForAppEditAndDefaultVPC: function(callback) {
+      return callback(null);
+    },
+    isCidrConflict: function() {
+      var Model, results, subnets;
+      Model = Design.modelClassForType(constant.RESTYPE.SUBNET);
+      subnets = Model.allObjects();
+      results = [];
+      subnets.sort(function(sb1, sb2) {
+        var conflict;
+        conflict = Model.isCidrConflict(sb1.get("cidr"), sb2.get("cidr"));
+        if (conflict) {
+          return results.push(Helper.message.error(null, lang.TA.ERROR_CIDR_CONFLICT, sb1.get('name'), sb1.get('cidr'), sb2.get('name'), sb2.get('cidr')));
+        }
+      });
+      return results;
+    }
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/vpc',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'CloudResources', 'TaHelper'], function(constant, MC, lang, Design, CloudResources, Helper) {
+  var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, isVPCWithRdsAccessibleEnableDNS, isVPCWithRdsAccessibleHasNoIgw, isVPCWithRdsTenancyDefault, __hasState;
+  i18n = Helper.i18n.short();
+  __hasState = function(uid) {
+    var component, had, state;
+    if (Design.instance().get('agent').enabled === false) {
+      return false;
+    }
+    if (uid) {
+      component = Design.instance().component(uid);
+      if (component) {
+        state = component.get('state');
+        return state && state.length;
+      } else {
+        return false;
+      }
+    } else {
+      had = false;
+      Design.instance().eachComponent(function(component) {
+        if (__hasState(component.id)) {
+          had = true;
+          return false;
+        }
+      });
+      return had;
+    }
+  };
+  isVPCAbleConnectToOutside = function() {
+    var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo;
+    isHaveVPN = false;
+    isHaveEIP = false;
+    isHavePubIP = false;
+    _.each(MC.canvas_data.component, function(compObj) {
+      var compType;
+      compType = compObj.type;
+      if (compType === constant.RESTYPE.VPN) {
+        isHaveVPN = true;
+      }
+      if (compType === constant.RESTYPE.EIP) {
+        isHaveEIP = true;
+      }
+      if (compType === constant.RESTYPE.ENI) {
+        if (compObj.index === 0) {
+          if (compObj.resource.AssociatePublicIpAddress) {
+            isHavePubIP = true;
+          }
+        }
+      }
+      if (compType === constant.RESTYPE.LC) {
+        if (compObj.resource.AssociatePublicIpAddress) {
+          isHavePubIP = true;
+        }
+      }
+      return null;
+    });
+    if (isHaveVPN || isHaveEIP || isHavePubIP) {
+      return null;
+    }
+    tipInfo = sprintf(lang.TA.WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE);
+    return {
+      level: constant.TA.WARNING,
+      info: tipInfo
+    };
+  };
+  isVPCUsingNoneDHCPAndVisualops = function(uid) {
+    var dhcpId, vpc;
+    if (!__hasState()) {
+      return null;
+    }
+    vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
+    dhcpId = vpc.get('dhcp').get('appId');
+    if (dhcpId !== 'default') {
+      return null;
+    }
+    return Helper.message.warning(vpc.id, i18n.WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
+  };
+  isVPCUsingNonexistentDhcp = function(callback) {
+    var dhcpCol, dhcpId, vpc;
+    vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
+    dhcpId = vpc.get('dhcp').get('appId');
+    if (!dhcpId || dhcpId === 'default') {
+      callback(null);
+      return;
+    }
+    dhcpCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DHCP, Design.instance().region());
+    dhcpCol.fetchForce().fin(function() {
+      if (dhcpCol.get(dhcpId)) {
+        return callback(null);
+      } else {
+        return callback(Helper.message.error(vpc.id, i18n.ERROR_VPC_DHCP_NONEXISTENT));
+      }
+    });
+    return null;
+  };
+  isVPCWithRdsTenancyDefault = function(uid) {
+    var hasRdsInstance, vpc;
+    vpc = Design.instance().component(uid);
+    hasRdsInstance = !!Design.modelClassForType(constant.RESTYPE.DBINSTANCE).size();
+    if (hasRdsInstance && (vpc.get('tenancy') !== 'default')) {
+      return Helper.message.error(uid, i18n.ERROR_RDS_TENANCY_MUST_DEFAULT);
+    }
+    return null;
+  };
+  isVPCWithRdsAccessibleHasNoIgw = function(uid) {
+    var hasRdsAccessible, vpc;
+    vpc = Design.instance().component(uid);
+    hasRdsAccessible = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).some(function(db) {
+      return db.get('accessible');
+    });
+    if (!hasRdsAccessible) {
+      return null;
+    }
+    if (_.some(vpc.children(), function(child) {
+      return child.type === constant.RESTYPE.IGW;
+    })) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_RDS_ACCESSIBLE_NOT_HAVE_IGW);
+  };
+  isVPCWithRdsAccessibleEnableDNS = function(uid) {
+    var hasRdsAccessible, vpc;
+    vpc = Design.instance().component(uid);
+    hasRdsAccessible = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).some(function(db) {
+      return db.get('accessible');
+    });
+    if (!hasRdsAccessible) {
+      return null;
+    }
+    if (vpc.get('dnsSupport') && vpc.get('dnsHostnames')) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_RDS_ACCESSIBLE_NOT_HAVE_DNS);
+  };
+  return {
+    isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
+    isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp,
+    isVPCUsingNoneDHCPAndVisualops: isVPCUsingNoneDHCPAndVisualops,
+    isVPCWithRdsTenancyDefault: isVPCWithRdsTenancyDefault,
+    isVPCWithRdsAccessibleHasNoIgw: isVPCWithRdsAccessibleHasNoIgw,
+    isVPCWithRdsAccessibleEnableDNS: isVPCWithRdsAccessibleEnableDNS
+  };
+});
+
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('component/trustedadvisor/validation/aws/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  var i18n, isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isHaveSubnetAttached, isInternetElbRouteOut, isNameExceedLimit, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
+  i18n = Helper.i18n.short();
+  isHaveIGWForInternetELB = function(elbUID) {
+    var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    isInternetELB = elbComp.resource.Scheme === 'internet-facing';
+    haveIGW = false;
+    _.each(MC.canvas_data.component, function(compObj) {
+      var compType;
+      compType = compObj.type;
+      if (compType === constant.RESTYPE.IGW) {
+        haveIGW = true;
+      }
+      return null;
+    });
+    if (!(isInternetELB && !haveIGW)) {
+      return null;
+    } else {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_VPC_HAVE_INTERNET_ELB_AND_NO_HAVE_IGW, elbName);
+      return {
+        level: constant.TA.ERROR,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+  };
+  isHaveInstanceAttached = function(elbUID) {
+    var attachedASGNum, attachedInstanceNum, elbComp, elbName, elbNameRef, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    attachedInstanceNum = elbComp.resource.Instances.length;
+    attachedASGNum = 0;
+    elbNameRef = MC.genResRef(elbUID, 'resource.LoadBalancerName');
+    _.each(MC.canvas_data.component, function(compObj) {
+      var attachedELBAry, compType;
+      compType = compObj.type;
+      if (compType === constant.RESTYPE.ASG) {
+        attachedELBAry = compObj.resource.LoadBalancerNames;
+        if (__indexOf.call(attachedELBAry, elbNameRef) >= 0) {
+          attachedASGNum++;
+        }
+      }
+      return null;
+    });
+    if (attachedInstanceNum !== 0 || attachedASGNum !== 0) {
+      return null;
+    } else {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG, elbName);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+  };
+  isHaveSubnetAttached = function(elbUID) {
+    var elbComp;
+    elbComp = Design.instance().component(elbUID);
+    if (elbComp.connections('ElbSubnetAsso').length === 0) {
+      return {
+        level: constant.TA.ERROR,
+        info: sprintf(lang.TA.ERROR_ELB_NO_ATTACH_SUBNET, elbComp.get('name')),
+        uid: elbUID
+      };
+    }
+    return null;
+  };
+  isAttachELBToMultiAZ = function(elbUID) {
+    var attachedAZAry, elbComp, elbName, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    attachedAZAry = elbComp.resource.AvailabilityZones;
+    if (attachedAZAry.length !== 1) {
+      return null;
+    } else {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.WARNING_ELB_NO_ATTACH_TO_MULTI_AZ, elbName);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+  };
+  isRedirectPortHttpsToHttp = function(elbUID) {
+    var elbComp, elbName, haveListener, listenerAry, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    haveListener = false;
+    listenerAry = elbComp.resource.ListenerDescriptions;
+    _.each(listenerAry, function(listenerItem) {
+      var elbPort, instancePort, listenerObj;
+      listenerObj = listenerItem.Listener;
+      elbPort = listenerObj.LoadBalancerPort;
+      instancePort = listenerObj.InstancePort;
+      if ((elbPort === 443 || elbPort === '443') && (instancePort === 443 || instancePort === '443')) {
+        haveListener = true;
+      }
+      return null;
+    });
+    if (!haveListener) {
+      return null;
+    } else {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.NOTICE_ELB_REDIRECT_PORT_443_TO_443, elbName);
+      return {
+        level: constant.TA.NOTICE,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+  };
+  isHaveRepeatListener = function(elbUID) {
+    var elbComp, elbName, haveRepeat, listenerAry, portExistMap, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    listenerAry = elbComp.resource.ListenerDescriptions;
+    portExistMap = {};
+    haveRepeat = false;
+    _.each(listenerAry, function(listenerItem) {
+      var elbPort, listenerObj;
+      listenerObj = listenerItem.Listener;
+      elbPort = listenerObj.LoadBalancerPort;
+      if (!portExistMap[elbPort]) {
+        portExistMap[String(elbPort)] = true;
+      } else {
+        haveRepeat = true;
+      }
+      return null;
+    });
+    if (!haveRepeat) {
+      return null;
+    } else {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_ELB_HAVE_REPEAT_LISTENER_ITEM, elbName);
+      return {
+        level: constant.TA.ERROR,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+  };
+  isHaveSSLCert = function(elbUID) {
+    var elbComp, elbName, isCorrect, listenerAry, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    listenerAry = elbComp.resource.ListenerDescriptions;
+    isCorrect = true;
+    _.each(listenerAry, function(listenerItem) {
+      var elbProtocol, listenerObj;
+      listenerObj = listenerItem.Listener;
+      elbProtocol = listenerObj.Protocol;
+      if (elbProtocol === 'HTTPS' || elbProtocol === 'SSL') {
+        if (!listenerObj.SSLCertificateId) {
+          isCorrect = false;
+        }
+      }
+      return null;
+    });
+    if (isCorrect) {
+      return null;
+    } else {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_ELB_HAVE_NO_SSL_CERT, elbName);
+      return {
+        level: constant.TA.ERROR,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+  };
+  isRuleInboundToELBListener = function(elbUID) {
+    var elbComp, elbName, elbPort, elbProtocol, isInRange, listenerAry, listenerItem, listenerObj, portData, result, resultPortAry, sgCompAry, tipInfo, _i, _len;
+    elbComp = MC.canvas_data.component[elbUID];
+    elbName = elbComp.name;
+    sgCompAry = Helper.sg.get(elbComp);
+    portData = Helper.sg.port(sgCompAry);
+    listenerAry = elbComp.resource.ListenerDescriptions;
+    result = true;
+    resultPortAry = [];
+    for (_i = 0, _len = listenerAry.length; _i < _len; _i++) {
+      listenerItem = listenerAry[_i];
+      listenerObj = listenerItem.Listener;
+      elbProtocol = listenerObj.Protocol;
+      elbPort = listenerObj.LoadBalancerPort;
+      isInRange = Helper.sg.isInRange('tcp', elbPort, portData, 'in');
+      if (!isInRange) {
+        result = false;
+        resultPortAry.push(elbProtocol + ' <span class="validation-tag tag-port">' + elbPort + '</span>');
+      }
+    }
+    if (!result) {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_NOT_INBOUND_TO_ELB_LISTENER, elbName, resultPortAry.join(', '));
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+    return null;
+  };
+  isRuleOutboundToInstanceListener = function(elbUID) {
+    var elbComp, elbName, instancePort, instanceProtocol, isInRange, listenerAry, listenerItem, listenerObj, portData, result, resultPortAry, sgCompAry, tipInfo, _i, _len;
+    elbComp = MC.canvas_data.component[elbUID];
+    sgCompAry = Helper.sg.get(elbComp);
+    portData = Helper.sg.port(sgCompAry);
+    listenerAry = elbComp.resource.ListenerDescriptions;
+    result = true;
+    resultPortAry = [];
+    for (_i = 0, _len = listenerAry.length; _i < _len; _i++) {
+      listenerItem = listenerAry[_i];
+      listenerObj = listenerItem.Listener;
+      instanceProtocol = listenerObj.InstanceProtocol;
+      instancePort = listenerObj.InstancePort;
+      isInRange = Helper.sg.isInRange('tcp', instancePort, portData, 'out');
+      if (!isInRange) {
+        result = false;
+        resultPortAry.push(instanceProtocol + ' <span class="validation-tag tag-port">' + instancePort + '</span>');
+      }
+    }
+    if (!result) {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_NOT_OUTBOUND_TO_INSTANCE_LISTENER, elbName, resultPortAry.join(', '));
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+    return null;
+  };
+  isRuleInboundInstanceForELBListener = function(elbUID) {
+    var asgUIDAry, elbComp, elbName, instanceAry, listenerAry, resultAry;
+    elbComp = MC.canvas_data.component[elbUID];
+    elbName = elbComp.name;
+    instanceAry = elbComp.resource.Instances;
+    listenerAry = elbComp.resource.ListenerDescriptions;
+    resultAry = [];
+    _.each(instanceAry, function(instanceObj) {
+      var instanceComp, instancePort, instanceProtocol, instanceUID, isInRange, listenerItem, listenerObj, portData, portInfo, resultPortAry, sgCompAry, targetName, targetType, tipInfo, _i, _len;
+      instanceUID = MC.extractID(instanceObj.InstanceId);
+      if (instanceUID) {
+        resultPortAry = [];
+        instanceComp = MC.canvas_data.component[instanceUID];
+        if (instanceComp.index !== 0) {
+          return;
+        }
+        sgCompAry = Helper.sg.get(instanceComp);
+        portData = Helper.sg.port(sgCompAry);
+        for (_i = 0, _len = listenerAry.length; _i < _len; _i++) {
+          listenerItem = listenerAry[_i];
+          listenerObj = listenerItem.Listener;
+          instanceProtocol = listenerObj.InstanceProtocol;
+          instancePort = listenerObj.InstancePort;
+          isInRange = Helper.sg.isInRange('tcp', instancePort, portData, 'in');
+          if (!isInRange) {
+            resultPortAry.push(instanceProtocol + ' <span class="validation-tag tag-port">' + instancePort + '</span>');
+          }
+        }
+        if (resultPortAry.length) {
+          targetType = 'Instance';
+          targetName = instanceComp.serverGroupName;
+          portInfo = resultPortAry.join(', ');
+          tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER, targetType, targetName, portInfo, elbName);
+          return resultAry.push({
+            level: constant.TA.WARNING,
+            info: tipInfo,
+            uid: elbUID
+          });
+        }
+      }
+    });
+    asgUIDAry = [];
+    _.each(MC.canvas_data.component, function(compObj) {
+      var elbRefAry;
+      if (compObj.type === constant.RESTYPE.ASG) {
+        elbRefAry = compObj.resource.LoadBalancerNames;
+        _.each(elbRefAry, function(elbRef) {
+          var currentELBUID;
+          currentELBUID = MC.extractID(elbRef);
+          if (elbUID === currentELBUID) {
+            asgUIDAry.push(compObj.uid);
+          }
+          return null;
+        });
+      }
+      return null;
+    });
+    _.each(asgUIDAry, function(asgUID) {
+      var asgComp, instancePort, instanceProtocol, isInRange, lcComp, lcRef, lcUID, listenerItem, listenerObj, portData, portInfo, resultPortAry, sgCompAry, targetName, targetType, tipInfo, _i, _len;
+      resultPortAry = [];
+      asgComp = MC.canvas_data.component[asgUID];
+      lcRef = asgComp.resource.LaunchConfigurationName;
+      if (lcRef) {
+        lcUID = MC.extractID(lcRef);
+        lcComp = MC.canvas_data.component[lcUID];
+      } else {
+        return;
+      }
+      sgCompAry = Helper.sg.get(lcComp);
+      portData = Helper.sg.port(sgCompAry);
+      for (_i = 0, _len = listenerAry.length; _i < _len; _i++) {
+        listenerItem = listenerAry[_i];
+        listenerObj = listenerItem.Listener;
+        instanceProtocol = listenerObj.InstanceProtocol;
+        instancePort = listenerObj.InstancePort;
+        isInRange = Helper.sg.isInRange('tcp', instancePort, portData, 'in');
+        if (!isInRange) {
+          resultPortAry.push(instanceProtocol + ' <span class="validation-tag tag-port">' + instancePort + '</span>');
+        }
+      }
+      if (resultPortAry.length) {
+        targetType = 'Launch Configuration';
+        targetName = lcComp.name;
+        portInfo = resultPortAry.join(', ');
+        tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER, targetType, targetName, portInfo, elbName);
+        return resultAry.push({
+          level: constant.TA.WARNING,
+          info: tipInfo,
+          uid: elbUID
+        });
+      }
+    });
+    return resultAry;
+  };
+  isRuleInboundToELBPingPort = function(elbUID) {
+    var elbComp, elbName, err, isInRange, pingPort, portData, sgCompAry, tipInfo;
+    elbComp = MC.canvas_data.component[elbUID];
+    elbName = elbComp.name;
+    sgCompAry = Helper.sg.get(elbComp);
+    portData = Helper.sg.port(sgCompAry);
+    pingPort = null;
+    try {
+      pingPort = elbComp.resource.HealthCheck.Target;
+      pingPort = pingPort.split(':')[1];
+      pingPort = pingPort.split('/')[0];
+    } catch (_error) {
+      err = _error;
+      return null;
+    }
+    isInRange = Helper.sg.isInRange('tcp', pingPort, portData, 'in');
+    if (!isInRange) {
+      elbName = elbComp.name;
+      tipInfo = sprintf(lang.TA.WARNING_ELB_RULE_NOT_INBOUND_TO_ELB_PING_PORT, elbName, pingPort);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: elbUID
+      };
+    }
+    return null;
+  };
+  isELBSubnetCIDREnough = function(elbUID) {
+    var elbComp, elbName, elbSubnetAry, resultAry;
+    elbComp = MC.canvas_data.component[elbUID];
+    elbSubnetAry = elbComp.resource.Subnets;
+    elbName = elbComp.name;
+    resultAry = [];
+    _.each(elbSubnetAry, function(subnetRef) {
+      var subnetCIDR, subnetComp, subnetName, subnetUID, suffixNum, tipInfo;
+      subnetUID = MC.extractID(subnetRef);
+      subnetComp = MC.canvas_data.component[subnetUID];
+      if (subnetComp) {
+        subnetName = subnetComp.name;
+        subnetUID = subnetComp.uid;
+        subnetCIDR = subnetComp.resource.CidrBlock;
+        suffixNum = Number(subnetCIDR.split('/')[1]);
+        if (suffixNum > 27) {
+          tipInfo = sprintf(lang.TA.ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27, elbName, subnetName);
+          resultAry.push({
+            level: constant.TA.ERROR,
+            info: tipInfo,
+            uid: subnetUID
+          });
+        }
+      }
+      return null;
+    });
+    return resultAry;
+  };
+  isSSLCertExist = function(callback) {
+    var allExistCertAry, eachListener, elbNameUIDMap, elbNotExistCertMap, err, haveCert, sslCertCol, validResultAry;
+    try {
+      if (!callback) {
+        callback = function() {};
+      }
+      elbNameUIDMap = {};
+      eachListener = function(iterator) {
+        return _.each(MC.canvas_data.component, function(compObj) {
+          var elbName, listenerAry, listenerCertRef, listenerCertUID, listenerItem, listenerObj, sslCertComp, sslCertName, _i, _len;
+          if (compObj.type === constant.RESTYPE.ELB) {
+            elbName = compObj.name;
+            elbNameUIDMap[elbName] = compObj.uid;
+            listenerAry = compObj.resource.ListenerDescriptions;
+            for (_i = 0, _len = listenerAry.length; _i < _len; _i++) {
+              listenerItem = listenerAry[_i];
+              listenerObj = listenerItem.Listener;
+              listenerCertRef = listenerObj.SSLCertificateId;
+              if (!listenerCertRef) {
+                continue;
+              }
+              listenerCertUID = MC.extractID(listenerCertRef);
+              sslCertComp = MC.canvas_data.component[listenerCertUID];
+              if (sslCertComp) {
+                sslCertName = sslCertComp.name;
+                iterator(elbName, sslCertName);
+              }
+            }
+          }
+          return null;
+        });
+      };
+      elbNotExistCertMap = {};
+      allExistCertAry = [];
+      validResultAry = [];
+      haveCert = false;
+      eachListener(function() {
+        return haveCert = true;
+      });
+      if (haveCert) {
+        sslCertCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.IAM, Design.instance().region());
+        return sslCertCol.fetchForce().then(function(result) {
+          var sslCertAry;
+          sslCertAry = sslCertCol.toJSON();
+          _.each(sslCertAry, function(sslCertData) {
+            return allExistCertAry.push(sslCertData.Name);
+          });
+          eachListener(function(elbName, sslCertName) {
+            if (__indexOf.call(allExistCertAry, sslCertName) < 0) {
+              if (!elbNotExistCertMap[elbName]) {
+                elbNotExistCertMap[elbName] = [];
+              }
+              return elbNotExistCertMap[elbName].push(sslCertName);
+            }
+          });
+          _.each(elbNotExistCertMap, function(sslCertNameAry, elbName) {
+            var tipInfo, uniqSSLCertNameAry;
+            uniqSSLCertNameAry = _.uniq(sslCertNameAry);
+            tipInfo = sprintf(lang.TA.ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, uniqSSLCertNameAry.join(', '));
+            return validResultAry.push({
+              level: constant.TA.ERROR,
+              info: tipInfo,
+              uid: elbNameUIDMap[elbName]
+            });
+          });
+          if (validResultAry.length) {
+            callback(validResultAry);
+            return;
+          }
+          return callback(null);
+        }, function() {
+          return callback(null);
+        });
+      } else {
+        return callback(null);
+      }
+    } catch (_error) {
+      err = _error;
+      return callback(null);
+    }
+  };
+  isInternetElbRouteOut = function(uid) {
+    var elb, rtbs, subnets;
+    elb = Design.instance().component(uid);
+    if (elb.get('internal')) {
+      return null;
+    }
+    subnets = elb.connectionTargets('ElbSubnetAsso');
+    rtbs = _.map(subnets, function(sb) {
+      return sb.connectionTargets('RTB_Asso')[0];
+    });
+    if (_.some(rtbs, function(rtb) {
+      var igw, rtbConnTarget;
+      rtbConnTarget = rtb.connectionTargets('RTB_Route');
+      igw = _.where(rtbConnTarget, {
+        type: constant.RESTYPE.IGW
+      });
+      return igw.length > 0;
+    })) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_ELB_INTERNET_SHOULD_ATTACH_TO_PUBLIC_SB, elb.get('name'));
+  };
+  isNameExceedLimit = function(uid) {
+    var elb, elbName, limit;
+    limit = 23;
+    elb = Design.instance().component(uid);
+    if (elb.get('appId')) {
+      return null;
+    }
+    elbName = elb.get('name');
+    if (elbName && elbName.length > limit) {
+      return Helper.message.error(uid, i18n.ERROR_ELB_NAME_EXCEED_LIMIT, elbName, limit);
+    }
+    return null;
+  };
+  return {
+    isHaveIGWForInternetELB: isHaveIGWForInternetELB,
+    isHaveInstanceAttached: isHaveInstanceAttached,
+    isAttachELBToMultiAZ: isAttachELBToMultiAZ,
+    isRedirectPortHttpsToHttp: isRedirectPortHttpsToHttp,
+    isHaveRepeatListener: isHaveRepeatListener,
+    isHaveSSLCert: isHaveSSLCert,
+    isRuleInboundToELBListener: isRuleInboundToELBListener,
+    isRuleOutboundToInstanceListener: isRuleOutboundToInstanceListener,
+    isRuleInboundInstanceForELBListener: isRuleInboundInstanceForELBListener,
+    isRuleInboundToELBPingPort: isRuleInboundToELBPingPort,
+    isELBSubnetCIDREnough: isELBSubnetCIDREnough,
+    isSSLCertExist: isSSLCertExist,
+    isInternetElbRouteOut: isInternetElbRouteOut,
+    isNameExceedLimit: isNameExceedLimit,
+    isHaveSubnetAttached: isHaveSubnetAttached
+  };
+});
+
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('component/trustedadvisor/validation/aws/ec2/securitygroup',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var getAllRefComp, isAssociatedSGNumExceedLimit, isELBDefaultSG, isHaveFullZeroOutboundRule, isHaveFullZeroSourceToHTTPRule, isHaveUsingAllProtocolRule, isHaveUsingPort22Rule, isSGRuleExceedFitNum, isStackUsingOnlyOneSG;
+  getAllRefComp = function(sgUID) {
+    var refCompAry, refNum, sgAry;
+    refNum = 0;
+    sgAry = [];
+    refCompAry = [];
+    _.each(MC.canvas_data.component, function(comp) {
+      var compType, _sgAry;
+      compType = comp.type;
+      if (compType === 'AWS.ELB' || compType === 'AWS.AutoScaling.LaunchConfiguration') {
+        sgAry = comp.resource.SecurityGroups;
+        sgAry = _.map(sgAry, function(value) {
+          var refSGUID;
+          refSGUID = MC.extractID(value);
+          return refSGUID;
+        });
+        if (__indexOf.call(sgAry, sgUID) >= 0) {
+          refCompAry.push(comp);
+        }
+      }
+      if (compType === 'AWS.EC2.Instance') {
+        sgAry = comp.resource.SecurityGroupId;
+        sgAry = _.map(sgAry, function(value) {
+          var refSGUID;
+          refSGUID = MC.extractID(value);
+          return refSGUID;
+        });
+        if (__indexOf.call(sgAry, sgUID) >= 0) {
+          refCompAry.push(comp);
+        }
+      }
+      if (compType === 'AWS.VPC.NetworkInterface') {
+        _sgAry = [];
+        _.each(comp.resource.GroupSet, function(sgObj) {
+          _sgAry.push(sgObj.GroupId);
+          return null;
+        });
+        sgAry = _sgAry;
+        sgAry = _.map(sgAry, function(value) {
+          var refSGUID;
+          refSGUID = MC.extractID(value);
+          return refSGUID;
+        });
+        if (__indexOf.call(sgAry, sgUID) >= 0) {
+          refCompAry.push(comp);
+        }
+      }
+      return null;
+    });
+    return refCompAry;
+  };
+  isELBDefaultSG = function(sgUID) {
+    var component;
+    component = MC.canvas_data.component[sgUID];
+    return component && component.name.indexOf("elbsg-") === 0;
+  };
+  isSGRuleExceedFitNum = function(sgUID) {
+    var sgComp, sgInboundRuleAry, sgName, sgOutboundRuleAry, sgTotalRuleNum, tipInfo;
+    sgComp = MC.canvas_data.component[sgUID];
+    sgInboundRuleAry = sgComp.resource.IpPermissions;
+    sgOutboundRuleAry = sgComp.resource.IpPermissionsEgress;
+    sgTotalRuleNum = 0;
+    if (sgInboundRuleAry) {
+      sgTotalRuleNum += sgInboundRuleAry.length;
+    }
+    if (sgOutboundRuleAry) {
+      sgTotalRuleNum += sgOutboundRuleAry.length;
+    }
+    if (sgTotalRuleNum > 50) {
+      sgName = sgComp.name;
+      tipInfo = sprintf(lang.TA.WARNING_SG_RULE_EXCEED_FIT_NUM, sgName, 50);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: sgUID
+      };
+    }
+    return null;
+  };
+  isStackUsingOnlyOneSG = function() {
+    var refSGNum, tipInfo;
+    refSGNum = 0;
+    _.each(MC.canvas_data.component, function(compObj) {
+      var allRefComp, sgUID;
+      if (compObj.type === constant.RESTYPE.SG) {
+        sgUID = compObj.uid;
+        allRefComp = getAllRefComp(sgUID);
+        if (allRefComp.length > 0) {
+          refSGNum++;
+        }
+      }
+      return null;
+    });
+    if (refSGNum === 1) {
+      tipInfo = sprintf(lang.TA.NOTICE_STACK_USING_ONLY_ONE_SG);
+      return {
+        level: constant.TA.NOTICE,
+        info: tipInfo
+      };
+    } else {
+      return null;
+    }
+  };
+  isHaveUsingAllProtocolRule = function(sgUID) {
+    var allRefComp, haveAllProtocolRule, sgComp, sgInboundRuleAry, sgName, sgOutboundRuleAry, tipInfo;
+    allRefComp = getAllRefComp(sgUID);
+    if (allRefComp.length === 0) {
+      return null;
+    }
+    if (isELBDefaultSG(sgUID)) {
+      return null;
+    }
+    sgComp = MC.canvas_data.component[sgUID];
+    sgInboundRuleAry = sgComp.resource.IpPermissions;
+    sgOutboundRuleAry = sgComp.resource.IpPermissionsEgress;
+    haveAllProtocolRule = false;
+    _.each(sgInboundRuleAry, function(ruleObj) {
+      var ruleProtocol;
+      ruleProtocol = ruleObj.IpProtocol;
+      if (ruleProtocol === '-1' || ruleProtocol === (-1)) {
+        haveAllProtocolRule = true;
+      }
+      return null;
+    });
+    if (!haveAllProtocolRule) {
+      _.each(sgOutboundRuleAry, function(ruleObj) {
+        var ruleProtocol;
+        ruleProtocol = ruleObj.IpProtocol;
+        if (ruleProtocol === '-1' || ruleProtocol === (-1)) {
+          haveAllProtocolRule = true;
+        }
+        return null;
+      });
+    }
+    if (haveAllProtocolRule) {
+      sgName = sgComp.name;
+      tipInfo = sprintf(lang.TA.WARNING_SG_USING_ALL_PROTOCOL_RULE, sgName);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: sgUID
+      };
+    }
+    return null;
+  };
+  isHaveFullZeroSourceToHTTPRule = function(sgUID) {
+    var allRefComp, isFullZeroTargetOtherPort, sgComp, sgInboundRuleAry, sgName, tipInfo, validPortAry1, validPortAry2;
+    allRefComp = getAllRefComp(sgUID);
+    if (allRefComp.length === 0) {
+      return null;
+    }
+    if (isELBDefaultSG(sgUID)) {
+      return null;
+    }
+    sgComp = MC.canvas_data.component[sgUID];
+    sgInboundRuleAry = sgComp.resource.IpPermissions;
+    isFullZeroTargetOtherPort = false;
+    validPortAry1 = [80, '80'];
+    validPortAry2 = [443, '443'];
+    _.each(sgInboundRuleAry, function(ruleObj) {
+      var _ref, _ref1, _ref2, _ref3;
+      if (ruleObj.IpRanges === '0.0.0.0/0') {
+        if (!(((_ref = ruleObj.FromPort, __indexOf.call(validPortAry1, _ref) >= 0) && (_ref1 = ruleObj.ToPort, __indexOf.call(validPortAry1, _ref1) >= 0)) || ((_ref2 = ruleObj.FromPort, __indexOf.call(validPortAry2, _ref2) >= 0) && (_ref3 = ruleObj.ToPort, __indexOf.call(validPortAry2, _ref3) >= 0)))) {
+          isFullZeroTargetOtherPort = true;
+        }
+      }
+      return null;
+    });
+    if (isFullZeroTargetOtherPort) {
+      sgName = sgComp.name;
+      tipInfo = sprintf(lang.TA.WARNING_SG_RULE_FULL_ZERO_SOURCE_TARGET_TO_OTHER_PORT, sgName);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: sgUID
+      };
+    }
+    return null;
+  };
+  isHaveUsingPort22Rule = function(sgUID) {
+    var allRefComp, isUsingPort22, sgComp, sgInboundRuleAry, sgName, sgOutboundRuleAry, tipInfo, validPortAry;
+    allRefComp = getAllRefComp(sgUID);
+    if (allRefComp.length === 0) {
+      return null;
+    }
+    if (isELBDefaultSG(sgUID)) {
+      return null;
+    }
+    sgComp = MC.canvas_data.component[sgUID];
+    sgInboundRuleAry = sgComp.resource.IpPermissions;
+    sgOutboundRuleAry = sgComp.resource.IpPermissionsEgress;
+    isUsingPort22 = false;
+    validPortAry = [22, '22'];
+    _.each(sgInboundRuleAry, function(ruleObj) {
+      var _ref, _ref1;
+      if ((_ref = ruleObj.FromPort, __indexOf.call(validPortAry, _ref) >= 0) && (_ref1 = ruleObj.ToPort, __indexOf.call(validPortAry, _ref1) >= 0)) {
+        isUsingPort22 = true;
+      }
+      return null;
+    });
+    if (isUsingPort22) {
+      sgName = sgComp.name;
+      tipInfo = sprintf(lang.TA.NOTICE_SG_RULE_USING_PORT_22, sgName);
+      return {
+        level: constant.TA.NOTICE,
+        info: tipInfo,
+        uid: sgUID
+      };
+    }
+    return null;
+  };
+  isHaveFullZeroOutboundRule = function(sgUID) {
+    var allRefComp, isHaveFullZeroOutbound, sgComp, sgName, sgOutboundRuleAry, tipInfo;
+    allRefComp = getAllRefComp(sgUID);
+    if (allRefComp.length === 0) {
+      return null;
+    }
+    if (isELBDefaultSG(sgUID)) {
+      return null;
+    }
+    sgComp = MC.canvas_data.component[sgUID];
+    sgOutboundRuleAry = sgComp.resource.IpPermissionsEgress;
+    isHaveFullZeroOutbound = false;
+    _.each(sgOutboundRuleAry, function(ruleObj) {
+      if (ruleObj.IpRanges === '0.0.0.0/0') {
+        isHaveFullZeroOutbound = true;
+      }
+      return null;
+    });
+    if (isHaveFullZeroOutbound) {
+      sgName = sgComp.name;
+      tipInfo = sprintf(lang.TA.WARNING_SG_RULE_HAVE_FULL_ZERO_OUTBOUND, sgName);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: sgUID
+      };
+    }
+    return null;
+  };
+  isAssociatedSGNumExceedLimit = function() {
+    var maxSGNumLimit, taResultAry;
+    maxSGNumLimit = 5;
+    taResultAry = [];
+    _.each(MC.canvas_data.component, function(comp) {
+      var compName, compType, compUID, instanceComp, instanceName, instanceUID, instanceUIDRef, isExceedLimit, resTypeName, sgAry, taObj, tagName, tipInfo, _ref;
+      compType = comp.type;
+      compName = comp.name;
+      compUID = comp.uid;
+      isExceedLimit = false;
+      sgAry = [];
+      resTypeName = '';
+      tagName = '';
+      if (compType === constant.RESTYPE.ELB) {
+        sgAry = comp.resource.SecurityGroups;
+        resTypeName = 'Load Balancer';
+        tagName = 'elb';
+      }
+      if (compType === constant.RESTYPE.LC) {
+        sgAry = comp.resource.SecurityGroups;
+        resTypeName = 'Launch Configuration';
+        tagName = 'lc';
+      } else if (compType === constant.RESTYPE.INSTANCE) {
+        sgAry = comp.resource.SecurityGroupId;
+        resTypeName = 'Instance';
+        tagName = 'instance';
+      } else if (compType === constant.RESTYPE.ENI) {
+        _.each(comp.resource.GroupSet, function(sgObj) {
+          sgAry.push(sgObj.GroupId);
+          return null;
+        });
+        resTypeName = 'Network Interface';
+        tagName = 'eni';
+        if ((_ref = comp.resource.Attachment.DeviceIndex) === 0 || _ref === '0') {
+          instanceUIDRef = comp.resource.Attachment.InstanceId;
+          if (instanceUIDRef) {
+            instanceUID = MC.extractID(instanceUIDRef);
+            instanceComp = MC.canvas_data.component[instanceUID];
+            if (instanceComp) {
+              instanceName = instanceComp.name;
+              resTypeName = 'Instance';
+              tagName = 'instance';
+              compName = instanceName;
+            }
+          }
+        }
+      }
+      if (sgAry.length > maxSGNumLimit) {
+        tipInfo = sprintf(lang.TA.ERROR_RESOURCE_ASSOCIATED_SG_EXCEED_LIMIT, resTypeName, tagName, compName, maxSGNumLimit);
+        taObj = {
+          level: constant.TA.WARNING,
+          info: tipInfo,
+          uid: compUID
+        };
+        taResultAry.push(taObj);
+      }
+      return null;
+    });
+    if (taResultAry.length > 0) {
+      return taResultAry;
+    }
+    return null;
+  };
+  return {
+    isSGRuleExceedFitNum: isSGRuleExceedFitNum,
+    isStackUsingOnlyOneSG: isStackUsingOnlyOneSG,
+    isHaveUsingAllProtocolRule: isHaveUsingAllProtocolRule,
+    isHaveFullZeroSourceToHTTPRule: isHaveFullZeroSourceToHTTPRule,
+    isHaveUsingPort22Rule: isHaveUsingPort22Rule,
+    isHaveFullZeroOutboundRule: isHaveFullZeroOutboundRule,
+    isAssociatedSGNumExceedLimit: isAssociatedSGNumExceedLimit
+  };
+});
+
+define('component/trustedadvisor/validation/aws/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  var i18n, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
+  i18n = Helper.i18n.short();
+  isHasLaunchConfiguration = function(uid) {
+    var asg, tipInfo;
+    asg = MC.canvas_data.component[uid];
+    if (asg.resource.LaunchConfigurationName) {
+      return null;
+    }
+    tipInfo = sprintf(lang.TA.ERROR_ASG_HAS_NO_LAUNCH_CONFIG, asg.name);
+    return {
+      level: constant.TA.ERROR,
+      info: tipInfo,
+      uid: uid
+    };
+  };
+  isNotificationNotHasTopic = function(uid) {
+    var asg, notification, topic;
+    asg = Design.instance().component(uid);
+    notification = asg.getNotiObject();
+    if (!notification || !notification.isEffective()) {
+      return null;
+    }
+    topic = notification.getTopic();
+    if (topic && topic.get('appId')) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_ASG_NOTIFICATION_NO_TOPIC, asg.get('name'));
+  };
+  isPolicyNotHasTopic = function(uid) {
+    var asg, p, policies, result, _i, _len;
+    asg = Design.instance().component(uid);
+    policies = asg.get("policies") || [];
+    result = [];
+    for (_i = 0, _len = policies.length; _i < _len; _i++) {
+      p = policies[_i];
+      if (!p.isNotificate() || p.getTopic()) {
+        continue;
+      }
+      result.push(Helper.message.error(p.id, i18n.ERROR_ASG_POLICY_NO_TOPIC, asg.get('name'), p.get('name')));
+    }
+    return result;
+  };
+  isTopicNonexist = function(callback) {
+    var allAsg, asg, needTa, notiValid, notification, p, policies, region, result, topic, topicCol, _i, _j, _len, _len1;
+    allAsg = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
+    needTa = [];
+    for (_i = 0, _len = allAsg.length; _i < _len; _i++) {
+      asg = allAsg[_i];
+      notification = asg.getNotiObject();
+      notiValid = false;
+      if (!notification || !notification.isEffective()) {
+        notiValid = true;
+      } else {
+        topic = notification.getTopic();
+        if (!topic) {
+          notiValid = true;
+        }
+      }
+      if (!notiValid) {
+        needTa.push([topic, asg, notification]);
+      }
+      policies = asg.get("policies") || [];
+      for (_j = 0, _len1 = policies.length; _j < _len1; _j++) {
+        p = policies[_j];
+        topic = p.getTopic();
+        if (p.isNotificate() && topic) {
+          needTa.push([topic, asg, p]);
+        }
+      }
+    }
+    if (_.isEmpty(needTa)) {
+      callback(null);
+      return;
+    }
+    region = Design.instance().region();
+    topicCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.TOPIC, region);
+    result = [];
+    return topicCol.fetchForce().fin(function() {
+      var obj, ta, _k, _len2;
+      for (_k = 0, _len2 = needTa.length; _k < _len2; _k++) {
+        ta = needTa[_k];
+        topic = ta[0];
+        asg = ta[1];
+        obj = ta[2];
+        if (!topicCol.get(topic.get('appId'))) {
+          if (obj.type === constant.RESTYPE.SP) {
+            result.push(Helper.message.error(obj.id, i18n.ERROR_ASG_POLICY_TOPIC_NONEXISTENT, asg.get('name'), obj.get('name'), topic.get('name')));
+          } else if (obj.type === constant.RESTYPE.NC) {
+            result.push(Helper.message.error(obj.id, i18n.ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT, asg.get('name'), topic.get('name')));
+          }
+        }
+      }
+      return callback(result);
+    });
+  };
+  return {
+    isHasLaunchConfiguration: isHasLaunchConfiguration,
+    isNotificationNotHasTopic: isNotificationNotHasTopic,
+    isPolicyNotHasTopic: isPolicyNotHasTopic,
+    isTopicNonexist: isTopicNonexist
+  };
+});
+
+define('component/trustedadvisor/validation/aws/ec2/eip',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isHasIGW, _hasType;
+  isHasIGW = function() {
+    var tipInfo;
+    if (!_hasType(constant.RESTYPE.EIP) || _hasType(constant.RESTYPE.IGW)) {
+      return null;
+    }
+    tipInfo = lang.TA.ERROR_HAS_EIP_NOT_HAS_IGW;
+    return {
+      level: constant.TA.ERROR,
+      info: tipInfo
+    };
+  };
+  _hasType = function(type) {
+    var components;
+    components = MC.canvas_data.component;
+    return _.some(components, function(component) {
+      return component.type === type;
+    });
+  };
+  return {
+    isHasIGW: isHasIGW
+  };
+});
+
+define('component/trustedadvisor/validation/aws/ec2/az',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isAZAlone;
+  isAZAlone = function() {
+    var count, instanceCount, tipInfo;
+    instanceCount = _.countBy(MC.canvas_data.component, function(compObj) {
+      var _ref;
+      if ((_ref = compObj.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC) {
+        return 'instance';
+      } else {
+        return 'others';
+      }
+    });
+    if (!instanceCount.instance) {
+      return null;
+    }
+    count = _.countBy(MC.canvas_data.component, function(component) {
+      if (component.type === constant.RESTYPE.AZ) {
+        return 'az';
+      } else {
+        return 'others';
+      }
+    });
+    if (count.az > 1) {
+      return null;
+    }
+    tipInfo = lang.TA.WARNING_SINGLE_AZ;
+    return {
+      level: constant.TA.WARNING,
+      info: tipInfo
+    };
+  };
+  return {
+    isAZAlone: isAZAlone
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/vgw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isConnectToRTB;
+  isConnectToRTB = function(uid) {
+    var components, isConnectRTB, tipInfo, vpn, vpnId;
+    components = MC.canvas_data.component;
+    vpn = components[uid];
+    vpnId = MC.genResRef(uid, 'resource.VpnGatewayId');
+    isConnectRTB = _.some(components, function(component) {
+      if (component.type === constant.RESTYPE.RT) {
+        return _.some(component.resource.RouteSet, function(rt) {
+          var RTB;
+          if (rt.GatewayId === vpnId) {
+            RTB = component;
+            return true;
+          }
+        });
+      }
+    });
+    if (isConnectRTB) {
+      return null;
+    }
+    tipInfo = lang.TA.WARNING_NO_RTB_CONNECT_VGW;
+    return {
+      level: constant.TA.WARNING,
+      info: tipInfo,
+      uid: uid
+    };
+  };
+  return {
+    isConnectToRTB: isConnectToRTB
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/vpn',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isVPNHaveIPForStaticCGW, isVPNPrefixIPNotValid;
+  isVPNHaveIPForStaticCGW = function(uid) {
+    var bgpAsn, cgwComp, cgwName, cgwRef, cgwUID, isHaveNoEmptyRoute, isStaticCGW, returnObj, routeAry, tipInfo, vgwComp, vgwName, vgwRef, vgwUID, vpnComp;
+    returnObj = null;
+    vpnComp = MC.canvas_data.component[uid];
+    cgwRef = vpnComp.resource.CustomerGatewayId;
+    vgwRef = vpnComp.resource.VpnGatewayId;
+    cgwUID = '';
+    if (cgwRef) {
+      cgwUID = MC.extractID(cgwRef);
+    }
+    vgwUID = '';
+    if (vgwRef) {
+      vgwUID = MC.extractID(vgwRef);
+    }
+    if (cgwUID && vgwUID) {
+      cgwComp = MC.canvas_data.component[cgwUID];
+      vgwComp = MC.canvas_data.component[vgwUID];
+      if (cgwComp) {
+        isStaticCGW = true;
+        bgpAsn = cgwComp.resource.BgpAsn;
+        if (bgpAsn && _.isNumber(Number(bgpAsn))) {
+          isStaticCGW = false;
+        }
+        if (isStaticCGW) {
+          routeAry = vpnComp.resource.Routes;
+          isHaveNoEmptyRoute = true;
+          if (!routeAry.length) {
+            isHaveNoEmptyRoute = false;
+          }
+          if (_.isArray(routeAry)) {
+            _.each(routeAry, function(routeObj) {
+              if (!routeObj.DestinationCidrBlock) {
+                isHaveNoEmptyRoute = false;
+              }
+              return null;
+            });
+          }
+          if (isStaticCGW && !isHaveNoEmptyRoute) {
+            vgwName = vgwComp.name;
+            cgwName = cgwComp.name;
+            tipInfo = sprintf(lang.TA.ERROR_VPN_NO_IP_FOR_STATIC_CGW, cgwName, vgwName);
+            returnObj = {
+              level: constant.TA.ERROR,
+              info: tipInfo,
+              uid: uid
+            };
+          }
+        }
+      }
+    }
+    return returnObj;
+  };
+  isVPNPrefixIPNotValid = function(uid) {
+    var invalidRouteCIDRAry, returnObj, routeAry, tipInfo, vpnComp, vpnName;
+    returnObj = null;
+    vpnComp = MC.canvas_data.component[uid];
+    vpnName = vpnComp.name;
+    routeAry = vpnComp.resource.Routes;
+    invalidRouteCIDRAry = [];
+    _.each(routeAry, function(routeObj) {
+      var isInAnyPriIPRange, isInAnyPubIPRange, routeCIDR, routeIP, routeIPCIDR, validSubnetCIDR;
+      routeCIDR = routeObj.DestinationCidrBlock;
+      if (routeCIDR) {
+        validSubnetCIDR = Design.modelClassForType(constant.RESTYPE.SUBNET).isValidSubnetCIDR(routeCIDR);
+        if (!validSubnetCIDR) {
+          return invalidRouteCIDRAry.push(routeCIDR);
+        } else {
+          routeIP = routeCIDR.split('/')[0];
+          routeIPCIDR = routeCIDR.split('/')[1];
+          isInAnyPubIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'public');
+          isInAnyPriIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'private');
+          if ((isInAnyPubIPRange && !isInAnyPriIPRange) || Number(routeIPCIDR) === 0) {
+            return invalidRouteCIDRAry.push(routeCIDR);
+          }
+        }
+      }
+    });
+    if (invalidRouteCIDRAry.length) {
+      tipInfo = sprintf(lang.TA.ERROR_VPN_NOT_PUBLIC_IP, vpnName, invalidRouteCIDRAry.join(', '));
+      returnObj = {
+        level: constant.TA.ERROR,
+        info: tipInfo,
+        uid: uid
+      };
+    }
+    return returnObj;
+  };
+  return {
+    isVPNHaveIPForStaticCGW: isVPNHaveIPForStaticCGW,
+    isVPNPrefixIPNotValid: isVPNPrefixIPNotValid
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/igw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isConnectToRTB;
+  isConnectToRTB = function(uid) {
+    var components, igw, igwId, isConnectRTB, tipInfo;
+    components = MC.canvas_data.component;
+    igw = components[uid];
+    igwId = MC.genResRef(uid, 'resource.InternetGatewayId');
+    isConnectRTB = _.some(components, function(component) {
+      if (component.type === constant.RESTYPE.RT) {
+        return _.some(component.resource.RouteSet, function(rt) {
+          var RTB;
+          if (rt.GatewayId === igwId) {
+            RTB = component;
+            return true;
+          }
+        });
+      }
+    });
+    if (isConnectRTB) {
+      return null;
+    }
+    tipInfo = lang.TA.WARNING_NO_RTB_CONNECT_IGW;
+    return {
+      level: constant.TA.WARNING,
+      info: tipInfo,
+      uid: uid
+    };
+  };
+  return {
+    isConnectToRTB: isConnectToRTB
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/networkacl',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isConnectSubnetButNoAllowRule;
+  isConnectSubnetButNoAllowRule = function(uid) {
+    var HasAllowACLRule, acl, components, connectSubnet, tipInfo;
+    components = MC.canvas_data.component;
+    acl = components[uid];
+    connectSubnet = _.some(acl.resource.AssociationSet, function(as) {
+      if (as.SubnetId) {
+        return true;
+      }
+    });
+    HasAllowACLRule = _.some(acl.resource.EntrySet, function(es) {
+      return es.RuleAction === 'allow';
+    });
+    if (!connectSubnet || HasAllowACLRule) {
+      return null;
+    }
+    tipInfo = sprintf(lang.TA.NOTICE_ACL_HAS_NO_ALLOW_RULE, acl.name);
+    return {
+      level: constant.TA.NOTICE,
+      info: tipInfo,
+      uid: uid
+    };
+  };
+  return {
+    isConnectSubnetButNoAllowRule: isConnectSubnetButNoAllowRule
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'TaHelper', "CloudResources"], function(constant, $, MC, lang, Helper, CloudResources) {
+  var i18n, isAttachVGW, isCGWHaveIPConflict, isValidCGWIP;
+  i18n = Helper.i18n.short();
+  isCGWHaveIPConflict = function(callback) {
+    var cr, err, failure, stackCGWIP, stackCGWId, stackCGWName, stackCGWUID, success;
+    try {
+      if (!callback) {
+        callback = function() {};
+      }
+      stackCGWIP = stackCGWName = stackCGWUID = stackCGWId = null;
+      _.each(MC.canvas_data.component, function(compObj) {
+        if (compObj.type === constant.RESTYPE.CGW) {
+          stackCGWId = compObj.resource.CustomerGatewayId;
+          stackCGWIP = compObj.resource.IpAddress;
+          stackCGWName = compObj.name;
+          stackCGWUID = compObj.uid;
+        }
+        return null;
+      });
+      if (stackCGWIP && stackCGWName && stackCGWUID && !stackCGWId) {
+        cr = CloudResources(Design.instance().credentialId(), constant.RESTYPE.CGW, Design.instance().region());
+        failure = function() {
+          return callback(null);
+        };
+        success = function() {
+          var error, exist;
+          exist = cr.where({
+            "state": "available",
+            "ipAddress": stackCGWIP
+          })[0];
+          if (exist) {
+            error = {
+              level: constant.TA.ERROR,
+              info: sprintf(lang.TA.ERROR_CGW_IP_CONFLICT, stackCGWName, stackCGWIP, exist.id, stackCGWIP)
+            };
+            console.log(error);
+          }
+          callback(error || null);
+          return null;
+        };
+        cr.fetchForce().then(success, failure);
+        return {
+          level: constant.TA.ERROR,
+          info: sprintf(lang.TA.ERROR_CGW_CHECKING_IP_CONFLICT)
+        };
+      } else {
+        return callback(null);
+      }
+    } catch (_error) {
+      err = _error;
+      return callback(null);
+    }
+  };
+  isValidCGWIP = function(uid) {
+    var cgwComp, cgwIP, cgwName, isInAnyPriIPRange, tipInfo;
+    cgwComp = MC.canvas_data.component[uid];
+    cgwName = cgwComp.name;
+    cgwIP = cgwComp.resource.IpAddress;
+    isInAnyPriIPRange = MC.aws.aws.isValidInIPRange(cgwIP, 'private');
+    if (isInAnyPriIPRange) {
+      tipInfo = sprintf(lang.TA.WARNING_CGW_IP_RANGE_ERROR, cgwName, cgwIP);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: uid
+      };
+    }
+    return null;
+  };
+  isAttachVGW = function(uid) {
+    var cgw, hasAttachVgw;
+    cgw = Design.instance().component(uid);
+    hasAttachVgw = cgw.connections(constant.RESTYPE.VPN).length;
+    if (hasAttachVgw) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_CGW_MUST_ATTACH_VPN, cgw.get('name'));
+  };
+  return {
+    isCGWHaveIPConflict: isCGWHaveIPConflict,
+    isValidCGWIP: isValidCGWIP,
+    isAttachVGW: isAttachVGW
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/eni',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  var isENIAttachToInstance;
+  isENIAttachToInstance = function(eniUID) {
+    var attachedInstanceId, eniComp, eniName, tipInfo;
+    eniComp = MC.canvas_data.component[eniUID];
+    attachedInstanceId = eniComp.resource.Attachment.InstanceId;
+    if (attachedInstanceId) {
+      return null;
+    } else {
+      eniName = eniComp.name;
+      tipInfo = sprintf(lang.TA.ERROR_ENI_NOT_ATTACH_TO_INSTANCE, eniName);
+      return {
+        level: constant.TA.WARNING,
+        info: tipInfo,
+        uid: eniUID
+      };
+    }
+  };
+  return {
+    isENIAttachToInstance: isENIAttachToInstance
+  };
+});
+
+define('component/trustedadvisor/validation/aws/vpc/rtb',['constant', 'MC', 'TaHelper', 'Design'], function(CONST, MC, Helper, Design) {
+  var i18n, isRtbConnectedNatAndItConnectedSubnet, isRtbHaveConflictDestination, isRtbHaveVPCPeeringRoute;
+  i18n = Helper.i18n.short();
+  isRtbConnectedNatAndItConnectedSubnet = function(uid) {
+    var connectedInstances, instance, instanceName, instanceNameStr, notices, rtb, rtbName, subnets, suspectInstances, _i, _len;
+    rtb = Design.instance().component(uid);
+    rtbName = rtb.get('name');
+    suspectInstances = rtb.connectionTargets('RTB_Route');
+    subnets = rtb.connectionTargets('RTB_Asso');
+    instanceNameStr = '';
+    connectedInstances = _.filter(suspectInstances, function(comp) {
+      return comp.type === CONST.RESTYPE.INSTANCE;
+    });
+    notices = [];
+    if (subnets.length) {
+      for (_i = 0, _len = connectedInstances.length; _i < _len; _i++) {
+        instance = connectedInstances[_i];
+        instanceName = instance.get('name');
+        notices.push(Helper.message.notice(uid + instance.id, i18n.NOTICE_RT_ROUTE_NAT, instanceName, rtbName, instanceName, rtbName));
+      }
+      return notices;
+    }
+    return null;
+  };
+  isRtbHaveConflictDestination = function(uid) {
+    var notices, routeDesAry, routeSet, rtb, rtbName;
+    rtb = MC.canvas_data.component[uid];
+    routeSet = rtb.resource.RouteSet;
+    rtbName = rtb.name;
+    routeDesAry = [];
+    notices = [];
+    _.each(routeSet, function(route, idx) {
+      var currentRouteDes;
+      currentRouteDes = route.DestinationCidrBlock;
+      _.each(routeDesAry, function(routeDes) {
+        var SubnetModel, tipInfo;
+        SubnetModel = Design.modelClassForType(CONST.RESTYPE.SUBNET);
+        if ((currentRouteDes === routeDes) || SubnetModel.isCidrConflict(currentRouteDes, routeDes)) {
+          tipInfo = sprintf(i18n.ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
+          return notices.push({
+            level: CONST.TA.ERROR,
+            info: tipInfo,
+            uid: uid
+          });
+        }
+      });
+      return routeDesAry.push(currentRouteDes);
+    });
+    if (notices.length) {
+      return notices;
+    }
+    return null;
+  };
+  isRtbHaveVPCPeeringRoute = function(uid) {
+    var notices, routeSet, rtb, rtbName;
+    if (Design.instance().mode() === 'stack') {
+      rtb = MC.canvas_data.component[uid];
+      routeSet = rtb.resource.RouteSet;
+      rtbName = rtb.name;
+      notices = [];
+      _.each(routeSet, function(route, idx) {
+        var tipInfo, vpcPeringConnectId;
+        vpcPeringConnectId = route.VpcPeeringConnectionId;
+        if (vpcPeringConnectId && vpcPeringConnectId !== "") {
+          tipInfo = sprintf(i18n.ERROR_RT_HAVE_VPC_PEERING_ROUTE, rtbName, vpcPeringConnectId);
+          return notices.push({
+            level: CONST.TA.ERROR,
+            info: tipInfo,
+            uid: uid
+          });
+        }
+      });
+      if (notices.length) {
+        return notices;
+      }
+    }
+    return null;
+  };
+  return {
+    isRtbConnectedNatAndItConnectedSubnet: isRtbConnectedNatAndItConnectedSubnet,
+    isRtbHaveConflictDestination: isRtbHaveConflictDestination,
+    isRtbHaveVPCPeeringRoute: isRtbHaveVPCPeeringRoute
+  };
+});
+
+
+/*
+This file use for validate state.
+ */
+define('component/trustedadvisor/validation/aws/stateeditor/validation/reference',['constant', 'MC', 'i18n!/nls/lang.js'], function(CONST, MC, lang) {
+  var Message, checkRefExist, takeplace, __componentTipMap, __findReference, __genError, __getComp, __getCompTip, __getRef, __isUid, __legalExist, __legalState, __refState;
+  __componentTipMap = {
+    'AWS.EC2.Instance': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,
+    'AWS.AutoScaling.Group': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_ASG,
+    'OS::Nova::Server': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_OSSERVER
+  };
+  __getCompTip = function(compType, str1, str2, str100) {
+    var tip, type;
+    type = arguments[0];
+    if (type === 'AWS.AutoScaling.LaunchConfiguration') {
+      type = 'AWS.AutoScaling.Group';
+    }
+    tip = __componentTipMap[type];
+    return sprintf.apply(this, [].concat(tip, Array.prototype.slice.call(arguments, 1)));
+  };
+  __genError = function(tip, stateId) {
+    return {
+      level: CONST.TA.ERROR,
+      info: tip,
+      uid: "refinexsit:" + stateId
+    };
+  };
+  __findReference = function(str) {
+    var refObj, reg, resArr, ret;
+    reg = CONST.REGEXP.stateEditorOriginReference;
+    ret = [];
+    while ((resArr = reg.exec(str)) !== null) {
+      refObj = {
+        attr: resArr[3],
+        uid: resArr[2],
+        ref: resArr[1],
+        str: resArr[0]
+      };
+      ret.push(refObj);
+    }
+    return ret;
+  };
+  __isUid = function(uid) {
+    CONST.REGEXP.uid.lastIndex = 0;
+    return CONST.REGEXP.uid.test(uid);
+  };
+  __getComp = function(uid) {
+    var component;
+    component = MC.canvas_data.component[uid];
+    return component;
+  };
+  __getRef = function(obj, data) {
+    var key, ref, value;
+    ref = [];
+    if (_.isString(obj)) {
+      if (obj.length === 0) {
+        return [];
+      }
+      ref = ref.concat(__findReference(obj));
+    } else {
+      for (key in obj) {
+        value = obj[key];
+        ref = ref.concat(__getRef(value, data));
+      }
+    }
+    return ref;
+  };
+  __legalExist = function(legalRef, ref) {
+    return _.some(legalRef, function(legal) {
+      return legal.ref === ref.ref;
+    });
+  };
+  __legalState = function(ref) {
+    var arr, comp, state, stateId;
+    arr = ref.attr.split('.');
+    state = arr[0];
+    stateId = arr[1];
+    comp = __getComp(ref.uid);
+    if (comp && comp[state] && _.where(comp[state], {
+      id: stateId
+    }).length) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  __refState = function(ref) {
+    return ref.attr.indexOf('.') !== -1;
+  };
+  Message = {
+    illegal: function(ref) {
+      var comp, refName;
+      comp = __getComp(ref.uid);
+      if (comp) {
+        refName = "" + (comp.serverGroupName || comp.name) + "." + ref.attr;
+      } else if (__isUid(ref.uid)) {
+        refName = "unknown." + ref.attr;
+      } else {
+        refName = ref.ref;
+      }
+      return refName;
+    },
+    state: function(ref) {
+      var arr, refName;
+      refName = Message.illegal(ref);
+      arr = refName.split('.');
+      if (arr[2].length === 42) {
+        arr[2] = 'unknown';
+      }
+      return arr.join('.');
+    }
+  };
+  checkRefExist = function(obj, data) {
+    var error, legalRef, r, ref, refName, refNames, tip, _i, _len;
+    ref = __getRef(obj, data);
+    error = [];
+    refNames = [];
+    if (ref.length) {
+      legalRef = MC.aws.aws.genAttrRefList(data.comp, MC.canvas_data.component);
+    }
+    for (_i = 0, _len = ref.length; _i < _len; _i++) {
+      r = ref[_i];
+      refName = '';
+      if (__refState(r)) {
+        if (!__legalState(r)) {
+          refName = Message.state(r);
+        }
+      } else {
+        if (!__legalExist(legalRef, r)) {
+          refName = Message.illegal(r);
+        }
+      }
+      if (refName) {
+        refNames.push("<span class='validation-tag tag-state-ref'>" + refName + "</span>");
+      }
+    }
+    if (refNames.length) {
+      tip = __getCompTip(data.type, data.name, data.stateId, refNames.join(', '));
+      error.push(__genError(tip, data.stateId));
+    }
+    return error;
+  };
+  takeplace = function() {
+    return null;
+  };
+  return checkRefExist;
+});
+
+
+/*
+This file use for validate state.
+ */
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('component/trustedadvisor/validation/aws/stateeditor/validation/format',['Design', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC'], function(Design, constant, lang) {
+  var Helper, Message, Validator, checkFormat, __matchModule;
+  Message = {};
+  Validator = {
+    command: function(val, param, elem, represent) {
+      var map;
+      val = Helper.trim(val);
+      map = param.dataMap;
+      if (!this.required(val)) {
+        return 'Command name is required.';
+      }
+      if (!this.stateAllowed(val, map)) {
+        return "Command \"" + val + "\" is not supported.";
+      }
+      return null;
+    },
+    parameter: function(val, param, elem, represent) {
+      var result, validateList;
+      validateList = ['required', 'type'];
+      result = null;
+      if (this[param.constraint.type]) {
+        result = this[param.constraint.type](val, param, elem, represent);
+      }
+      if (!result) {
+        result = this.componentExist(val);
+      }
+      return result;
+    },
+    dict: function(val, param, elem, represent) {
+      var result, subType;
+      subType = param.subType;
+      result = null;
+      if (param.constraint.required && subType === 'key' && !this.required(val)) {
+        result = 'dict key is required';
+      }
+      return result;
+    },
+    array: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'array value is required';
+      }
+      return result;
+    },
+    line: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'line value is required';
+      }
+      return result;
+    },
+    text: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'text value is required';
+      } else {
+        result = this.componentExist(val);
+      }
+      return result;
+    },
+    bool: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'line value is required';
+      } else if (!(this.isBool(val) || this.isStringBool(val, true))) {
+        result = "invalid boolean value: \"" + val + "\"";
+      }
+      return result;
+    },
+    componentExist: function(val) {
+      var inexsitCount, ref, refs, _i, _len;
+      refs = Helper.getRefName(val);
+      inexsitCount = 0;
+      for (_i = 0, _len = refs.length; _i < _len; _i++) {
+        ref = refs[_i];
+        if (!Helper.nameExist(ref.name)) {
+          inexsitCount++;
+        }
+      }
+      if (inexsitCount) {
+        return "Reference 'unknown' doesn't exist.";
+      }
+      return null;
+    },
+    required: function(val) {
+      if (_.isArray(val) || _.isObject(val)) {
+        return !!_.size(val);
+      } else {
+        return this.notnull(val) && this.notblank(val);
+      }
+    },
+    isRef: function(val) {
+      if (!_.isArray(val)) {
+        val = [val];
+      }
+      return _.every(val, function(v) {
+        return constant.REGEXP.stateEditorRefOnly.test(v);
+      });
+    },
+    notnull: function(val) {
+      return val.length > 0;
+    },
+    notblank: function(val) {
+      return 'string' === typeof val && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+    },
+    isBool: function(val) {
+      return _.isBoolean(val);
+    },
+    isStringBool: function(val, allowEmpty) {
+      return /^(true|false)$/i.test(val || allowEmpty && val === '');
+    },
+    stateAllowed: function(val, map) {
+      return __indexOf.call(Helper.getAllowCommands(map), val) >= 0;
+    }
+  };
+  Helper = {
+    getAllowCommands: function(map) {
+      return _.keys(map);
+    },
+    trim: function(val) {
+      return $.trim(val);
+    },
+    nameExist: function(name) {
+      var allCompData, component, uid;
+      allCompData = Design.instance().serialize().component;
+      for (uid in allCompData) {
+        component = allCompData[uid];
+        if (component.name === name) {
+          return true;
+        }
+      }
+      return false;
+    },
+    getRefName: function(val) {
+      var reg, resArr, ret;
+      reg = constant.REGEXP.stateEditorOriginReference;
+      ret = [];
+      while ((resArr = reg.exec(val)) !== null) {
+        ret.push({
+          name: resArr[1],
+          ref: resArr[0]
+        });
+      }
+      return ret;
+    },
+    buildError: function(tip, stateId, type) {
+      return {
+        level: constant.TA.ERROR,
+        info: tip,
+        uid: "format_" + type + ":" + stateId
+      };
+    },
+    getModule: function() {
+      var module, moduleDataObj, stateModuel;
+      stateModuel = Design.instance().get('agent').module;
+      moduleDataObj = App.model.getStateModule(stateModuel.repo, stateModuel.tag);
+      module = {};
+      _.each(moduleDataObj, function(obj, key) {
+        return _.extend(module, obj);
+      });
+      return module;
+    },
+    getCommand: function(module, moduleName) {
+      return _.findWhere(module, {
+        module: moduleName
+      });
+    }
+  };
+  __matchModule = function(state, data) {
+    var cmd, error, module, name, param, tip, type, _ref;
+    module = Helper.getModule();
+    cmd = Helper.getCommand(module, state.module);
+    if (cmd) {
+      error = [];
+      _ref = cmd.parameter;
+      for (name in _ref) {
+        param = _ref[name];
+        if (param.required === true && !Validator.required(state.parameter[name])) {
+          tip = sprintf(lang.TA.ERROR_STATE_EDITOR_EMPTY_REQUIED_PARAMETER, data.name, data.stateId, name);
+          type = 'requiredParameter';
+          error.push(Helper.buildError(tip, data.stateId, type));
+        } else if (cmd.module === 'meta.wait' && name === 'state' && !Validator.isRef(state.parameter[name])) {
+          tip = sprintf(lang.TA.ERROR_STATE_EDITOR_INVALID_FORMAT, data.name, data.stateId, 'wait');
+          type = 'invalidFormat';
+          error.push(Helper.buildError(tip, data.stateId, type));
+        }
+      }
+      return error;
+    }
+  };
+  checkFormat = function(state, data) {
+    return __matchModule(state, data);
+  };
+  return checkFormat;
+});
+
+define('component/trustedadvisor/validation/aws/stateeditor/register',['./validation/reference', './validation/format'], function(reference, format) {
+  return [reference, format];
+});
+
+
+/*
+This file use for validate state.
+ */
+define('component/trustedadvisor/validation/aws/stateeditor/main',['./register', 'constant', 'MC', 'i18n!/nls/lang.js'], function(validators, constant, MC, lang) {
+  var isStateValid, __checkState, __modifyUid;
+  __modifyUid = function(result, uid, index) {
+    var r, _i, _len, _ref;
+    if (result) {
+      if (!_.isArray(result)) {
+        result = [result];
+      }
+      _ref = result || [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        r = _ref[_i];
+        r.uid = "" + uid + ":" + index + ":" + r.uid;
+      }
+    }
+    return result;
+  };
+  __checkState = function(state, data) {
+    var index, result, results, validator;
+    results = [];
+    for (index in validators) {
+      validator = validators[index];
+      result = validator(state, data);
+      result = __modifyUid(result, data.uid, index);
+      results = results.concat(result);
+    }
+    return results;
+  };
+  isStateValid = function(uid) {
+    var component, data, errs, states;
+    component = MC.canvas_data.component[uid];
+    if (!component || !component.state || component.index && component.index > 0) {
+      return null;
+    }
+    states = component.state;
+    data = {
+      uid: uid,
+      comp: component,
+      type: component.type,
+      name: component.name,
+      stateId: null
+    };
+    errs = [];
+    _.each(states, function(state, id) {
+      errs = errs.concat(__checkState(state, _.extend({}, data, {
+        stateId: id + 1
+      })));
+      return null;
+    });
+    if (!errs.length) {
+      errs = null;
+    }
+    return errs;
+  };
+  return isStateValid;
+});
+
+
+/*
+This file use for validate component about state.
+ */
+define('component/trustedadvisor/validation/aws/state/state',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
+  var i18n, isConnectedOut, isHasIgw, isHasOutPort80and443, isHasOutPort80and443Strict, __genConnectedError, __getComp, __getEniByInstance, __getSg, __getSubnetRtb, __hasEipOrPublicIp, __hasState, __hasType, __isEniSourceDestUncheck, __isInstanceConnectedOut, __isInstanceNat, __isLcConnectedOut, __isPortTcpAllowed, __isRouteIgw, __natOut, __selfOut, __sgsHasOutPort80and443, __wrap;
+  i18n = Helper.i18n.short();
+  __wrap = function(method) {
+    return function(uid) {
+      if (__hasState(uid)) {
+        return method(uid);
+      } else {
+        return null;
+      }
+    };
+  };
+  __getComp = function(uid, rework) {
+    if (rework) {
+      return Design.instance().component(uid);
+    } else {
+      return MC.canvas_data.component[uid];
+    }
+  };
+  __hasState = function(uid) {
+    var component, had, state;
+    if (Design.instance().get('agent').enabled === false) {
+      return false;
+    }
+    if (uid) {
+      component = __getComp(uid, true);
+      if (component) {
+        state = component.get('state');
+        return state && state.length;
+      } else {
+        return false;
+      }
+    } else {
+      had = false;
+      Design.instance().eachComponent(function(component) {
+        if (__hasState(component.id)) {
+          had = true;
+          return false;
+        }
+      });
+      return had;
+    }
+  };
+  __hasType = function(type) {
+    return Design.modelClassForType(type).allObjects().length;
+  };
+  __getEniByInstance = function(instance) {
+    return _.filter(MC.canvas_data.component, function(component) {
+      if (component.type === constant.RESTYPE.ENI) {
+        if (MC.extractID(component.resource.Attachment.InstanceId) === instance.uid) {
+          return true;
+        }
+      }
+    });
+  };
+  __getSg = function(component) {
+    var eni, enis, sg, sgId, sgs, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    sgs = [];
+    if (component.type === constant.RESTYPE.LC) {
+      _ref = component.resource.SecurityGroups;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        sgId = _ref[_i];
+        sgs.push(__getComp(MC.extractID(sgId)));
+      }
+    } else if (component.type === constant.RESTYPE.INSTANCE) {
+      enis = __getEniByInstance(component);
+      for (_j = 0, _len1 = enis.length; _j < _len1; _j++) {
+        eni = enis[_j];
+        _ref1 = eni.resource.GroupSet;
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          sg = _ref1[_k];
+          sgs.push(__getComp(MC.extractID(sg.GroupId)));
+        }
+      }
+    }
+    return _.uniq(_.compact(sgs));
+  };
+  __isPortTcpAllowed = function(permission, port) {
+    var formPort, res, toPort, _ref;
+    res = false;
+    if ((_ref = permission.IpProtocol) === '-1' || _ref === '6' || _ref === 'tcp') {
+      formPort = +permission.FromPort;
+      toPort = +permission.ToPort;
+      if ((formPort === toPort && toPort === port)) {
+        res = true;
+      } else if (+permission.FromPort <= port && permission.ToPort >= port) {
+        res = true;
+      }
+    }
+    return res;
+  };
+  __sgsHasOutPort80and443 = function(sgs, strict) {
+    var permission, sg, __443, __80, _i, _j, _len, _len1, _ref;
+    __80 = __443 = 0;
+    for (_i = 0, _len = sgs.length; _i < _len; _i++) {
+      sg = sgs[_i];
+      _ref = sg.resource.IpPermissionsEgress;
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        permission = _ref[_j];
+        if (strict && permission.IpRanges === '0.0.0.0/0' || !strict) {
+          if (__isPortTcpAllowed(permission, 80)) {
+            __80++;
+          }
+          if (__isPortTcpAllowed(permission, 443)) {
+            __443++;
+          }
+        }
+      }
+    }
+    return __80 > 0 && __443 > 0;
+  };
+  __hasEipOrPublicIp = function(component) {
+    var enis, hasEip;
+    if (component.type === constant.RESTYPE.LC) {
+      return component.get('publicIp') === true;
+    } else if (component.type === constant.RESTYPE.INSTANCE) {
+      enis = component.connectionTargets('EniAttachment');
+      enis.push(component.getEmbedEni());
+      hasEip = _.some(enis, function(eni) {
+        return eni.hasEip();
+      });
+      return component.hasAutoAssignPublicIp() || hasEip;
+    }
+  };
+  __getSubnetRtb = function(component) {
+    return component.parent().connectionTargets('RTB_Asso')[0];
+  };
+  __isRouteIgw = function(component) {
+    var eni, enis, rtbs, uid, _i, _len;
+    uid = component.uid || component.id;
+    component = Design.instance().component(uid);
+    rtbs = [];
+    rtbs.push(__getSubnetRtb(component));
+    enis = component.connectionTargets("EniAttachment");
+    for (_i = 0, _len = enis.length; _i < _len; _i++) {
+      eni = enis[_i];
+      rtbs.push(__getSubnetRtb(eni));
+    }
+    return _.some(rtbs, function(rtb) {
+      var igw, rtbConn;
+      rtbConn = rtb.connectionTargets('RTB_Route');
+      igw = _.where(rtbConn, {
+        type: constant.RESTYPE.IGW
+      });
+      return igw.length > 0;
+    });
+  };
+  __natOut = function(component) {
+    var instances, rtb, _ref;
+    if ((_ref = component.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.ASG || _ref === 'ExpandedAsg') {
+      rtb = __getSubnetRtb(component);
+      if (rtb) {
+        instances = _.where(rtb.connectionTargets('RTB_Route'), {
+          type: constant.RESTYPE.INSTANCE
+        });
+        return _.some(instances, function(instance) {
+          return __isInstanceNat(instance);
+        });
+      }
+    }
+    return false;
+  };
+  __isInstanceNat = function(instance) {
+    return __isRouteIgw(instance) && __isEniSourceDestUncheck(instance);
+  };
+  __isEniSourceDestUncheck = function(instance) {
+    var enis;
+    enis = instance.connectionTargets('EniAttachment');
+    enis.push(instance.getEmbedEni());
+    return _.some(enis, function(eni) {
+      return !eni.get('sourceDestCheck');
+    });
+  };
+  __selfOut = function(component, result, subnetName) {
+    var lcOrInstance, name, _ref;
+    if ((_ref = component.type) === constant.RESTYPE.ASG || _ref === 'ExpandedAsg') {
+      lcOrInstance = component.getLc();
+    } else {
+      lcOrInstance = component;
+    }
+    if (!__hasEipOrPublicIp(lcOrInstance)) {
+      name = lcOrInstance.get('name');
+      result.push(Helper.message.error(lcOrInstance.id, i18n.ERROR_NO_EIP_OR_PIP, name, name, subnetName));
+      return true;
+    } else if (__isRouteIgw(component)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  __genConnectedError = function(subnetName, uid) {
+    return Helper.message.error(uid, i18n.ERROR_NOT_CONNECT_OUT, subnetName);
+  };
+  __isLcConnectedOut = function(uid) {
+    var asg, asgs, expandedAsgs, lc, result, subnet, subnetId, subnetName, subnetNameString, subnetNames, _i, _len;
+    lc = __getComp(uid, true);
+    result = [];
+    expandedAsgs = [];
+    subnetNames = [];
+    asgs = Design.modelClassForType(constant.RESTYPE.ASG).filter(function(asg) {
+      if (asg.getLc() === lc) {
+        expandedAsgs = expandedAsgs.concat(asg.get('expandedList'));
+        subnetNames.push(asg.parent().get('name'));
+        return true;
+      }
+    });
+    asgs = asgs.concat(expandedAsgs);
+    subnetNameString = _.uniq(subnetNames).join(',');
+    for (_i = 0, _len = asgs.length; _i < _len; _i++) {
+      asg = asgs[_i];
+      if (!(__natOut(asg) || __selfOut(asg, result, subnetNameString))) {
+        subnet = asg.parent();
+        subnetName = subnet.get('name');
+        subnetId = subnet.id;
+        result.push(__genConnectedError(subnetName, subnetId));
+      }
+    }
+    return result;
+  };
+  __isInstanceConnectedOut = function(uid) {
+    var component, result, subnet, subnetId, subnetName;
+    component = __getComp(uid, true);
+    result = [];
+    subnet = component.parent();
+    subnetName = subnet.get('name');
+    subnetId = subnet.id;
+    if (__natOut(component) || __selfOut(component, result, subnetName)) {
+      return result;
+    }
+    result.push(__genConnectedError(subnetName, subnetId));
+    return result;
+  };
+
+  /* Public */
+  isHasIgw = function(uid) {
+    if (__hasType(constant.RESTYPE.IGW)) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_NO_CGW);
+  };
+  isHasOutPort80and443 = function(uid) {
+    var component, sgs;
+    component = __getComp(uid);
+    sgs = __getSg(component);
+    if (__sgsHasOutPort80and443(sgs)) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_NO_OUTBOUND_RULES, component.name);
+  };
+  isHasOutPort80and443Strict = function(uid) {
+    var component, sgs;
+    component = __getComp(uid);
+    sgs = __getSg(component);
+    if (isHasOutPort80and443(uid) || __sgsHasOutPort80and443(sgs, true)) {
+      return null;
+    }
+    return Helper.message.warning(uid, i18n.WARNING_OUTBOUND_NOT_TO_ALL, component.name);
+  };
+  isConnectedOut = function(uid) {
+    var component, result;
+    result = [];
+    component = __getComp(uid);
+    if (component.type === constant.RESTYPE.LC) {
+      return __isLcConnectedOut(uid);
+    } else {
+      return __isInstanceConnectedOut(uid);
+    }
+  };
+  return {
+    isHasIgw: __wrap(isHasIgw),
+    isHasOutPort80and443: __wrap(isHasOutPort80and443),
+    isHasOutPort80and443Strict: __wrap(isHasOutPort80and443Strict),
+    isConnectedOut: __wrap(isConnectedOut)
+  };
+});
+
+define('component/trustedadvisor/validation/aws/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', "CloudResources"], function(constant, $, MC, lang, CloudResources) {
+  var isSnapshotExist;
+  isSnapshotExist = function(callback) {
+    var cr, err, failure, snaphostAry, snaphostMap, success;
+    try {
+      if (!callback) {
+        callback = function() {};
+      }
+      snaphostAry = [];
+      snaphostMap = {};
+      _.each(MC.canvas_data.component, function(compObj) {
+        var instanceUID, snaphostId;
+        if (compObj.type === constant.RESTYPE.VOL) {
+          snaphostId = compObj.resource.SnapshotId;
+          instanceUID = compObj.resource.AttachmentSet.InstanceId;
+          if (snaphostId && instanceUID) {
+            if (!snaphostMap[snaphostId]) {
+              snaphostMap[snaphostId] = [];
+            }
+            instanceUID = MC.extractID(instanceUID);
+            snaphostMap[snaphostId] = _.union(snaphostMap[snaphostId], [instanceUID]);
+          }
+        }
+        if (compObj.type === constant.RESTYPE.LC) {
+          _.each(compObj.resource.BlockDeviceMapping, function(blockObj, idx) {
+            if (idx > 0) {
+              snaphostId = blockObj.Ebs.SnapshotId;
+              instanceUID = compObj.uid;
+              if (snaphostId && instanceUID) {
+                if (!snaphostMap[snaphostId]) {
+                  snaphostMap[snaphostId] = [];
+                }
+                return snaphostMap[snaphostId] = _.union(snaphostMap[snaphostId], [instanceUID]);
+              }
+            }
+          });
+        }
+        return null;
+      });
+      snaphostAry = _.keys(snaphostMap);
+      if (snaphostAry.length) {
+        cr = CloudResources(Design.instance().credentialId(), constant.RESTYPE.SNAP, Design.instance().region());
+        failure = function() {
+          return callback(null);
+        };
+        success = function() {
+          var id, infoObjType, instanceId, instanceObj, instanceUID, missingIds, snapshotId, tipInfoAry, _i, _j, _k, _len, _len1, _len2, _ref, _results;
+          tipInfoAry = [];
+          missingIds = [];
+          for (_i = 0, _len = snaphostAry.length; _i < _len; _i++) {
+            id = snaphostAry[_i];
+            if (!cr.get(id)) {
+              missingIds.push(id);
+            }
+          }
+          if (!missingIds.length) {
+            return callback(null);
+          }
+          _results = [];
+          for (_j = 0, _len1 = missingIds.length; _j < _len1; _j++) {
+            snapshotId = missingIds[_j];
+            _ref = snaphostMap[snapshotId] || [];
+            for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+              instanceUID = _ref[_k];
+              instanceObj = MC.canvas_data.component[instanceUID];
+              if (instanceObj.type === constant.RESTYPE.LC) {
+                instanceId = instanceObj.resource.LaunchConfigurationARN;
+                infoObjType = lang.PROP.LC_TITLE;
+              } else {
+                instanceId = instanceObj.resource.InstanceId;
+                infoObjType = lang.PROP.ELB_INSTANCES;
+              }
+              if (!instanceId) {
+                tipInfoAry.push({
+                  level: constant.TA.ERROR,
+                  uid: instanceUID,
+                  info: sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceObj.name)
+                });
+              }
+              null;
+            }
+            if (tipInfoAry.length) {
+              callback(tipInfoAry);
+              _results.push(console.log(tipInfoAry));
+            } else {
+              _results.push(callback(null));
+            }
+          }
+          return _results;
+        };
+        cr.fetch().then(success, failure);
+        return null;
+      } else {
+        return callback(null);
+      }
+    } catch (_error) {
+      err = _error;
+      return callback(null);
+    }
+  };
+  return {
+    isSnapshotExist: isSnapshotExist
+  };
+});
+
+define('component/trustedadvisor/validation/aws/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, _, CloudResources) {
+  var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
+  i18n = Helper.i18n.short();
+  isNotDefaultAndRefInstance = function(uid) {
+    var instance, instanceStr, instances, kp, lcStr, message, tag, _i, _len;
+    kp = Design.instance().component(uid);
+    instances = kp.connectionTargets("KeypairUsage");
+    if (kp.isDefault() || !instances.length) {
+      return null;
+    }
+    lcStr = '';
+    instanceStr = '';
+    message = '';
+    for (_i = 0, _len = instances.length; _i < _len; _i++) {
+      instance = instances[_i];
+      tag = instance.type === constant.RESTYPE.LC ? 'lc' : 'instance';
+      if (instance.type === constant.RESTYPE.LC) {
+        tag = 'lc';
+        lcStr += "<span class='validation-tag tag-" + tag + "'>" + (instance.get('name')) + "</span>, ";
+      } else {
+        tag = 'instance';
+        instanceStr += "<span class='validation-tag tag-" + tag + "'>" + (instance.get('name')) + "</span>, ";
+      }
+    }
+    if (instanceStr) {
+      message += i18n.INSTANCE + ' ' + instanceStr;
+    }
+    if (lcStr) {
+      message += i18n.LAUNCH_CONFIGURATION + " " + lcStr;
+    }
+    message = message.slice(0, -2);
+    return Helper.message.error(uid, i18n.ERROR_INSTANCE_REF_OLD_KEYPAIR, message, kp.get('name'));
+  };
+  longLiveNotice = function() {
+    return Helper.message.notice(null, i18n.NOTICE_KEYPAIR_LONE_LIVE);
+  };
+  isKeyPairExistInAws = function(callback) {
+    var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, kpCollection, needValidate, region, results, _i, _len;
+    allInstances = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
+    allLcs = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
+    instanceLike = allInstances.concat(allLcs);
+    needValidate = [];
+    invalid = [];
+    errors = {};
+    results = [];
+    for (_i = 0, _len = instanceLike.length; _i < _len; _i++) {
+      i = instanceLike[_i];
+      if (i.type === constant.RESTYPE.INSTANCE && i.get('appId') && i.get('count') === i.groupMembers().length + 1) {
+        continue;
+      }
+      keyName = i.get('keyName');
+      if (keyName && keyName[0] !== '@' && !i.connectionTargets("KeypairUsage").length) {
+        needValidate.push(i);
+      }
+    }
+    if (!needValidate.length) {
+      return callback(null);
+    } else {
+      region = Design.instance().region();
+      kpCollection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.KP, Design.instance().get("region"));
+      return kpCollection.fetchForce().then(function(col) {
+        var kpList;
+        kpList = col.toJSON();
+        _.each(needValidate, function(i) {
+          var inexist, tag;
+          inexist = _.every(kpList, function(kp) {
+            return kp.keyName !== i.get('keyName');
+          });
+          if (inexist) {
+            keyName = i.get('keyName');
+            invalid.push(i);
+            if (!errors[keyName]) {
+              errors[keyName] = {
+                lc: '',
+                instance: ''
+              };
+            }
+            tag = i.type === constant.RESTYPE.LC ? 'lc' : 'instance';
+            if (i.type === constant.RESTYPE.LC) {
+              tag = 'lc';
+              return errors[keyName].lc += "<span class='validation-tag tag-" + tag + "'>" + (i.get('name')) + "</span>, ";
+            } else {
+              tag = 'instance';
+              return errors[keyName].instance += "<span class='validation-tag tag-" + tag + "'>" + (i.get('name')) + "</span>, ";
+            }
+          }
+        });
+        _.each(errors, function(err, keyName) {
+          var message;
+          message = '';
+          if (err.instance) {
+            message += 'Instance ' + err.instance;
+          }
+          if (err.lc) {
+            message += 'Launch Configuration' + err.lc;
+          }
+          message = message.slice(0, -2);
+          return results.push(Helper.message.error(keyName, i18n.ERROR_INSTANCE_REF_OLD_KEYPAIR, message, keyName));
+        });
+        return callback(results);
+      }, function() {
+        return callback(null);
+      });
+    }
+  };
+  return {
+    isNotDefaultAndRefInstance: isNotDefaultAndRefInstance,
+    longLiveNotice: longLiveNotice,
+    isKeyPairExistInAws: isKeyPairExistInAws
+  };
+});
+
+define('component/trustedadvisor/validation/aws/rds/dbinstance',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+  var diff, i18n, isAzConsistent, isBackupMaintenanceOverlap, isDBandOgBothModified, isHaveEnoughIPForDB, isHaveReplicaStorageSmallThanOrigin, isMasterPasswordValid, isOgValid, isSqlServerCross3Subnet;
+  i18n = Helper.i18n.short();
+  diff = function(oldcomp, newcomp) {
+    return !_.isEqual(oldcomp, newcomp);
+  };
+  isOgValid = function() {
+    var db, dbs, nameStr, taId, _i, _len;
+    dbs = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).filter(function(db) {
+      return (db.get('instanceClass') === 'db.t1.micro') && !db.getOptionGroup().isDefault();
+    });
+    if (!dbs.length) {
+      return null;
+    }
+    taId = '';
+    nameStr = '';
+    for (_i = 0, _len = dbs.length; _i < _len; _i++) {
+      db = dbs[_i];
+      nameStr += "<span class='validation-tag'>" + (db.get('name')) + "</span>, ";
+      taId += db.id;
+    }
+    nameStr = nameStr.slice(0, -2);
+    return Helper.message.error(taId, i18n.ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION, nameStr);
+  };
+  isAzConsistent = function(uid) {
+    var azName, db, sbg;
+    db = Design.instance().component(uid);
+    azName = db.get('az');
+    if (!azName) {
+      return null;
+    }
+    sbg = db.parent();
+    if (_.some(sbg.connectionTargets("SubnetgAsso"), function(sb) {
+      return sb.parent().get('name') === azName;
+    })) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_RDS_AZ_NOT_CONSISTENT, db.get('name'), azName);
+  };
+  isHaveEnoughIPForDB = function(uid) {
+    var dbModels, resultSubnetAry, subnetDBMap, _getSubnetRemainIPCount;
+    _getSubnetRemainIPCount = function(subnetModel) {
+      var availableIPCount, cidr;
+      cidr = subnetModel.get('cidr');
+      availableIPCount = subnetModel.getAvailableIPCountInSubnet();
+      return availableIPCount;
+    };
+    subnetDBMap = {};
+    resultSubnetAry = [];
+    dbModels = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).allObjects();
+    _.each(dbModels, function(dbModel) {
+      var connAry, subnetGroupModel;
+      subnetGroupModel = dbModel.get('__parent');
+      connAry = subnetGroupModel.get('__connections');
+      _.each(connAry, function(conModel) {
+        var subnetModel;
+        subnetModel = conModel.getTarget(constant.RESTYPE.SUBNET);
+        if (!subnetDBMap[subnetModel.id]) {
+          subnetDBMap[subnetModel.id] = [];
+        }
+        subnetDBMap[subnetModel.id] = _.union(subnetDBMap[subnetModel.id], [dbModel.get('id')]);
+        return null;
+      });
+      return null;
+    });
+    _.each(subnetDBMap, function(dbAry, subnetUID) {
+      var availableIPCount, subnetModel;
+      subnetModel = Design.instance().component(subnetUID);
+      availableIPCount = _getSubnetRemainIPCount(subnetModel);
+      if (availableIPCount < dbAry.length) {
+        resultSubnetAry.push(subnetModel.get('name'));
+      }
+      return null;
+    });
+    resultSubnetAry = _.map(resultSubnetAry, function(name) {
+      return "<span class='validation-tag tag-vpn'>" + name + "</span>";
+    });
+    if (resultSubnetAry.length) {
+      return {
+        level: constant.TA.ERROR,
+        info: sprintf(i18n.ERROR_HAVE_NOT_ENOUGH_IP_FOR_DB, resultSubnetAry.join(', '))
+      };
+    }
+    return null;
+  };
+  isHaveReplicaStorageSmallThanOrigin = function(uid) {
+    var dbModel, srcStorge, storge;
+    dbModel = Design.instance().component(uid);
+    if (!dbModel.master()) {
+      return null;
+    }
+    storge = dbModel.get('allocatedStorage');
+    srcStorge = dbModel.master().get('allocatedStorage');
+    if (storge < srcStorge) {
+      return {
+        uid: uid,
+        level: constant.TA.ERROR,
+        info: sprintf(i18n.ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN, dbModel.get('name'), dbModel.master().get('name'))
+      };
+    }
+    return null;
+  };
+  isSqlServerCross3Subnet = function(uid) {
+    var azs, db, og, sbg;
+    db = Design.instance().component(uid);
+    og = db.getOptionGroup();
+    if (!db.isSqlserver()) {
+      return null;
+    }
+    if (og.isDefault()) {
+      return null;
+    }
+    if (_.every(og.get('options'), function(option) {
+      return option.OptionName !== 'Mirroring';
+    })) {
+      return null;
+    }
+    sbg = db.parent();
+    azs = _.map(sbg.connectionTargets('SubnetgAsso'), function(sb) {
+      return sb.parent();
+    });
+    if (_.uniq(azs).length > 2) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_RDS_SQL_SERVER_MIRROR_MUST_HAVE3SUBNET, db.get('name'));
+  };
+  isBackupMaintenanceOverlap = function(uid) {
+    var appData, appId, backupEnd, backupStart, backupTimeArray, backupWindow, db, maintenanceEnd, maintenanceStart, maintenanceTimeArray, maintenanceWindow;
+    db = Design.instance().component(uid);
+    appId = db.get('appId');
+    backupWindow = db.get('backupWindow');
+    maintenanceWindow = db.get('maintenanceWindow');
+    if (!(backupWindow && maintenanceWindow)) {
+      return null;
+    }
+    if (appId) {
+      appData = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(appId);
+      backupWindow = backupWindow || appData.get('PreferredBackupWindow');
+      maintenanceWindow = maintenanceWindow || appData.get('PreferredMaintenanceWindow');
+    }
+    backupTimeArray = backupWindow.replace(/:/g, '').split('-');
+    maintenanceTimeArray = maintenanceWindow.replace(/:/g, '').split('-');
+    backupStart = +backupTimeArray[0];
+    backupEnd = +backupTimeArray[1];
+    maintenanceStart = +maintenanceTimeArray[0].slice(3);
+    maintenanceEnd = +maintenanceTimeArray[1].slice(3);
+    if (maintenanceEnd <= maintenanceStart && backupStart <= backupEnd) {
+      if (maintenanceEnd <= backupStart && backupStart <= maintenanceStart && backupEnd <= maintenanceStart) {
+        return null;
+      }
+    } else if (backupEnd <= backupStart && maintenanceStart <= maintenanceEnd) {
+      if (backupEnd <= maintenanceStart && maintenanceStart <= backupStart && maintenanceEnd < backupStart) {
+        return null;
+      }
+    } else if (backupEnd <= backupStart && maintenanceEnd <= maintenanceStart) {
+
+    } else if (backupStart >= maintenanceEnd || backupEnd <= maintenanceStart) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_RDS_BACKUP_MAINTENANCE_OVERLAP, db.get('name'));
+  };
+  isMasterPasswordValid = function(uid) {
+    var db, password, _ref;
+    db = Design.instance().component(uid);
+    password = db.get('password');
+    if (password && (password === '****' || (8 <= (_ref = password.length) && _ref <= 41))) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_MASTER_PASSWORD_INVALID, db.get('name'));
+  };
+  isDBandOgBothModified = function(uid) {
+    var db, dbOrigincomp, dbcomp, og, ogOrigincomp, ogcomp, originJson;
+    db = Design.instance().component(uid);
+    og = db.getOptionGroup();
+    if (!db.get('appId') || !og.get('appId') || og.isDefault()) {
+      return null;
+    }
+    originJson = Design.instance().__opsModel.getJsonData();
+    dbOrigincomp = originJson.component[uid];
+    ogOrigincomp = originJson.component[og.id];
+    dbcomp = MC.canvas_data.component[uid];
+    ogcomp = MC.canvas_data.component[og.id];
+    if (!(diff(dbOrigincomp, dbcomp) && diff(ogOrigincomp, ogcomp))) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_OG_DB_BOTH_MODIFIED, db.get('name'), og.get('name'));
+  };
+  return {
+    isOgValid: isOgValid,
+    isAzConsistent: isAzConsistent,
+    isHaveEnoughIPForDB: isHaveEnoughIPForDB,
+    isSqlServerCross3Subnet: isSqlServerCross3Subnet,
+    isBackupMaintenanceOverlap: isBackupMaintenanceOverlap,
+    isMasterPasswordValid: isMasterPasswordValid,
+    isHaveReplicaStorageSmallThanOrigin: isHaveReplicaStorageSmallThanOrigin,
+    isDBandOgBothModified: isDBandOgBothModified
+  };
+});
+
+define('component/trustedadvisor/validation/aws/rds/og',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+  var i18n, isOGExeedCountLimit, unusedOgWontCreate;
+  i18n = Helper.i18n.short();
+  unusedOgWontCreate = function(callback) {
+    var nameStr, og, ogUnused, taId, _i, _len;
+    ogUnused = Design.modelClassForType(constant.RESTYPE.DBOG).filter(function(og) {
+      return !(og.isDefault() || og.connections().length);
+    });
+    if (!ogUnused.length) {
+      callback(null);
+      return null;
+    }
+    taId = '';
+    nameStr = '';
+    for (_i = 0, _len = ogUnused.length; _i < _len; _i++) {
+      og = ogUnused[_i];
+      nameStr += "<span class='validation-tag'>" + (og.get('name')) + "</span>, ";
+      taId += og.id;
+    }
+    nameStr = nameStr.slice(0, -2);
+    callback(Helper.message.warning(taId, i18n.WARNING_RDS_UNUSED_OG_NOT_CREATE, nameStr));
+    return null;
+  };
+  isOGExeedCountLimit = function(callback) {
+    var customOGModels, err, existOGModels, ogModels, region, regionName;
+    try {
+      if (!callback) {
+        callback = function() {};
+      }
+      existOGModels = Design.modelClassForType(constant.RESTYPE.DBOG).allObjects();
+      customOGModels = _.filter(existOGModels, function(model) {
+        if (!model.get('default') && !model.get('createdBy')) {
+          return true;
+        }
+      });
+      if (customOGModels.length) {
+        region = Design.instance().get('region');
+        regionName = constant.REGION_SHORT_LABEL[region];
+        ogModels = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBOG, region);
+        return ogModels.fetchForce().then(function(ogCol) {
+          var customOgAry;
+          customOgAry = ogCol.filter(function(model) {
+            return model.get('id').indexOf('default:') !== 0;
+          });
+          if (customOgAry.length + customOGModels.length > 20) {
+            return callback(Helper.message.error('', i18n.ERROR_RDS_OG_EXCEED_20_LIMIT, regionName));
+          } else {
+            return callback(null);
+          }
+        }, function(err) {
+          return callback(null);
+        });
+      } else {
+        return callback(null);
+      }
+    } catch (_error) {
+      err = _error;
+      return callback(null);
+    }
+  };
+  return {
+    isOGExeedCountLimit: isOGExeedCountLimit
+  };
+});
+
+define('component/trustedadvisor/validation/aws/rds/sbg',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
+  var i18n, isSbgHasSbin2Az;
+  i18n = Helper.i18n.short();
+  isSbgHasSbin2Az = function(uid) {
+    var azs, minAZCount, sbg, sbs, tmpTip, uniqAzCount, _ref;
+    tmpTip = "Subnet Group %s must have subnets in at least 2 Availability Zones.";
+    sbg = Design.instance().component(uid);
+    sbs = sbg.connectionTargets("SubnetgAsso");
+    azs = [];
+    azs = _.map(sbs, function(sb) {
+      return sb.parent();
+    });
+    uniqAzCount = _.uniq(azs).length;
+    if ((_ref = Design.instance().region()) === 'cn-north-1') {
+      minAZCount = 1;
+    } else {
+      minAZCount = 2;
+    }
+    if (uniqAzCount >= minAZCount) {
+      return null;
+    }
+    return Helper.message.error(uid, sprintf(tmpTip, sbg.get('name')));
+  };
+  return {
+    isSbgHasSbin2Az: isSbgHasSbin2Az
+  };
+});
+
+define('component/trustedadvisor/validation/os/osport',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
+  var i18n, isPortConnectwithServer;
+  i18n = Helper.i18n.short();
+  isPortConnectwithServer = function(uid) {
+    var connectedServer, port;
+    port = Design.instance().component(uid);
+    connectedServer = _.some(port.connectionTargets('OsPortUsage'), function(target) {
+      return target.type === constant.RESTYPE.OSSERVER;
+    });
+    if (connectedServer) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_PORT_MUST_CONNECT_WITH_SERVER, port.get('name'));
+  };
+  return {
+    isPortConnectwithServer: isPortConnectwithServer
+  };
+});
+
+define('component/trustedadvisor/validation/os/ossubnet',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
+  var i18n, isSubnetCIDRConflict, subnetHasPortShouldConncectedOut, __isSbConnectOut;
+  i18n = Helper.i18n.short();
+  __isSbConnectOut = function(sb) {
+    var rt, rts;
+    rts = _.filter(sb.connectionTargets('OsRouterAsso'), function(obj) {
+      return obj.type === constant.RESTYPE.OSRT;
+    });
+    rt = rts[0];
+    if (!rt || !rt.get('extNetworkId')) {
+      return false;
+    }
+    return true;
+  };
+  subnetHasPortShouldConncectedOut = function() {
+    var badSbs, child, port, sb, sbNames, subnets, _i, _j, _len, _len1, _ref, _ref1;
+    badSbs = [];
+    subnets = Design.modelClassForType(constant.RESTYPE.OSSUBNET).allObjects();
+    for (_i = 0, _len = subnets.length; _i < _len; _i++) {
+      sb = subnets[_i];
+      _ref = sb.children();
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        child = _ref[_j];
+        port = null;
+        if ((_ref1 = child.type) === constant.RESTYPE.OSPORT || _ref1 === constant.RESTYPE.OSLISTENER) {
+          port = child;
+        } else if (child.type === constant.RESTYPE.OSSERVER) {
+          port = child.embedPort();
+        }
+        if (port && port.getFloatingIp() && !__isSbConnectOut(sb)) {
+          badSbs.push(sb);
+        }
+      }
+    }
+    sbNames = _.map(_.uniq(badSbs), function(sb) {
+      return "<span class='validation-tag tag-ossubnet'>" + (sb.get('name')) + "</span>";
+    }).join(', ');
+    if (!sbNames) {
+      return null;
+    }
+    return Helper.message.error(null, i18n.ERROR_SUBNET_HAS_PORT_SHOULD_CONNECTED_OUT, sbNames);
+  };
+  isSubnetCIDRConflict = function() {
+    var cidr1, cidr2, conflictSubnet1, conflictSubnet2, haveConflict, isCidrConflict, name1, name2, subnetModel1, subnetModel2, subnetModels, _i, _j, _len, _len1;
+    subnetModels = Design.modelClassForType(constant.RESTYPE.OSSUBNET).allObjects();
+    isCidrConflict = Design.modelClassForType(constant.RESTYPE.SUBNET).isCidrConflict;
+    conflictSubnet1 = null;
+    conflictSubnet2 = null;
+    for (_i = 0, _len = subnetModels.length; _i < _len; _i++) {
+      subnetModel1 = subnetModels[_i];
+      for (_j = 0, _len1 = subnetModels.length; _j < _len1; _j++) {
+        subnetModel2 = subnetModels[_j];
+        if (subnetModel1 === subnetModel2) {
+          continue;
+        }
+        haveConflict = isCidrConflict(subnetModel1.get('cidr'), subnetModel2.get('cidr'));
+        if (haveConflict) {
+          conflictSubnet1 = subnetModel1;
+          conflictSubnet2 = subnetModel2;
+          break;
+        }
+      }
+      if (conflictSubnet1) {
+        break;
+      }
+    }
+    if (conflictSubnet1) {
+      name1 = conflictSubnet1.get('name');
+      name2 = conflictSubnet2.get('name');
+      cidr1 = conflictSubnet1.get('cidr');
+      cidr2 = conflictSubnet2.get('cidr');
+      return Helper.message.error(null, i18n.ERROR_SUBNET_HAS_CONFLICT_CIDR_WITH_OTHERS, name1, cidr1, name2, cidr2);
+    }
+  };
+  return {
+    subnetHasPortShouldConncectedOut: subnetHasPortShouldConncectedOut,
+    isSubnetCIDRConflict: isSubnetCIDRConflict
+  };
+});
+
+define('component/trustedadvisor/validation/os/osrouter',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
+  var i18n, rtMustConnecteToOneSubnet;
+  i18n = Helper.i18n.short();
+  rtMustConnecteToOneSubnet = function(uid) {
+    var rt;
+    rt = Design.instance().component(uid);
+    if (rt.connections('OsRouterAsso').length) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_ROUTER_XXX_MUST_CONNECT_TO_AT_LEAST_ONE_SUBNET, rt.get('name'));
+  };
+  return {
+    rtMustConnecteToOneSubnet: rtMustConnecteToOneSubnet
+  };
+});
+
+define('component/trustedadvisor/validation/os/ospool',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
+  var i18n, isMemberBelongsConnectedSubnet, isPoolConnectedwithListener;
+  i18n = Helper.i18n.short();
+  isPoolConnectedwithListener = function(uid) {
+    var pool;
+    pool = Design.instance().component(uid);
+    if (pool.connections('OsListenerAsso').length) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_POOL_XXX_MUST_BE_CONNECTED_TO_A_LISTENER, pool.get('name'));
+  };
+  isMemberBelongsConnectedSubnet = function(uid) {
+    var memberNames, members, notConnectedMembers, pool;
+    pool = Design.instance().component(uid);
+    members = pool.connectionTargets('OsPoolMembership');
+    notConnectedMembers = _.reject(members, function(m) {
+      var memberRt, poolRt;
+      if (m.parent() === pool.parent()) {
+        return true;
+      }
+      memberRt = m.parent().connectionTargets('OsRouterAsso')[0];
+      poolRt = pool.parent().connectionTargets('OsRouterAsso')[0];
+      if (memberRt && memberRt === poolRt) {
+        return true;
+      }
+      return false;
+    });
+    memberNames = _.map(notConnectedMembers, function(nc) {
+      return "<span class='validation-tag tag-ospoolmember'>" + (nc.get('name')) + "</span>";
+    }).join(', ');
+    if (!memberNames) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED, pool.get('name'), memberNames);
+  };
+  return {
+    isPoolConnectedwithListener: isPoolConnectedwithListener,
+    isMemberBelongsConnectedSubnet: isMemberBelongsConnectedSubnet
+  };
+});
+
+define('component/trustedadvisor/validation/os/oslistener',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  var i18n, isListenerConnectedwithPool;
+  i18n = Helper.i18n.short();
+  isListenerConnectedwithPool = function(uid) {
+    var listener;
+    listener = Design.instance().component(uid);
+    if (listener.connections('OsListenerAsso').length) {
+      return null;
+    }
+    return Helper.message.error(uid, i18n.ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL, listener.get('name'));
+  };
+  return {
+    isListenerConnectedwithPool: isListenerConnectedwithPool
+  };
+});
+
+define('component/trustedadvisor/validation/os/osstack',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  var i18n, isResExtendQuotaLimit;
+  i18n = Helper.i18n.short();
+  isResExtendQuotaLimit = function() {
+    var credentialId, existMap, getNewCount, limitMap, newMap, provider, quotaMap, region, typeShortMap, validAry;
+    region = Design.instance().region();
+    provider = App.user.get("default_provider");
+    quotaMap = App.model.getOpenstackQuotas(provider);
+    getNewCount = function(type) {
+      return _.filter(Design.modelClassForType(type).allObjects(), function(model) {
+        return !model.get('appId');
+      }).length;
+    };
+    typeShortMap = {};
+    existMap = {};
+    newMap = {};
+    limitMap = {};
+    credentialId = Design.instance().credentialId();
+    _.each([constant.RESTYPE.OSPORT, constant.RESTYPE.OSFIP, constant.RESTYPE.OSRT, constant.RESTYPE.OSSG, constant.RESTYPE.OSSUBNET], function(type) {
+      typeShortMap[type] = existMap[type] = CloudResources(credentialId, type, region).length;
+      return newMap[type] = getNewCount(type);
+    });
+    limitMap[constant.RESTYPE.OSPORT] = quotaMap['Neutron::port'];
+    limitMap[constant.RESTYPE.OSFIP] = quotaMap['Neutron::floatingip'];
+    limitMap[constant.RESTYPE.OSRT] = quotaMap['Neutron::router'];
+    limitMap[constant.RESTYPE.OSSG] = quotaMap['Neutron::security_group'];
+    limitMap[constant.RESTYPE.OSSUBNET] = quotaMap['Neutron::subnet'];
+    validAry = [];
+    _.each(existMap, function(count, type) {
+      var limitCount, typeName, usedCount;
+      usedCount = existMap[type] + newMap[type];
+      limitCount = limitMap[type];
+      typeName = constant.RESNAME[type];
+      if (usedCount > limitCount && typeName) {
+        validAry.push(Helper.message.error(null, i18n.ERROR_STACK_RESOURCE_EXCCED_LIMIT, typeName, usedCount, limitCount));
+      }
+      return null;
+    });
+    return validAry;
+  };
+  return {
+    isResExtendQuotaLimit: isResExtendQuotaLimit
+  };
+});
+
+define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/aws/stack/stack', '../validation/aws/ec2/instance', '../validation/aws/vpc/subnet', '../validation/aws/vpc/vpc', '../validation/aws/elb/elb', '../validation/aws/ec2/securitygroup', '../validation/aws/asg/asg', '../validation/aws/ec2/eip', '../validation/aws/ec2/az', '../validation/aws/vpc/vgw', '../validation/aws/vpc/vpn', '../validation/aws/vpc/igw', '../validation/aws/vpc/networkacl', '../validation/aws/vpc/cgw', '../validation/aws/vpc/eni', '../validation/aws/vpc/rtb', '../validation/aws/stateeditor/main', '../validation/aws/state/state', '../validation/aws/ec2/ebs', '../validation/aws/ec2/kp', '../validation/aws/rds/dbinstance', '../validation/aws/rds/og', '../validation/aws/rds/sbg', '../validation/os/osport', '../validation/os/ossubnet', '../validation/os/osrouter', '../validation/os/ospool', '../validation/os/oslistener', '../validation/os/osstack'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og, sbg, osport, ossubnet, osrouter, ospool, oslistener, osstack) {
+  return {
+    stack: stack,
+    instance: instance,
+    subnet: subnet,
+    vpc: vpc,
+    elb: elb,
+    sg: sg,
+    asg: asg,
+    eip: eip,
+    az: az,
+    vgw: vgw,
+    vpn: vpn,
+    igw: igw,
+    acl: acl,
+    cgw: cgw,
+    eni: eni,
+    rtb: rtb,
+    stateEditor: stateEditor,
+    state: state,
+    ebs: ebs,
+    kp: kp,
+    dbinstance: dbinstance,
+    og: og,
+    sbg: sbg,
+    osport: osport,
+    ossubnet: ossubnet,
+    osrouter: osrouter,
+    ospool: ospool,
+    oslistener: oslistener,
+    osstack: osstack
+  };
+});
+
+define('component/trustedadvisor/lib/TA.Core',['event', 'MC', 'Design', 'underscore'], function(ide_event, MC, Design) {
+  var reset, result, set, _add, _del, _exist, _genKey, _genRes, _hash, _replace;
+  _hash = function(str) {
+    var hash;
+    hash = 0;
+    if (str.length === 0) {
+      return hash;
+    }
+    _.each(str, function(v, i) {
+      var char;
+      char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+      return null;
+    });
+    return "k" + hash;
+  };
+  _genKey = function(key, uid) {
+    return _hash("" + key + "|" + uid);
+  };
+  _genRes = function(key, result, uid) {
+    uid = uid || result && result.uid || null;
+    return _.extend({}, result, {
+      key: _genKey(key, uid),
+      type: key
+    });
+  };
+  _del = function(key) {
+    var delete_obj;
+    delete_obj = {};
+    _.map(MC.ta.list, function(obj) {
+      if (obj.key === key) {
+        delete_obj = obj;
+      }
+      return null;
+    });
+    if (delete_obj) {
+      MC.ta.list = _.without(MC.ta.list, delete_obj);
+      if (delete_obj.level) {
+        ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'delete', delete_obj.level);
+      }
+    }
+    return null;
+  };
+  _add = function(result) {
+    MC.ta.list.push(result);
+    return ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'add', result.level);
+  };
+  _replace = function(result) {
+    MC.ta.list = _.map(MC.ta.list, function(item) {
+      if (item.key === result.key) {
+        return result;
+      }
+      return item;
+    });
+    return MC.ta.list;
+  };
+  _exist = function(key) {
+    return _.contains(_.pluck(MC.ta.list, 'key'), key);
+  };
+  set = function(key, result, uid) {
+    var k, res;
+    res = _genRes(key, result, uid);
+    k = res.key;
+    if (_.isArray(result)) {
+      _.each(result, function(r) {
+        if (r) {
+          return set(key, r, r.uid);
+        }
+      });
+    } else if (result) {
+      if (!_exist(k)) {
+        _add(res);
+      } else {
+        _replace(res);
+      }
+    } else {
+      _del(k);
+    }
+    return MC.ta.list;
+  };
+  reset = function() {
+    MC.ta.list = [];
+    MC.canvas_data = Design.instance().serialize();
+    return null;
+  };
+  result = function() {
+    return MC.ta.list;
+  };
+  return {
+    set: set,
+    reset: reset,
+    result: result
+  };
+});
+
+define('validation',['constant', 'event', 'component/trustedadvisor/lib/TA.Config', 'component/trustedadvisor/lib/TA.Bundle', 'component/trustedadvisor/lib/TA.Core', 'jquery', 'underscore', "MC"], function(constant, ide_event, config, TaBundle, TaCore) {
+  var validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncFinish, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
+  _init = function() {
+    return TaCore.reset();
+  };
+  _isGlobal = function(filename, method) {
+    return config.get('globalList')[filename] && _.contains(config.get('globalList')[filename], method);
+  };
+  _isAsync = function(filename, method) {
+    return config.get('asyncList')[filename] && _.contains(config.get('asyncList')[filename], method);
+  };
+  _getFilename = function(componentType) {
+    var filename;
+    if (config.get('componentTypeToFileMap')[componentType]) {
+      return config.get('componentTypeToFileMap')[componentType];
+    }
+    filename = _.last(componentType.split('.'));
+    filename = filename.toLowerCase();
+    return [filename];
+  };
+  _pushResult = function(result, method, filename, uid) {
+    return TaCore.set("" + filename + "." + method, result, uid);
+  };
+  _syncStart = function() {
+    return ide_event.trigger(ide_event.TA_SYNC_START);
+  };
+  _syncFinish = function() {
+    return ide_event.trigger(ide_event.TA_SYNC_FINISH);
+  };
+  _genSyncFinish = function(times) {
+    return _.after(times, function() {
+      return _syncFinish();
+    });
+  };
+  _asyncCallback = function(method, filename, done) {
+    var hasRun;
+    hasRun = false;
+    _.delay(function() {
+      if (!hasRun) {
+        hasRun = true;
+        _pushResult(null, method, filename);
+        done();
+        return console.error('Async TA Timeout');
+      }
+    }, config.syncTimeout);
+    return function(result) {
+      if (!hasRun) {
+        hasRun = true;
+        _pushResult(result, method, filename);
+        return done();
+      }
+    };
+  };
+  _handleException = function(err) {
+    return console.log('TA Exception: ', err);
+  };
+  _validGlobal = function(env) {
+    _.each(config.get('globalList'), function(methods, filename) {
+      return _.each(methods, function(method) {
+        var err, result;
+        try {
+          if (method.indexOf('~') === 0) {
+            if (env === 'all') {
+              method = method.slice(1);
+            } else {
+              return;
+            }
+          }
+          result = TaBundle[filename][method]();
+          return _pushResult(result, method, filename);
+        } catch (_error) {
+          err = _error;
+          return _handleException(err);
+        }
+      });
+    });
+    return null;
+  };
+  _validComponents = function() {
+    var components;
+    components = MC.canvas_data.component;
+    _.each(components, function(component, uid) {
+      var err, filenames;
+      filenames = _getFilename(component.type);
+      _.each(filenames, function(filename) {
+        return _.each(TaBundle[filename], function(func, method) {
+          var err, result;
+          if (!_isGlobal(filename, method) && !_isAsync(filename, method)) {
+            try {
+              result = TaBundle[filename][method](uid);
+              return _pushResult(result, method, filename, uid);
+            } catch (_error) {
+              err = _error;
+              return _handleException(err);
+            }
+          }
+        });
+      });
+      try {
+        return _validState(TaBundle, uid);
+      } catch (_error) {
+        err = _error;
+        return _handleException(err);
+      }
+    });
+    return null;
+  };
+  _validState = function(TaBundle, uid) {
+    var result;
+    if (Design.instance().get('agent').enabled === true) {
+      result = TaBundle.stateEditor(uid);
+      _pushResult(result, 'stateEditor', 'stateEditor', uid);
+    }
+    return null;
+  };
+  _validAsync = function(differ) {
+    var asyncList, finishTimes, syncFinish;
+    asyncList = config.get('asyncList');
+    if (!asyncList || !_.size(asyncList)) {
+      _syncFinish();
+      return;
+    }
+    finishTimes = _.reduce(asyncList, function(memo, arr) {
+      return memo + arr.length;
+    }, 0);
+    _syncStart();
+    syncFinish = _genSyncFinish(finishTimes);
+    _.each(asyncList, function(methods, filename) {
+      return _.each(methods, function(method) {
+        var err, result;
+        try {
+          result = TaBundle[filename][method](_asyncCallback(method, filename, syncFinish), differ);
+          return _pushResult(result, method, filename);
+        } catch (_error) {
+          err = _error;
+          return _handleException(err);
+        }
+      });
+    });
+    return null;
+  };
+  validComp = function(type) {
+    var args, err, filename, func, method, result, temp;
+    try {
+      MC.ta.resultVO = TaCore;
+      temp = type.split('.');
+      filename = temp[0];
+      method = temp[1];
+      func = TaBundle[filename][method];
+      if (_.isFunction(func)) {
+        args = Array.prototype.slice.call(arguments, 1);
+        result = func.apply(TaBundle[filename], args);
+        TaCore.set(type, result);
+        return result;
+      } else {
+        console.log('func not found');
+      }
+    } catch (_error) {
+      err = _error;
+      _handleException(err);
+    }
+    return null;
+  };
+  validRun = function(differ) {
+    _init();
+    _validComponents();
+    _validGlobal('run');
+    _validAsync(differ);
+    return TaCore.result();
+  };
+  validAll = function() {
+    _init();
+    _validComponents();
+    _validGlobal('all');
+    return TaCore.result();
+  };
+  MC.ta = {
+    validComp: validComp,
+    validAll: validAll,
+    validRun: validRun,
+    stateEditor: TaBundle.stateEditor,
+    list: [],
+    state_list: {}
+  };
+  return MC.ta;
+});
+
+define('component/trustedadvisor/gui/tpl/template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "no-item";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						";
+  stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n					</div>\n\n				";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title empty\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.GOOD_JOB_NO_ERROR_HERE", {hash:{},data:data}))
+    + "\n					</div>\n				";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						";
+  stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n					</div>\n				";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title empty\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.GOOD_JOB_NO_WARNING_HERE", {hash:{},data:data}))
+    + "\n					</div>\n				";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title empty\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.GOOD_JOB_NO_NOTICE_HERE", {hash:{},data:data}))
+    + "\n					</div>\n				";
+  return buffer;
+  }
+
+  buffer += "<div class=\"validation-content mgt10\">\n	<ul class=\"tab\">\n		<li class=\"active ";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-tab-target=\"#item-error-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ERROR", {hash:{},data:data}))
+    + "<span class=\"validation-counter validation-counter-error\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></li>\n		<li data-tab-target=\"#item-warning-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_WARNING", {hash:{},data:data}))
+    + "<span class=\"validation-counter validation-counter-warning\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></li>\n		<li data-tab-target=\"#item-notice-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_NOTICE", {hash:{},data:data}))
+    + "<span class=\"validation-counter validation-counter-notice\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"pos-r scroll-content\">\n\n			<div id=\"item-error-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"content active\">\n\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.SOME_ERROR_VALIDATION_ONLY_HAPPENS_AT_THE_TIME_TO_RUN_STACK", {hash:{},data:data}))
+    + "</div>\n\n			</div>\n			<div id=\"item-warning-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"content\">\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n			<div id=\"item-notice-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"content\">\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.notice_list), {hash:{},inverse:self.program(11, program11, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n		</div>\n	</div>\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+define('component/trustedadvisor/gui/tpl/modal_template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"modal-header\">\n	<h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_VALIDATION", {hash:{},data:data}))
+    + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-validation-statusbar\">\n	</div>\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+define('component/trustedadvisor/gui/view',['event', 'i18n!/nls/lang.js', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, lang, template, modal_template) {
+  var TrustedAdvisorView;
+  TrustedAdvisorView = Backbone.View.extend({
+    events: {
+      'click .modal-close': 'closedPopup'
+    },
+    render: function(type, status) {
+      var data;
+      if (type === 'stack') {
+        $('#stack-run-validation-container').html(template(this.model.attributes));
+        $('.validating').hide();
+        this.processDetails();
+        $('.stack-validation details').show();
+      } else if (type === 'statusbar') {
+        this.setElement($('#OpsEditor .status-bar-modal'));
+        this.$el.html(modal_template());
+        data = _.extend({
+          timestamp: Date.now()
+        }, this.model.attributes);
+        this.$('.modal-validation-statusbar').html(template(data));
+        this.processStatusBarDetails();
+      } else if (type === 'openstack') {
+        $('.validating').hide();
+        false;
+      }
+      return null;
+    },
+    processStatusBarDetails: function() {
+      var $tabs, error, notice, warning;
+      error = this.model.get('error_list');
+      warning = this.model.get('warning_list');
+      notice = this.model.get('notice_list');
+      $tabs = this.$el.find('.tab li');
+      if (error.length) {
+
+      } else if (warning.length) {
+        return $tabs.eq(1).click();
+      } else if (notice.length) {
+        return $tabs.eq(2).click();
+      } else {
+        this.$el.find('.validation-content').text(lang.IDE.GREAT_JOB_NO_ERROR_WARNING_NOTICE_HERE);
+        return this.$el.find('.validation-content').addClass('empty');
+      }
+    },
+    processDetails: function() {
+      var $details, $nutshell, $summary, $tabs, error, notice, processNutshell, warning;
+      error = this.model.get('error_list');
+      warning = this.model.get('warning_list');
+      notice = this.model.get('notice_list');
+      $tabs = $('.modal-box .tab li');
+      $nutshell = $('.modal-box .nutshell');
+      $details = $('.stack-validation details');
+      $summary = $details.find('summary');
+      processNutshell = function(notShow) {
+        var content, contentArr;
+        contentArr = [];
+        if (error.length) {
+          contentArr.push(sprintf(lang.IDE.LENGTH_ERROR, error.length));
+          _.defer(function() {
+            return modal.position();
+          });
+        }
+        if (warning.length) {
+          contentArr.push(sprintf(lang.IDE.LENGTH_WARNING, warning.length));
+        }
+        if (notice.length) {
+          contentArr.push(sprintf(lang.IDE.LENGTH_NOTICE, notice.length));
+        }
+        if (!contentArr.length) {
+          content = lang.IDE.NO_ERROR_WARNING_OR_NOTICE;
+        } else {
+          content = contentArr.join(lang.IDE.COMMA);
+        }
+        $nutshell.find('label').text(content);
+        return $nutshell.click(function() {
+          return $summary.click();
+        });
+      };
+      if (error.length) {
+        return processNutshell(true);
+      } else if (warning.length) {
+        $tabs.eq(1).click();
+        $details.removeAttr('open');
+        return processNutshell();
+      } else if (notice.length) {
+        $tabs.eq(2).click();
+        $details.removeAttr('open');
+        return processNutshell();
+      } else {
+        $details.removeAttr('open');
+        processNutshell();
+        return $('.validation-content').text('Great job! No error, warning or notice here.');
+      }
+    },
+    restoreRun: function() {
+      return $('#btn-confirm, #confirm-update-app').removeAttr('disabled');
+    },
+    _clickCurrentTab: function(status) {
+      console.log('_clickCurrentTab, status = ' + status);
+      if (!status) {
+        return;
+      }
+      return _.each($('.tab').find('li'), function(item) {
+        if ($(item).attr('data-tab-target') === '#item-' + status) {
+          return $(item).trigger('click');
+        }
+      });
+    },
+    closedPopup: function() {
+      if (this.$el.html()) {
+        this.$el.empty();
+        return this.trigger('CLOSE_POPUP');
+      }
+    }
+  });
+  return TrustedAdvisorView;
+});
+
+define('component/trustedadvisor/gui/model',['backbone', 'jquery', 'underscore', 'MC'], function() {
+  var TrustedAdvisorModel;
+  TrustedAdvisorModel = Backbone.Model.extend({
+    defaults: {
+      'notice_list': null,
+      'warning_list': null,
+      'error_list': null
+    },
+    createList: function() {
+      var error_list, notice_list, temp, warning_list;
+      console.log('createList');
+      notice_list = [];
+      warning_list = [];
+      error_list = [];
+      temp = {};
+      _.each(MC.ta.list, function(obj) {
+        temp = {
+          'info': obj.info,
+          'key': obj.key,
+          'type': obj.type
+        };
+        switch (obj.level) {
+          case 'NOTICE':
+            return notice_list.push(temp);
+          case 'WARNING':
+            return warning_list.push(temp);
+          case 'ERROR':
+            return error_list.push(temp);
+        }
+      });
+      this.set('notice_list', notice_list);
+      this.set('warning_list', warning_list);
+      this.set('error_list', error_list);
+      MC.ta.state_list = {
+        'notice_list': notice_list,
+        'warning_list': warning_list,
+        'error_list': error_list
+      };
+    }
+  });
+  return TrustedAdvisorModel;
+});
+
+define('TaGui',['jquery', 'event', 'component/trustedadvisor/gui/view', 'component/trustedadvisor/gui/model'], function($, ide_event, View, Model) {
+  var loadModule, unLoadModule;
+  loadModule = function(type, status, differ) {
+    var model, processBar, processRun, view;
+    view = new View();
+    model = new Model();
+    view.model = model;
+    view.on('CLOSE_POPUP', function() {
+      return unLoadModule(view, model);
+    });
+    processBar = function() {
+      ide_event.onLongListen(ide_event.UPDATE_TA_MODAL, function() {
+        return console.log('UPDATE_TA_MODAL');
+      });
+      model.createList();
+      return view.render(type, status);
+    };
+    processRun = function(differ) {
+      var deferred;
+      deferred = Q.defer();
+      ide_event.onListen(ide_event.TA_SYNC_FINISH, function() {
+        console.log('TA_SYNC_FINISH');
+        model.createList();
+        view.render(type, status);
+        if (model.get('error_list').length === 0) {
+          return deferred.resolve(model);
+        } else {
+          return deferred.reject(model);
+        }
+      });
+      MC.ta.validRun(differ);
+      return deferred.promise;
+    };
+    ide_event.onLongListen(ide_event.UNLOAD_TA_MODAL, function() {
+      console.log('UNLOAD_TA_MODAL');
+      return unLoadModule(view, model);
+    });
+    if (type === 'stack') {
+      view.closedPopup();
+      return processRun(differ);
+    } else {
+      return processBar();
+    }
+  };
+  unLoadModule = function(view, model) {
+    console.log('trusted advisor run unLoadModule');
+    view.off();
+    model.off();
+    view.undelegateEvents();
+    view = null;
+    model = null;
+    ide_event.offListen(ide_event.UPDATE_TA_MODAL);
+    return ide_event.offListen(ide_event.UNLOAD_TA_MODAL);
+  };
+  return {
+    loadModule: loadModule,
+    unLoadModule: unLoadModule
+  };
+});
+
+
+define("component/Validation", function(){});

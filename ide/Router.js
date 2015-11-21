@@ -1,1 +1,69 @@
-define(["scenes/ProjectScene","scenes/Settings","scenes/StackStore","scenes/Cheatsheet","backbone"],function(e,t,n,r){return Backbone.Router.extend({routes:{"":"openProject","workspace(/:project)":"openProject","workspace/:project/ops(/:ops)":"openProject",settings:"openSettings","settings/:projectId(/:tab)":"openSettings","store/:sampleId":"openStore",cheatsheet:"openCheatsheet"},openStore:function(e){return new n({id:e})},openSettings:function(e,n){return new t({tab:n,projectId:e})},openProject:function(t,n){return new e(t,n)},openCheatsheet:function(){return new r},start:function(){var e;Backbone.history.start({pushState:!0})||(void 0,this.navigate("/",{replace:!0,trigger:!0})),e=this,$(document).on("click","a.route",function(t){return e.onRouteClicked(t)}),this.route("workspace/:project/unsaved(/:ops)","openProject")},onRouteClicked:function(e){var t,n,r,i;n=$(e.currentTarget).attr("href"),t=Backbone.history.fragment,r=n[n.length-1];if(r==="/"||r==="\\")n=n.substring(0,n.length-1);return i=this.navigate(n,{replace:!0,trigger:!0}),i===!0?$(document).trigger("urlroute"):i===!1&&(void 0,this.navigate(t,{replace:!0})),!1}})});
+define(["scenes/ProjectScene", "scenes/Settings", "scenes/StackStore", "scenes/Cheatsheet", "backbone"], function(ProjectScene, Settings, StackStore, Cheatsheet) {
+  return Backbone.Router.extend({
+    routes: {
+      "": "openProject",
+      "workspace(/:project)": "openProject",
+      "workspace/:project/ops(/:ops)": "openProject",
+      "settings": "openSettings",
+      "settings/:projectId(/:tab)": "openSettings",
+      "store/:sampleId": "openStore",
+      "cheatsheet": "openCheatsheet"
+    },
+    openStore: function(id) {
+      return new StackStore({
+        id: id
+      });
+    },
+    openSettings: function(projectId, tab) {
+      return new Settings({
+        tab: tab,
+        projectId: projectId
+      });
+    },
+    openProject: function(projectId, opsModelId) {
+      return new ProjectScene(projectId, opsModelId);
+    },
+    openCheatsheet: function() {
+      return new Cheatsheet();
+    },
+    start: function() {
+      var self;
+      if (!Backbone.history.start({
+        pushState: true
+      })) {
+        console.warn("URL doesn't match any routes.");
+        this.navigate("/", {
+          replace: true,
+          trigger: true
+        });
+      }
+      self = this;
+      $(document).on("click", "a.route", function(evt) {
+        return self.onRouteClicked(evt);
+      });
+      this.route("workspace/:project/unsaved(/:ops)", "openProject");
+    },
+    onRouteClicked: function(evt) {
+      var currentUrl, href, lastChar, result;
+      href = $(evt.currentTarget).attr("href");
+      currentUrl = Backbone.history.fragment;
+      lastChar = href[href.length - 1];
+      if (lastChar === "/" || lastChar === "\\") {
+        href = href.substring(0, href.length - 1);
+      }
+      result = this.navigate(href, {
+        replace: true,
+        trigger: true
+      });
+      if (result === true) {
+        $(document).trigger("urlroute");
+      } else if (result === false) {
+        console.log("URL doesn't match any routes.");
+        this.navigate(currentUrl, {
+          replace: true
+        });
+      }
+      return false;
+    }
+  });
+});

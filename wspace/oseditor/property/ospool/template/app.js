@@ -1,1 +1,54 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){var r="",i;return r+="\r\n    <header>"+a((i=e&&e.name,typeof i===u?i.apply(e):i))+" ("+a((i=e&&e.address,typeof i===u?i.apply(e):i))+')</header>\r\n    <section class="group">\r\n        <dl class="dl-vertical">\r\n            <dt>Status</dt><dd class="os-status os-status-'+a((i=e&&e.status,typeof i===u?i.apply(e):i))+'">'+a(n.emptyStr.call(e,e&&e.status,{hash:{},data:t}))+"</dd>\r\n            <dt>Weight</dt><dd>"+a(n.emptyStr.call(e,e&&e.weight,{hash:{},data:t}))+"</dd>\r\n        </dl>\r\n    </section>\r\n",r}function c(e,t){return'\r\n    <div class="os-property-message">\r\n        No Member\r\n    </div>\r\n'}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div class="option-group-head expand">\r\n    Pool Details\r\n</div>\r\n<div class="option-group pool-details">\r\n    <dl class="dl-vertical">\r\n        <dt>Name</dt><dd>'+a(n.emptyStr.call(t,t&&t.name,{hash:{},data:i}))+"</dd>\r\n        <dt>Description</dt><dd>"+a(n.emptyStr.call(t,t&&t.description,{hash:{},data:i}))+"</dd>\r\n        <dt>ID</dt><dd>"+a(n.emptyStr.call(t,t&&t.id,{hash:{},data:i}))+'</dd>\r\n        <dt>Status</dt><dd class="os-status os-status-'+a((o=t&&t.status,typeof o===u?o.apply(t):o))+'">'+a(n.emptyStr.call(t,t&&t.status,{hash:{},data:i}))+"</dd>\r\n        <dt>Subnet ID</dt><dd>"+a(n.emptyStr.call(t,t&&t.subnet_id,{hash:{},data:i}))+"</dd>\r\n        <dt>Protocol</dt><dd>"+a(n.emptyStr.call(t,t&&t.protocol,{hash:{},data:i}))+"</dd>\r\n        <dt>LB Method</dt><dd>"+a(n.emptyStr.call(t,t&&t.lb_method,{hash:{},data:i}))+"</dd>\r\n        <dt>Provider</dt><dd>"+a(n.emptyStr.call(t,t&&t.provider,{hash:{},data:i}))+'</dd>\r\n    </dl>\r\n</div>\r\n\r\n<div class="option-group-head expand">\r\n    Member('+a((o=(o=t&&t.members,o==null||o===!1?o:o.length),typeof o===u?o.apply(t):o))+')\r\n</div>\r\n<div class="option-group ">\r\n',o=n.each.call(t,t&&t.members,{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;return s+="\r\n</div>",s};return e.template(t)});
+define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n    <header>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ("
+    + escapeExpression(((stack1 = (depth0 && depth0.address)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</header>\r\n    <section class=\"group\">\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Status</dt><dd class=\"os-status os-status-"
+    + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.status), {hash:{},data:data}))
+    + "</dd>\r\n            <dt>Weight</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.weight), {hash:{},data:data}))
+    + "</dd>\r\n        </dl>\r\n    </section>\r\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "\r\n    <div class=\"os-property-message\">\r\n        No Member\r\n    </div>\r\n";
+  }
+
+  buffer += "<div class=\"option-group-head expand\">\r\n    Pool Details\r\n</div>\r\n<div class=\"option-group pool-details\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Name</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>Description</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>ID</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>Status</dt><dd class=\"os-status os-status-"
+    + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.status), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>Subnet ID</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.subnet_id), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>Protocol</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.protocol), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>LB Method</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.lb_method), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>Provider</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.provider), {hash:{},data:data}))
+    + "</dd>\r\n    </dl>\r\n</div>\r\n\r\n<div class=\"option-group-head expand\">\r\n    Member("
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.members)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")\r\n</div>\r\n<div class=\"option-group \">\r\n";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.members), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });

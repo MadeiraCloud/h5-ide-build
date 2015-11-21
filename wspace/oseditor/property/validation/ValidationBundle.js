@@ -1,1 +1,1 @@
-define(["./oselb","./ossg","./osport","./osserver","./ossubnet","./osrouter","./osnetwork","./volume"],function(){});
+define(['./oselb', './ossg', './osport', './osserver', './ossubnet', './osrouter', './osnetwork', './volume'], function() {});

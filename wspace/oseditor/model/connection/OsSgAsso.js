@@ -1,1 +1,5 @@
-define(["ConnectionModel","constant"],function(e,t){return e.extend({type:"OsSgAsso"})});
+define(["ConnectionModel", "constant"], function(ConnectionModel, constant) {
+  return ConnectionModel.extend({
+    type: "OsSgAsso"
+  });
+});

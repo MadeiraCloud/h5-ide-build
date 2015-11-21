@@ -1,1 +1,49 @@
-define(["ComplexResModel","constant","Design"],function(e,t,n){var r;return r=e.extend({type:t.RESTYPE.OSFIP,newNameTmpl:"float-ip",serialize:function(){var e,n,r,i,s;r=this.connectionTargets("OsFloatIpUsage")[0];if(!r)return;return s=r.getRouter(),e=s?s.get("extNetworkId"):"",i=r.createRef(r.type===t.RESTYPE.OSLISTENER?"port_id":"id"),n=r.createRef(r.type===t.RESTYPE.OSLISTENER?"address":"fixed_ips.0.ip_address"),{component:{name:this.get("name"),type:this.type,uid:this.id,resource:{id:this.get("appId"),fixed_ip_address:n,floating_ip_address:this.get("address")||"",port_id:i,floating_network_id:e}}}}},{handleTypes:t.RESTYPE.OSFIP,deserialize:function(e,t,i){var s,o,u;o=new r({id:e.uid,name:e.resource.name,appId:e.resource.id,address:e.resource.floating_ip_address}),u=i(MC.extractID(e.resource.port_id)),u&&(s=n.modelClassForType("OsFloatIpUsage"),new s(o,u))}}),r});
+define(["ComplexResModel", "constant", "Design"], function(ComplexResModel, constant, Design) {
+  var Model;
+  Model = ComplexResModel.extend({
+    type: constant.RESTYPE.OSFIP,
+    newNameTmpl: "float-ip",
+    serialize: function() {
+      var extNetworkId, fixed_ip_address, port, port_id, rt;
+      port = this.connectionTargets("OsFloatIpUsage")[0];
+      if (!port) {
+        return;
+      }
+      rt = port.getRouter();
+      extNetworkId = rt ? rt.get("extNetworkId") : "";
+      port_id = port.createRef(port.type === constant.RESTYPE.OSLISTENER ? "port_id" : "id");
+      fixed_ip_address = port.createRef(port.type === constant.RESTYPE.OSLISTENER ? "address" : "fixed_ips.0.ip_address");
+      return {
+        component: {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            id: this.get("appId"),
+            fixed_ip_address: fixed_ip_address,
+            floating_ip_address: this.get("address") || '',
+            port_id: port_id,
+            floating_network_id: extNetworkId
+          }
+        }
+      };
+    }
+  }, {
+    handleTypes: constant.RESTYPE.OSFIP,
+    deserialize: function(data, layout_data, resolve) {
+      var IpUsage, fip, port;
+      fip = new Model({
+        id: data.uid,
+        name: data.resource.name,
+        appId: data.resource.id,
+        address: data.resource.floating_ip_address
+      });
+      port = resolve(MC.extractID(data.resource.port_id));
+      if (port) {
+        IpUsage = Design.modelClassForType("OsFloatIpUsage");
+        new IpUsage(fip, port);
+      }
+    }
+  });
+  return Model;
+});

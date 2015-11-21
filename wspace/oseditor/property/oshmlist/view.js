@@ -1,1 +1,145 @@
-define(["constant","../OsPropertyView","./stack","./app","CloudResources","../oshm/view","UI.selection","../validation/ValidationBase"],function(e,t,n,r,i,s,o,u){return t.extend({events:{"change .selection[data-target]":"updateAttribute","select_dropdown_button_click .item-list":"addItem","click .item-list .item":"editItem","click .item-readable-list .item":"viewItem","click .item-list .item .item-remove":"removeItem"},initialize:function(e){var t;return this.targetModel=e.targetModel,this.isApp=e.isApp,this.isApp&&(this.appModelList=this.targetModel,delete this.targetModel),t=this,this.selectTpl={button:function(){return t.getTpl().addButton()},getItem:function(e){return t.getTpl().item(t.getItemData(e))}}},getModelForMode:function(){return this.targetModel},getItemData:function(e){return Design.instance().component(e.value).toJSON()},getAppData:function(){var t;return t=Design.modelClassForType(e.RESTYPE.OSHM),_.map(this.appModelList,function(e){var n,r;return n=e.toJSON(),r=t.find(function(e){return e.get("appId")===n.id}),n.name=r!=null?r.get("name"):void 0,n})},getSingleAppData:function(e){return _.findWhere(this.getAppData(),{id:e})},getTpl:function(){return this.isApp?r:n},render:function(){var t;return t=u.getClass(e.RESTYPE.OSHM),o(this.$el,this.selectTpl,new t({view:this})),this.isApp?this.renderApp():this.refreshList(),this},refreshList:function(){var e;return e=this.targetModel.get("healthMonitors").map(function(e){return e.toJSON()}),this.$el.html(this.getTpl().stack({activeList:this.targetModel.get("healthMonitors").map(function(e){return e.id}).join(","),list:e,mustShowList:!this.isApp}))},renderApp:function(){return this.$el.html(this.getTpl().stack({list:this.getAppData()}))},getSelectItemModel:function(e){var t;return t=e.data("value"),Design.instance().component(t)},updateAttribute:function(e){var t,n,r;return t=$(e.currentTarget),n=t.data("target"),r=t.getValue()},addItem:function(e,t){var n,r;return r=this.targetModel.addNewHm(t),this.refreshList(),n=this.$el.find('.item-list .item[data-value="'+r.get("id")+'"]'),n.click()},editItem:function(e){var t,n,r;return t=$(e.currentTarget),n=this.getSelectItemModel(t),r=this.reg(new s({model:n,isApp:this.isApp})),this.listenTo(n,"change",this.refreshList),this.showFloatPanel(r.render().el)},viewItem:function(e){var t,n,r,i;return t=$(e.currentTarget),$(".item-readable-list .item").removeClass("focus"),t.addClass("focus"),n=t.data("id"),r=this.getSingleAppData(n),i=this.reg(new s({modelData:r,isApp:this.isApp})),this.showFloatPanel(i.render().el)},removeItem:function(e){var t,n;return t=$(e.currentTarget),n=t.closest(".item").data("value"),this.targetModel.removeHm(n),this.refreshList(),this.hideFloatPanel(),!1}},{handleTypes:["ossglist"],handleModes:["stack","appedit"]})});
+define(['constant', '../OsPropertyView', './stack', './app', 'CloudResources', '../oshm/view', 'UI.selection', '../validation/ValidationBase'], function(constant, OsPropertyView, TplStack, TplApp, CloudResources, HmView, bindSelection, ValidationBase) {
+  return OsPropertyView.extend({
+    events: {
+      "change .selection[data-target]": "updateAttribute",
+      "select_dropdown_button_click .item-list": "addItem",
+      "click .item-list .item": "editItem",
+      "click .item-readable-list .item": "viewItem",
+      "click .item-list .item .item-remove": "removeItem"
+    },
+    initialize: function(options) {
+      var that;
+      this.targetModel = options.targetModel;
+      this.isApp = options.isApp;
+      if (this.isApp) {
+        this.appModelList = this.targetModel;
+        delete this.targetModel;
+      }
+      that = this;
+      return this.selectTpl = {
+        button: function() {
+          return that.getTpl().addButton();
+        },
+        getItem: function(item) {
+          return that.getTpl().item(that.getItemData(item));
+        }
+      };
+    },
+    getModelForMode: function() {
+      return this.targetModel;
+    },
+    getItemData: function(item) {
+      return Design.instance().component(item.value).toJSON();
+    },
+    getAppData: function() {
+      var HmClass;
+      HmClass = Design.modelClassForType(constant.RESTYPE.OSHM);
+      return _.map(this.appModelList, function(model) {
+        var json, oshm;
+        json = model.toJSON();
+        oshm = HmClass.find(function(hm) {
+          return hm.get('appId') === json.id;
+        });
+        json.name = oshm != null ? oshm.get('name') : void 0;
+        return json;
+      });
+    },
+    getSingleAppData: function(id) {
+      return _.findWhere(this.getAppData(), {
+        id: id
+      });
+    },
+    getTpl: function() {
+      if (this.isApp) {
+        return TplApp;
+      } else {
+        return TplStack;
+      }
+    },
+    render: function() {
+      var HMValid;
+      HMValid = ValidationBase.getClass(constant.RESTYPE.OSHM);
+      bindSelection(this.$el, this.selectTpl, new HMValid({
+        view: this
+      }));
+      if (this.isApp) {
+        this.renderApp();
+      } else {
+        this.refreshList();
+      }
+      return this;
+    },
+    refreshList: function() {
+      var list;
+      list = this.targetModel.get("healthMonitors").map(function(hm) {
+        return hm.toJSON();
+      });
+      return this.$el.html(this.getTpl().stack({
+        activeList: this.targetModel.get("healthMonitors").map(function(hm) {
+          return hm.id;
+        }).join(','),
+        list: list,
+        mustShowList: !this.isApp
+      }));
+    },
+    renderApp: function() {
+      return this.$el.html(this.getTpl().stack({
+        list: this.getAppData()
+      }));
+    },
+    getSelectItemModel: function($item) {
+      var uid;
+      uid = $item.data('value');
+      return Design.instance().component(uid);
+    },
+    updateAttribute: function(event) {
+      var $target, attr, value;
+      $target = $(event.currentTarget);
+      attr = $target.data('target');
+      return value = $target.getValue();
+    },
+    addItem: function(event, value) {
+      var $newItem, monitor;
+      monitor = this.targetModel.addNewHm(value);
+      this.refreshList();
+      $newItem = this.$el.find('.item-list .item[data-value="' + monitor.get('id') + '"]');
+      return $newItem.click();
+    },
+    editItem: function(event) {
+      var $target, model, view;
+      $target = $(event.currentTarget);
+      model = this.getSelectItemModel($target);
+      view = this.reg(new HmView({
+        model: model,
+        isApp: this.isApp
+      }));
+      this.listenTo(model, 'change', this.refreshList);
+      return this.showFloatPanel(view.render().el);
+    },
+    viewItem: function(event) {
+      var $target, id, modelData, view;
+      $target = $(event.currentTarget);
+      $('.item-readable-list .item').removeClass('focus');
+      $target.addClass('focus');
+      id = $target.data('id');
+      modelData = this.getSingleAppData(id);
+      view = this.reg(new HmView({
+        modelData: modelData,
+        isApp: this.isApp
+      }));
+      return this.showFloatPanel(view.render().el);
+    },
+    removeItem: function(event) {
+      var $target, id;
+      $target = $(event.currentTarget);
+      id = $target.closest('.item').data('value');
+      this.targetModel.removeHm(id);
+      this.refreshList();
+      this.hideFloatPanel();
+      return false;
+    }
+  }, {
+    handleTypes: ['ossglist'],
+    handleModes: ['stack', 'appedit']
+  });
+});

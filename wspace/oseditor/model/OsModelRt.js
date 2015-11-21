@@ -1,1 +1,67 @@
-define(["ComplexResModel","constant","Design"],function(e,t,n){var r;return r=e.extend({type:t.RESTYPE.OSRT,newNameTmpl:"router",defaults:{nat:!1,extNetworkId:"",publicip:""},isPublic:function(){return!!this.get("extNetworkId")},serialize:function(){var e;return this.get("extNetworkId")?e={network_id:this.get("extNetworkId")}:e={},{layout:this.generateLayout(),component:{name:this.get("name"),type:this.type,uid:this.id,resource:{id:this.get("appId"),name:this.get("name"),nat:this.get("extNetworkId")?this.get("nat"):!1,external_gateway_info:e,router_interface:this.connectionTargets("OsRouterAsso").map(function(e){return{subnet_id:e.createRef("id")}}),public_ip:this.get("publicip")}}}}},{handleTypes:t.RESTYPE.OSRT,deserialize:function(e,t,i){var s,o,u,a,f,l;o=new r({id:e.uid,name:e.resource.name,appId:e.resource.id,nat:e.resource.nat,extNetworkId:(e.resource.external_gateway_info||{}).network_id||"",publicip:e.resource.public_ip,x:t.coordinate[0],y:t.coordinate[1]}),s=n.modelClassForType("OsRouterAsso"),l=e.resource.router_interface;for(a=0,f=l.length;a<f;a++)u=l[a],new s(o,i(MC.extractID(u.subnet_id)))}}),r});
+define(["ComplexResModel", "constant", "Design"], function(ComplexResModel, constant, Design) {
+  var Model;
+  Model = ComplexResModel.extend({
+    type: constant.RESTYPE.OSRT,
+    newNameTmpl: "router",
+    defaults: {
+      nat: false,
+      extNetworkId: "",
+      publicip: ""
+    },
+    isPublic: function() {
+      return !!this.get("extNetworkId");
+    },
+    serialize: function() {
+      var extNetwork;
+      if (this.get("extNetworkId")) {
+        extNetwork = {
+          network_id: this.get("extNetworkId")
+        };
+      } else {
+        extNetwork = {};
+      }
+      return {
+        layout: this.generateLayout(),
+        component: {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            id: this.get("appId"),
+            name: this.get("name"),
+            nat: this.get("extNetworkId") ? this.get("nat") : false,
+            external_gateway_info: extNetwork,
+            router_interface: this.connectionTargets("OsRouterAsso").map(function(subnet) {
+              return {
+                subnet_id: subnet.createRef("id")
+              };
+            }),
+            public_ip: this.get("publicip")
+          }
+        }
+      };
+    }
+  }, {
+    handleTypes: constant.RESTYPE.OSRT,
+    deserialize: function(data, layout_data, resolve) {
+      var Asso, router, subnet, _i, _len, _ref;
+      router = new Model({
+        id: data.uid,
+        name: data.resource.name,
+        appId: data.resource.id,
+        nat: data.resource.nat,
+        extNetworkId: (data.resource.external_gateway_info || {}).network_id || "",
+        publicip: data.resource.public_ip,
+        x: layout_data.coordinate[0],
+        y: layout_data.coordinate[1]
+      });
+      Asso = Design.modelClassForType("OsRouterAsso");
+      _ref = data.resource.router_interface;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        subnet = _ref[_i];
+        new Asso(router, resolve(MC.extractID(subnet.subnet_id)));
+      }
+    }
+  });
+  return Model;
+});

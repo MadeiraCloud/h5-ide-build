@@ -1,1 +1,39 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){return"App"}function c(e,t){return"Stack"}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this,a="function",f=this.escapeExpression;s+='<section class="group required">\r\n    <label class="name">',o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:u.program(3,c,i),fn:u.program(1,l,i),data:i});if(o||o===0)s+=o;s+=' Name</label>\r\n    <input data-target="name" class="selection string" value="'+f((o=t&&t.name,typeof o===a?o.apply(t):o))+'"/>\r\n</section>\r\n\r\n<section class="group">\r\n    <label class="name">',o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:u.program(3,c,i),fn:u.program(1,l,i),data:i});if(o||o===0)s+=o;s+=' Description</label>\r\n    <input data-target="description" class="selection string" value="'+f((o=t&&t.description,typeof o===a?o.apply(t):o))+'"/>\r\n</section>\r\n\r\n<section class="group">\r\n    <dl class="dl-horizontal">\r\n        <dt>Platform</dt><dd>'+f((o=t&&t.platform,typeof o===a?o.apply(t):o))+"</dd>\r\n        <dt>Region</dt><dd>"+f((o=t&&t.region,typeof o===a?o.apply(t):o))+"</dd>\r\n        <dt>",o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:u.program(3,c,i),fn:u.program(1,l,i),data:i});if(o||o===0)s+=o;return s+=" ID</dt><dd>"+f((o=t&&t.id,typeof o===a?o.apply(t):o))+"</dd>\r\n    </dl>\r\n</section>",s};return e.template(t)});
+define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  
+  return "App";
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "Stack";
+  }
+
+  buffer += "<section class=\"group required\">\r\n    <label class=\"name\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " Name</label>\r\n    <input data-target=\"name\" class=\"selection string\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <label class=\"name\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " Description</label>\r\n    <input data-target=\"description\" class=\"selection string\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <dl class=\"dl-horizontal\">\r\n        <dt>Platform</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.platform)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n        <dt>Region</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n        <dt>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ID</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n    </dl>\r\n</section>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });

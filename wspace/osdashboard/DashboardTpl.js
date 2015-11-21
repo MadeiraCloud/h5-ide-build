@@ -1,1 +1,210 @@
-define(["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div>\n\n<header class="dash-header">\n  <button class="icon-refresh" id="OsReloadResource">'+o(n.i18n.call(t,"DASH_TPL_JUST_NOW",{hash:{},data:i}))+'</button>\n  <button class="btn btn-primary icon-new-stack">'+o(n.i18n.call(t,"DASH_CREATE_NEW_STACK",{hash:{},data:i}))+'</button>\n\n  <button id="ImportStack" class="btn btn-primary icon-import" data-analytics-plus="import_json">'+o(n.i18n.call(t,"DASH_IMPORT_JSON",{hash:{},data:i}))+'</button>\n\n  <button id="VisualizeApp" class="btn btn-blue icon-visualize" data-analytics-plus="visualize_vpc">'+o(n.i18n.call(t,"DASH_VISUALIZE_APP",{hash:{},data:i}))+'\n  </button>\n\n</header>\n\n<div class="dash-body nano"> <div class="nano-content">\n\n  <section class="dash-ops-list-wrapper">\n    <nav>\n      <button class="on stack ops-list-switcher"><span class="count"></span> <small>'+o(n.i18n.call(t,"DASH_LBL_STACK",{hash:{},data:i}))+'</small></button>\n      <button class="ops-list-switcher"><span class="count">0</span> <small>'+o(n.i18n.call(t,"DASH_LBL_APP",{hash:{},data:i}))+'</small></button>\n    </nav>\n    <ul class="clearfix dash-ops-list"></ul>\n  </section>\n  <section class="dash-ops-resource-list"></section>\n\n</div></div>\n\n</div>',s},n.frame=e.template(t),t=function(e,t,n,r,i){function f(e,t){var r="",i;r+='<li data-id="'+a((i=e&&e.id,typeof i===u?i.apply(e):i))+'">',i=n["if"].call(e,e&&e.progressing,{hash:{},inverse:o.program(5,h,t),fn:o.program(2,l,t),data:t});if(i||i===0)r+=i;return r+="</li>\n",r}function l(e,t){var r="",i;r+='\n  <div class="thumbnail app-thumbnail"></div>\n  <div class="region-resource-progess',i=n.unless.call(e,e&&e.progress,{hash:{},inverse:o.noop,fn:o.program(3,c,t),data:t});if(i||i===0)r+=i;return r+='" style="width:'+a((i=e&&e.progress,typeof i===u?i.apply(e):i))+'%;"></div>\n  <div class="region-resource-info truncate">\n      <div class="loading-spinner loading-spinner-small"></div>'+a((i=e&&e.name,typeof i===u?i.apply(e):i))+" - "+a((i=e&&e.stateDesc,typeof i===u?i.apply(e):i))+"...\n  </div>\n",r}function c(e,t){return" hide"}function h(e,t){var r="",i;r+="\n  ",i=n["if"].call(e,e&&e.usage,{hash:{},inverse:o.noop,fn:o.program(6,p,t),data:t});if(i||i===0)r+=i;r+='\n  <div class="thumbnail app-thumbnail"><img src="'+a((i=e&&e.thumbnail,typeof i===u?i.apply(e):i))+'" ',i=n.unless.call(e,e&&e.thumbnail,{hash:{},inverse:o.noop,fn:o.program(8,d,t),data:t});if(i||i===0)r+=i;r+='/></div>\n  <div class="region-resource-info">\n    <i class="icon-terminate terminate-app role-observer-hidden"></i>\n    ',i=n.ifCond.call(e,e&&e.stateDesc,"Running",{hash:{},inverse:o.program(12,m,t),fn:o.program(10,v,t),data:t});if(i||i===0)r+=i;r+='\n    <span class="',i=n.ifCond.call(e,e&&e.stateDesc,"Running",{hash:{},inverse:o.program(16,y,t),fn:o.program(14,g,t),data:t});if(i||i===0)r+=i;return r+=' truncate">'+a((i=e&&e.name,typeof i===u?i.apply(e):i))+"</span>\n  </div>\n",r}function p(e,t){var n="",r;return n+='<i class="icon-app-type-'+a((r=e&&e.usage,typeof r===u?r.apply(e):r))+'"></i>',n}function d(e,t){return'class="hide"'}function v(e,t){return'<i class="icon-stop stop-app role-observer-hidden"></i>'}function m(e,t){return'<i class="icon-play start-app role-observer-hidden"></i>'}function g(e,t){return"running"}function y(e,t){return"stopped"}function b(e,t){var r="";return r+='\n  <div class="blank-widget"><div>'+a(n.i18n.call(e,"DASH_LBL_NO_APP",{hash:{},data:t}))+"</div></div>\n",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o=this,u="function",a=this.escapeExpression;return s=n.each.call(t,t,{hash:{},inverse:o.program(18,b,i),fn:o.program(1,f,i),data:i}),s||s===0?s:""},n.appList=e.template(t),t=function(e,t,n,r,i){function f(e,t){var r="",i;r+='<li data-id="'+u((i=e&&e.id,typeof i===o?i.apply(e):i))+'">\n    <div class="thumbnail"><img src="'+u((i=e&&e.thumbnail,typeof i===o?i.apply(e):i))+'" ',i=n.unless.call(e,e&&e.thumbnail,{hash:{},inverse:a.noop,fn:a.program(2,l,t),data:t});if(i||i===0)r+=i;return r+='/></div>\n    <div class="region-resource-info">\n      <i class="icon-delete delete-stack role-observer-hidden"></i>\n      <i class="icon-duplicate duplicate-stack role-observer-hidden"></i>\n      <span class="truncate">'+u((i=e&&e.name,typeof i===o?i.apply(e):i))+"</span>\n    </div>\n  </li>\n",r}function l(e,t){return'class="hide"'}function c(e,t){var r="";return r+='\n  <div class="blank-widget"><div>'+u(n.i18n.call(e,"DASH_LBL_NO_STACK",{hash:{},data:t}))+"</div></div>\n",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o="function",u=this.escapeExpression,a=this;return s=n.each.call(t,t,{hash:{},inverse:a.program(4,c,i),fn:a.program(1,f,i),data:i}),s||s===0?s:""},n.stackList=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div id="modal-import-json-dropzone">'+o(n.i18n.call(t,"POP_IMPORT_DROP_LBL",{hash:{},data:i}))+'<label for="modal-import-json-file" class="select-file-link">'+o(n.i18n.call(t,"POP_IMPORT_SELECT_LBL",{hash:{},data:i}))+'</label><input type="file" id="modal-import-json-file"></div>\n<div id="import-json-error"></div>',s},n.importJSON=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<nav class="clearfix resource-list-nav">\n  <div class="resource-tab servers on" data-type="OSSERVER">\n    <svg class="quota-chart" viewbox="0 0 282 282">\n      <path class="quota-path" d="M48.6 221.4a125 125 0 1 1 176.8 0"/>\n      <path class="quota-path usage" d="M48.6 221.4a125 125 0 1 1 176.8 0" stroke-dashoffset="589.1"/>\n    </svg>\n    <span class="resource-count">Server</span>\n    <p class="count"><span class="count-usage">-</span><span class="count-quota">-</span></p>\n  </div>\n  <div class="resource-tab volumes" data-type="OSVOL">\n    <svg class="quota-chart" viewbox="0 0 282 282">\n      <path class="quota-path" d="M48.6 221.4a125 125 0 1 1 176.8 0"/>\n      <path class="quota-path usage" d="M48.6 221.4a125 125 0 1 1 176.8 0" stroke-dashoffset="589.1"/>\n    </svg>\n    <span class="resource-count">Volume</span>\n    <p class="count"><span class="count-usage">-</span><span class="count-quota">-</span></p>\n  </div>\n  <div class="resource-tab snaps" data-type="OSSNAP">\n    <svg class="quota-chart" viewbox="0 0 282 282">\n      <path class="quota-path" d="M48.6 221.4a125 125 0 1 1 176.8 0"/>\n      <path class="quota-path usage" d="M48.6 221.4a125 125 0 1 1 176.8 0" stroke-dashoffset="589.1"/>\n    </svg>\n    <span class="resource-count">Snapshot</span>\n    <p class="count"><span class="count-usage">-</span><span class="count-quota">-</span></p>\n  </div>\n  <div class="resource-tab fips" data-type="OSFIP">\n    <svg class="quota-chart" viewbox="0 0 282 282">\n      <path class="quota-path" d="M48.6 221.4a125 125 0 1 1 176.8 0"/>\n      <path class="quota-path usage" d="M48.6 221.4a125 125 0 1 1 176.8 0" stroke-dashoffset="589.1"/>\n    </svg>\n    <span class="resource-count">Floating IP</span>\n    <p class="count"><span class="count-usage">-</span><span class="count-quota">-</span></p>\n  </div>\n  <div class="resource-tab rts" data-type="OSRT">\n    <svg class="quota-chart" viewbox="0 0 282 282">\n      <path class="quota-path" d="M48.6 221.4a125 125 0 1 1 176.8 0"/>\n      <path class="quota-path usage" d="M48.6 221.4a125 125 0 1 1 176.8 0" stroke-dashoffset="589.1"/>\n    </svg>\n    <span class="resource-count">Router</span>\n    <p class="count"><span class="count-usage">-</span><span class="count-quota">-</span></p>\n  </div>\n  <div class="resource-tab elbs" data-type="OSLISTENER">\n    <svg class="quota-chart" viewbox="0 0 282 282">\n      <path class="quota-path" d="M48.6 221.4a125 125 0 1 1 176.8 0"/>\n      <path class="quota-path usage" d="M48.6 221.4a125 125 0 1 1 176.8 0" stroke-dashoffset="589.1"/>\n    </svg>\n    <span class="resource-count">Load Balancer</span>\n    <p class="count"><span class="count-usage">-</span><span class="count-quota">-</span></p>\n  </div>\n</nav>\n<div class="resource-list-body table-head-fix"></div>'},n.resourceList=e.template(t),n});
+define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div>\n\n<header class=\"dash-header\">\n  <button class=\"icon-refresh\" id=\"OsReloadResource\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
+    + "</button>\n  <button class=\"btn btn-primary icon-new-stack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
+    + "</button>\n\n  <button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
+    + "</button>\n\n  <button id=\"VisualizeApp\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_APP", {hash:{},data:data}))
+    + "\n  </button>\n\n</header>\n\n<div class=\"dash-body nano\"> <div class=\"nano-content\">\n\n  <section class=\"dash-ops-list-wrapper\">\n    <nav>\n      <button class=\"on stack ops-list-switcher\"><span class=\"count\"></span> <small>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}))
+    + "</small></button>\n      <button class=\"ops-list-switcher\"><span class=\"count\">0</span> <small>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
+    + "</small></button>\n    </nav>\n    <ul class=\"clearfix dash-ops-list\"></ul>\n  </section>\n  <section class=\"dash-ops-resource-list\"></section>\n\n</div></div>\n\n</div>";
+  return buffer;
+  };
+TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"thumbnail app-thumbnail\"></div>\n  <div class=\"region-resource-progess";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" style=\"width:"
+    + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "%;\"></div>\n  <div class=\"region-resource-info truncate\">\n      <div class=\"loading-spinner loading-spinner-small\"></div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " - "
+    + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "...\n  </div>\n";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  return " hide";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  <div class=\"thumbnail app-thumbnail\"><img src=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/></div>\n  <div class=\"region-resource-info\">\n    <i class=\"icon-terminate terminate-app role-observer-hidden\"></i>\n    ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <span class=\"";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " truncate\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n  </div>\n";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<i class=\"icon-app-type-"
+    + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></i>";
+  return buffer;
+  }
+
+function program8(depth0,data) {
+  
+  
+  return "class=\"hide\"";
+  }
+
+function program10(depth0,data) {
+  
+  
+  return "<i class=\"icon-stop stop-app role-observer-hidden\"></i>";
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "<i class=\"icon-play start-app role-observer-hidden\"></i>";
+  }
+
+function program14(depth0,data) {
+  
+  
+  return "running";
+  }
+
+function program16(depth0,data) {
+  
+  
+  return "stopped";
+  }
+
+function program18(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n  <div class=\"blank-widget\"><div>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NO_APP", {hash:{},data:data}))
+    + "</div></div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(18, program18, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.appList=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n    <div class=\"thumbnail\"><img src=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack role-observer-hidden\"></i>\n      <i class=\"icon-duplicate duplicate-stack role-observer-hidden\"></i>\n      <span class=\"truncate\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n    </div>\n  </li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "class=\"hide\"";
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n  <div class=\"blank-widget\"><div>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NO_STACK", {hash:{},data:data}))
+    + "</div></div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.stackList=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div id=\"modal-import-json-dropzone\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_LBL", {hash:{},data:data}))
+    + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>";
+  return buffer;
+  };
+TEMPLATE.importJSON=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<nav class=\"clearfix resource-list-nav\">\n  <div class=\"resource-tab servers on\" data-type=\"OSSERVER\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Server</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab volumes\" data-type=\"OSVOL\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Volume</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab snaps\" data-type=\"OSSNAP\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Snapshot</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab fips\" data-type=\"OSFIP\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Floating IP</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab rts\" data-type=\"OSRT\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Router</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab elbs\" data-type=\"OSLISTENER\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Load Balancer</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n</nav>\n<div class=\"resource-list-body table-head-fix\"></div>";
+  };
+TEMPLATE.resourceList=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });

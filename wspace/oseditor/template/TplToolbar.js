@@ -1,1 +1,328 @@
-define(["handlebars"],function(e){var t,n={confirm:{},modal:{},"export":{}};return t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="btn-toolbar icon-zoom-in tooltip" data-tooltip=\''+o(n.i18n.call(t,"TOOLBAR.TIP_ZOOM_IN",{hash:{},data:i}))+"'></button>\n<button class=\"btn-toolbar icon-zoom-out seperator tooltip\" data-tooltip='"+o(n.i18n.call(t,"TOOLBAR.TIP_ZOOM_OUT",{hash:{},data:i}))+"'></button>",s},n.BtnZoom=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="btn-toolbar icon-play tooltip toolbar-btn-primary runApp role-observer-hidden" data-tooltip=\''+o(n.i18n.call(t,"TOOLBAR.TIP_BTN_RUN_STACK",{hash:{},data:i}))+"'>"+o(n.i18n.call(t,"TOOLBAR.BTN_RUN_STACK",{hash:{},data:i}))+"</button>",s},n.BtnRunStack=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="btn-toolbar tooltip icon-save role-observer-hidden" data-tooltip=\''+o(n.i18n.call(t,"TOOLBAR.TIP_SAVE_STACK",{hash:{},data:i}))+"'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator role-observer-hidden\" data-tooltip='"+o(n.i18n.call(t,"TOOLBAR.TIP_DELETE_STACK",{hash:{},data:i}))+"'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate role-observer-hidden\" data-tooltip='"+o(n.i18n.call(t,"TOOLBAR.TIP_DUPLICATE_STACK",{hash:{},data:i}))+"'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator role-observer-hidden\" data-tooltip='"+o(n.i18n.call(t,"TOOLBAR.TIP_CREATE_STACK",{hash:{},data:i}))+"'></button>",s},n.BtnStackOps=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="selectbox btn-toolbar seperator">\n  <button class="selection tooltip icon-send" data-tooltip=\''+o(n.i18n.call(t,"TOOLBAR.EXPORT",{hash:{},data:i}))+'\'></button>\n  <ul class="dropdown">\n    <li data-analytics-plus="export_png" class="icon-export-png">'+o(n.i18n.call(t,"TOOLBAR.EXPORT_AS_PNG",{hash:{},data:i}))+'</li>\n    <li data-analytics-plus="export_json" class="icon-export-json">'+o(n.i18n.call(t,"TOOLBAR.EXPORT_AS_JSON",{hash:{},data:i}))+"</li>\n  </ul>\n</div>",s},n.BtnExport=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="tooltip btn-toolbar icon-update-app toolbar-btn-primary role-observer-hidden" data-tooltip="'+o(n.i18n.call(t,"TOOLBAR.TIP_UPDATE_APP",{hash:{},data:i}))+'">'+o(n.i18n.call(t,"TOOLBAR.EDIT_APP",{hash:{},data:i}))+'</button>\n<button class="tooltip btn-toolbar icon-apply-app toolbar-btn-primary role-observer-hidden" data-tooltip="'+o(n.i18n.call(t,"TOOLBAR.TIP_SAVE_UPDATE_APP",{hash:{},data:i}))+'">'+o(n.i18n.call(t,"TOOLBAR.APPLY_EDIT",{hash:{},data:i}))+'</button>\n<button class="tooltip btn-toolbar icon-cancel-update-app seperator role-observer-hidden" data-tooltip="'+o(n.i18n.call(t,"TOOLBAR.TIP_CANCEL_UPDATE_APP",{hash:{},data:i}))+'"></button>',s},n.BtnEditApp=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression;s+='<button class="tooltip btn-toolbar icon-stop role-observer-hidden" data-tooltip="'+u(n.i18n.call(t,"TOOLBAR.TIP_STOP_APP",{hash:{},data:i}))+'"></button>\n<button class="tooltip btn-toolbar icon-play startApp role-observer-hidden" data-tooltip="'+u(n.i18n.call(t,"TOOLBAR.TIP_START_APP",{hash:{},data:i}))+'"><span style="display: none">'+u(n.i18n.call(t,"TOOLBAR.START_APP",{hash:{},data:i}))+'</span></button>\n<button class="btn-toolbar tooltip icon-terminate seperator role-observer-hidden" data-tooltip="',o=n.i18n.call(t,"TOOLBAR.TIP_TERMINATE_APP",{hash:{},data:i});if(o||o===0)s+=o;return s+='"></button>\n<button class="btn-toolbar tooltip icon-save-app seperator role-observer-hidden" data-tooltip=\''+u(n.i18n.call(t,"TOOLBAR.TIP_SAVE_APP_TO_STACK",{hash:{},data:i}))+"'></button>",s},n.BtnAppOps=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="btn-toolbar icon-export-png tooltip seperator" data-analytics-plus="export_png" data-tooltip=\''+o(n.i18n.call(t,"TOOLBAR.EXPORT_AS_PNG",{hash:{},data:i}))+"'></button>",s},n.BtnPng=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="btn-toolbar tooltip icon-refresh seperator" data-tooltip="'+o(n.i18n.call(t,"TOOLBAR.TIP_REFRESH_RESOURCES",{hash:{},data:i}))+'"></button>',s},n.BtnReloadRes=e.template(t),t=function(e,t,n,r,i){function f(e,t){return" on"}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this,a=this.escapeExpression;s+='<label class="switch toolbar-visual-ops-switch tooltip',o=n["if"].call(t,t&&t.stateOn,{hash:{},inverse:u.noop,fn:u.program(1,f,i),data:i});if(o||o===0)s+=o;return s+=' role-observer-hidden" data-tooltip="'+a(n.i18n.call(t,"TOOLBAR.TIP_CUSTOM_USER_DATA",{hash:{},data:i}))+'">\n    <span class="switch-label" data-on="'+a(n.i18n.call(t,"TOOLBAR.TOGGLE_VISUALOPS_ON",{hash:{},data:i}))+'" data-off="'+a(n.i18n.call(t,"TOOLBAR.TOGGLE_VISUALOPS_OFF",{hash:{},data:i}))+'"></span>\n    <span class="switch-handle"></span>\n</label>',s},n.BtnSwitchStates=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<button class="icon-reload tooltip btn btn-blue reload-states" data-original="Reload States" data-disabled="Initiating…"  data-tooltip="Instantly rerun all states in this app.">'+o(n.i18n.call(t,"TOOLBAR.RELOAD_STATES",{hash:{},data:i}))+"</button>",s},n.BtnReloadStates=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<header class="sidebar-title resource">\n    <a class="resource tooltip icon-resource" data-target="resource" data-tooltip="Resource (R)"></a>\n    <a class="config tooltip icon-config" data-target="config" data-tooltip="Stack Property (A)"></a>\n    <a class="property tooltip icon-property" data-target="property" data-tooltip="Property (P)"></a>\n    <a class="state tooltip icon-gear" data-target="state" data-tooltip="Instance State (S)">\n        <span class="state-count">99</span>\n    </a>\n</header>'},n.PanelHeaderStack=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<header class="sidebar-title resource" data-mode="app">\n    <a class="resource tooltip icon-resource" data-target="resource" data-tooltip="Resource (R)"></a>\n    <a class="config tooltip icon-config" data-target="config" data-tooltip="App Property (A)"></a>\n    <a class="property tooltip icon-property" data-target="property" data-tooltip="Property (P)"></a>\n    <a class="state tooltip icon-gear" data-target="state" data-tooltip="Instance State (S)">\n        <span class="state-count">99</span>\n    </a>\n</header>'},n.PanelHeaderApp=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="modal-text-wraper">\n    <div class="modal-center-align-helper">\n        <div class="modal-text-major">'+o(n.i18n.call(t,"TOOLBAR.CONFIRM_ENABLE_STATE",{hash:{},data:i}))+"</div>\n    </div>\n</div>",s},n.confirm.enableState=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="modal-text-wraper">\n    <div class="modal-center-align-helper">\n        <div class="modal-text-major">'+o(n.i18n.call(t,"TOOLBAR.CANCEL_UPDATE_CONFIRM",{hash:{},data:i}))+'</div>\n        <div class="modal-text-major">'+o(n.i18n.call(t,"TOOLBAR.DISCARD_UPDATE_CHANGE",{hash:{},data:i}))+"</div>\n    </div>\n</div>",s},n.modal.cancelUpdate=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function";return s+='<div class="modal-text-wraper">\n    <div class="modal-center-align-helper" style="padding:40px 20px;">\n        <div class="modal-text-major"></div>\n        <div class="modal-text-minor">'+u(n.i18n.call(t,"TOOLBAR.POP_BODY_EXPORT_AS_JSON",{hash:{},data:i}))+'</div>\n    </div>\n</div>\n<div class="modal-footer">\n    <a class="btn btn-blue" href="'+u((o=t&&t.data,typeof o===a?o.apply(t):o))+'" target="_blank">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_DOWNLOAD",{hash:{},data:i}))+'</a>\n    <button id="tpl-cancel" class="btn modal-close btn-silver">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.export.JSON=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="loading-spinner"></div>\n<section style="margin:10px 10px 0;max-height:420px;overflow:hidden;text-align:center;display:none;"></section>\n<div class="modal-footer">\n    <a class="btn btn-blue" style="display: inline-block;">'+o(n.i18n.call(t,"TOOLBAR.LBL_DOWNLOAD",{hash:{},data:i}))+'</a>\n    <button class="btn modal-close btn-silver">'+o(n.i18n.call(t,"TOOLBAR.LBL_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.export.PNG=e.template(t),t=function(e,t,n,r,i){function l(e,t){var r="",i;return r+='\n            <div id="replace_stack" style="padding: 10px 0">\n                <div class="radio">\n                    <input id="radio-replace-stack" type="radio" name="save-stack-type" value="replace" checked>\n                    <label for="radio-replace-stack"></label>\n                </div>\n                <label class="modal-text-minor" for="radio-replace-stack">'+u(n.i18n.call(e,"TOOLBAR.POP_REPLACE_STACK",{hash:{},data:t}))+'</label>\n                <div style="padding: 10px 22px" class="radio-instruction">\n                    '+u(n.i18n.call(e,"TOOLBAR.POP_REPLACE_STACK_INTRO",{hash:{},data:t}))+' "'+u((i=e&&e.input,typeof i===a?i.apply(e):i))+'" '+u(n.i18n.call(e,"TOOLBAR.POP_REPLACE_STACK_INTRO_END",{hash:{},data:t}))+'\n                </div>\n            </div>\n            <div id="save_new_stack">\n                <div class="radio">\n                    <input id="radio-new-stack" type="radio" name="save-stack-type">\n                    <label for="radio-new-stack"></label>\n                </div>\n                <label class="modal-text-minor" for="radio-new-stack">'+u(n.i18n.call(e,"TOOLBAR.POP_SAVE_NEW_STACK",{hash:{},data:t}))+'</label>\n                <div style="padding: 10px 22px" class="radio-instruction hide">\n                    <p>'+u(n.i18n.call(e,"TOOLBAR.POP_SAVE_STACK_INSTRUCTION",{hash:{},data:t}))+'</p>\n                    <input class="input" id="modal-input-value" value="'+u((i=e&&e.stackName,typeof i===a?i.apply(e):i))+'" type="text" style="width: 400px"/>\n                    <div id="stack-name-exist" class="hide" style="color: #ec3c38">\n                        '+u(n.i18n.call(e,"TOOLBAR.POP_STACK_NAME_ERROR",{hash:{},data:t}))+"</div>\n                </div>\n            </div>\n        ",r}function c(e,t){var r="",i;return r+='\n            <div id="name_new_stack">\n                <input id="radio-new-stack" type="hidden" name="save-stack-type" checked>\n                <div style="padding: 10px 22px" class="radio-instruction">\n                    <p>'+u(n.i18n.call(e,"TOOLBAR.POP_SAVE_STACK_INSTRUCTION",{hash:{},data:t}))+'</p>\n                    <input class="input" id="modal-input-value" value="'+u((i=e&&e.stackName,typeof i===a?i.apply(e):i))+'" type="text" style="width: 400px"/>\n                    <div id="stack-name-exist" class="hide" style="color: #ec3c38">'+u(n.i18n.call(e,"TOOLBAR.POP_STACK_NAME_ERROR",{hash:{},data:t}))+"</div>\n                </div>\n            </div>\n        ",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function",f=this;s+='<p class="modal-text-minor">'+u(n.i18n.call(t,"TOOLBAR.POP_INTRO_1",{hash:{},data:i}))+'</p>\n<p class="modal-text-minor">'+u(n.i18n.call(t,"TOOLBAR.POP_INTRO_2",{hash:{},data:i}))+'</p>\n<div class="modal-center-align-helper">\n    <div class="modal-control-group">\n        ',o=n["if"].call(t,t&&t.originStackExist,{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;return s+="\n    </div>\n</div>",s},n.saveAppToStack=e.template(t),n});
+define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={"confirm":{},"modal":{},"export":{}};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"btn-toolbar icon-zoom-in tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_ZOOM_IN", {hash:{},data:data}))
+    + "'></button>\n<button class=\"btn-toolbar icon-zoom-out seperator tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_ZOOM_OUT", {hash:{},data:data}))
+    + "'></button>";
+  return buffer;
+  };
+TEMPLATE.BtnZoom=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary runApp role-observer-hidden\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_BTN_RUN_STACK", {hash:{},data:data}))
+    + "'>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.BTN_RUN_STACK", {hash:{},data:data}))
+    + "</button>";
+  return buffer;
+  };
+TEMPLATE.BtnRunStack=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"btn-toolbar tooltip icon-save role-observer-hidden\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_STACK", {hash:{},data:data}))
+    + "'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator role-observer-hidden\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
+    + "'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate role-observer-hidden\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + "'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator role-observer-hidden\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CREATE_STACK", {hash:{},data:data}))
+    + "'></button>";
+  return buffer;
+  };
+TEMPLATE.BtnStackOps=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"selectbox btn-toolbar seperator\">\n  <button class=\"selection tooltip icon-send\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT", {hash:{},data:data}))
+    + "'></button>\n  <ul class=\"dropdown\">\n    <li data-analytics-plus=\"export_png\" class=\"icon-export-png\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_PNG", {hash:{},data:data}))
+    + "</li>\n    <li data-analytics-plus=\"export_json\" class=\"icon-export-json\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_JSON", {hash:{},data:data}))
+    + "</li>\n  </ul>\n</div>";
+  return buffer;
+  };
+TEMPLATE.BtnExport=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"tooltip btn-toolbar icon-update-app toolbar-btn-primary role-observer-hidden\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_UPDATE_APP", {hash:{},data:data}))
+    + "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EDIT_APP", {hash:{},data:data}))
+    + "</button>\n<button class=\"tooltip btn-toolbar icon-apply-app toolbar-btn-primary role-observer-hidden\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_UPDATE_APP", {hash:{},data:data}))
+    + "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APPLY_EDIT", {hash:{},data:data}))
+    + "</button>\n<button class=\"tooltip btn-toolbar icon-cancel-update-app seperator role-observer-hidden\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CANCEL_UPDATE_APP", {hash:{},data:data}))
+    + "\"></button>";
+  return buffer;
+  };
+TEMPLATE.BtnEditApp=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"tooltip btn-toolbar icon-stop role-observer-hidden\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_STOP_APP", {hash:{},data:data}))
+    + "\"></button>\n<button class=\"tooltip btn-toolbar icon-play startApp role-observer-hidden\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_START_APP", {hash:{},data:data}))
+    + "\"><span style=\"display: none\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.START_APP", {hash:{},data:data}))
+    + "</span></button>\n<button class=\"btn-toolbar tooltip icon-terminate seperator role-observer-hidden\" data-tooltip=\"";
+  stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_TERMINATE_APP", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator role-observer-hidden\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
+    + "'></button>";
+  return buffer;
+  };
+TEMPLATE.BtnAppOps=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"btn-toolbar icon-export-png tooltip seperator\" data-analytics-plus=\"export_png\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_PNG", {hash:{},data:data}))
+    + "'></button>";
+  return buffer;
+  };
+TEMPLATE.BtnPng=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"btn-toolbar tooltip icon-refresh seperator\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_REFRESH_RESOURCES", {hash:{},data:data}))
+    + "\"></button>";
+  return buffer;
+  };
+TEMPLATE.BtnReloadRes=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  
+  return " on";
+  }
+
+  buffer += "<label class=\"switch toolbar-visual-ops-switch tooltip";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stateOn), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " role-observer-hidden\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CUSTOM_USER_DATA", {hash:{},data:data}))
+    + "\">\n    <span class=\"switch-label\" data-on=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOGGLE_VISUALOPS_ON", {hash:{},data:data}))
+    + "\" data-off=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOGGLE_VISUALOPS_OFF", {hash:{},data:data}))
+    + "\"></span>\n    <span class=\"switch-handle\"></span>\n</label>";
+  return buffer;
+  };
+TEMPLATE.BtnSwitchStates=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
+    + "</button>";
+  return buffer;
+  };
+TEMPLATE.BtnReloadStates=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<header class=\"sidebar-title resource\">\n    <a class=\"resource tooltip icon-resource\" data-target=\"resource\" data-tooltip=\"Resource (R)\"></a>\n    <a class=\"config tooltip icon-config\" data-target=\"config\" data-tooltip=\"Stack Property (A)\"></a>\n    <a class=\"property tooltip icon-property\" data-target=\"property\" data-tooltip=\"Property (P)\"></a>\n    <a class=\"state tooltip icon-gear\" data-target=\"state\" data-tooltip=\"Instance State (S)\">\n        <span class=\"state-count\">99</span>\n    </a>\n</header>";
+  };
+TEMPLATE.PanelHeaderStack=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<header class=\"sidebar-title resource\" data-mode=\"app\">\n    <a class=\"resource tooltip icon-resource\" data-target=\"resource\" data-tooltip=\"Resource (R)\"></a>\n    <a class=\"config tooltip icon-config\" data-target=\"config\" data-tooltip=\"App Property (A)\"></a>\n    <a class=\"property tooltip icon-property\" data-target=\"property\" data-tooltip=\"Property (P)\"></a>\n    <a class=\"state tooltip icon-gear\" data-target=\"state\" data-tooltip=\"Instance State (S)\">\n        <span class=\"state-count\">99</span>\n    </a>\n</header>";
+  };
+TEMPLATE.PanelHeaderApp=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONFIRM_ENABLE_STATE", {hash:{},data:data}))
+    + "</div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.confirm.enableState=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CANCEL_UPDATE_CONFIRM", {hash:{},data:data}))
+    + "</div>\n        <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.DISCARD_UPDATE_CHANGE", {hash:{},data:data}))
+    + "</div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.modal.cancelUpdate=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\" style=\"padding:40px 20px;\">\n        <div class=\"modal-text-major\"></div>\n        <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_EXPORT_AS_JSON", {hash:{},data:data}))
+    + "</div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <a class=\"btn btn-blue\" href=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.data)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DOWNLOAD", {hash:{},data:data}))
+    + "</a>\n    <button id=\"tpl-cancel\" class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.export.JSON=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"loading-spinner\"></div>\n<section style=\"margin:10px 10px 0;max-height:420px;overflow:hidden;text-align:center;display:none;\"></section>\n<div class=\"modal-footer\">\n    <a class=\"btn btn-blue\" style=\"display: inline-block;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_DOWNLOAD", {hash:{},data:data}))
+    + "</a>\n    <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.export.PNG=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <div id=\"replace_stack\" style=\"padding: 10px 0\">\n                <div class=\"radio\">\n                    <input id=\"radio-replace-stack\" type=\"radio\" name=\"save-stack-type\" value=\"replace\" checked>\n                    <label for=\"radio-replace-stack\"></label>\n                </div>\n                <label class=\"modal-text-minor\" for=\"radio-replace-stack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_REPLACE_STACK", {hash:{},data:data}))
+    + "</label>\n                <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                    "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_REPLACE_STACK_INTRO", {hash:{},data:data}))
+    + " \""
+    + escapeExpression(((stack1 = (depth0 && depth0.input)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_REPLACE_STACK_INTRO_END", {hash:{},data:data}))
+    + "\n                </div>\n            </div>\n            <div id=\"save_new_stack\">\n                <div class=\"radio\">\n                    <input id=\"radio-new-stack\" type=\"radio\" name=\"save-stack-type\">\n                    <label for=\"radio-new-stack\"></label>\n                </div>\n                <label class=\"modal-text-minor\" for=\"radio-new-stack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_SAVE_NEW_STACK", {hash:{},data:data}))
+    + "</label>\n                <div style=\"padding: 10px 22px\" class=\"radio-instruction hide\">\n                    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
+    + "</p>\n                    <input class=\"input\" id=\"modal-input-value\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.stackName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"text\" style=\"width: 400px\"/>\n                    <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">\n                        "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STACK_NAME_ERROR", {hash:{},data:data}))
+    + "</div>\n                </div>\n            </div>\n        ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <div id=\"name_new_stack\">\n                <input id=\"radio-new-stack\" type=\"hidden\" name=\"save-stack-type\" checked>\n                <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
+    + "</p>\n                    <input class=\"input\" id=\"modal-input-value\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.stackName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"text\" style=\"width: 400px\"/>\n                    <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STACK_NAME_ERROR", {hash:{},data:data}))
+    + "</div>\n                </div>\n            </div>\n        ";
+  return buffer;
+  }
+
+  buffer += "<p class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_INTRO_1", {hash:{},data:data}))
+    + "</p>\n<p class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_INTRO_2", {hash:{},data:data}))
+    + "</p>\n<div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.saveAppToStack=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });

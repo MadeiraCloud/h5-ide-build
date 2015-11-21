@@ -1,1 +1,91 @@
-define(["constant","../OsPropertyView","./template","CloudResources","underscore","OsKp","../ossglist/view","ApiRequest","ApiRequestOs","i18n!/nls/lang.js"],function(e,t,n,r,i,s,o,u,a,f){return t.extend({events:{"click .os-server-image-info":"openImageInfoPanel","click .property-btn-get-system-log":"openSysLogModal"},initialize:function(){this.sgListView=new o({panel:this.panel,targetModel:this.model.embedPort()})},render:function(){var e,t,r,s,o,u,a;return r=this.getRenderData(),e={},t=r!=null?(o=r.address)!=null?o.addresses:void 0:void 0,t&&i.each(t,function(t){return i.each(t,function(t){return t.type==="fixed"&&(e.fixedIp=t.addr,e.macAddress=t.mac_addr),t.type==="floating"&&(e.floatingIp=t.addr),null}),null}),this.flavorList=App.model.getOpenstackFlavors(Design.instance().get("provider"),Design.instance().region()),s=this.flavorList.get(r.flavor_id),r.vcpus=s.get("vcpus"),r.ram=Math.round(s.get("ram")/1024),r.image_name=(u=this.model.getImage())!=null?u.name:void 0,r.image_id=(a=this.model.getImage())!=null?a.id:void 0,this.$el.html(n.appTemplate(i.extend(r,e))),this.$el.append(this.sgListView.render().el),this},openSysLogModal:function(){var e,t,n,r;return n=this.model.get("appId"),r=this,e=Design.instance().region(),t="os_server_GetConsoleOutput",a(t,{region:e,server_id:n}).then(this.refreshSysLog,this.refreshSysLog),(new modalPlus({template:MC.template.modalInstanceSysLog({log_content:""}),width:900,title:f.IDE.SYSTEM_LOG+n,confirm:{hide:!0}})).tpl.attr("id","modal-instance-sys-log"),!1},refreshSysLog:function(e){var t,n;return $("#modal-instance-sys-log .instance-sys-log-loading").hide(),e&&e.output?(n=e.output,t=$("#modal-instance-sys-log .instance-sys-log-content"),t.html(MC.template.convertBreaklines({content:n})),t.show()):$("#modal-instance-sys-log .instance-sys-log-info").show(),modal.position()},openImageInfoPanel:function(){var e,t,r,i;return e=(t=this.getRenderData())!=null?t.system_metadata:void 0,e.image_name=(r=this.model.getImage())!=null?r.name:void 0,e.image_id=(i=this.model.getImage())!=null?i.id:void 0,this.showFloatPanel(n.imageTemplate(e))}},{handleTypes:[e.RESTYPE.OSSERVER],handleModes:["app"]})});
+define(['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequest', 'ApiRequestOs', 'i18n!/nls/lang.js'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest, ApiRequestOs, lang) {
+  return OsPropertyView.extend({
+    events: {
+      'click .os-server-image-info': 'openImageInfoPanel',
+      'click .property-btn-get-system-log': 'openSysLogModal'
+    },
+    initialize: function() {
+      this.sgListView = new SgListView({
+        panel: this.panel,
+        targetModel: this.model.embedPort()
+      });
+    },
+    render: function() {
+      var addrData, addressData, appData, flavorObj, _ref, _ref1, _ref2;
+      appData = this.getRenderData();
+      addrData = {};
+      addressData = appData != null ? (_ref = appData.address) != null ? _ref.addresses : void 0 : void 0;
+      if (addressData) {
+        _.each(addressData, function(addrAry) {
+          _.each(addrAry, function(addrObj) {
+            if (addrObj.type === 'fixed') {
+              addrData.fixedIp = addrObj.addr;
+              addrData.macAddress = addrObj.mac_addr;
+            }
+            if (addrObj.type === 'floating') {
+              addrData.floatingIp = addrObj.addr;
+            }
+            return null;
+          });
+          return null;
+        });
+      }
+      this.flavorList = App.model.getOpenstackFlavors(Design.instance().get("provider"), Design.instance().region());
+      flavorObj = this.flavorList.get(appData.flavor_id);
+      appData.vcpus = flavorObj.get("vcpus");
+      appData.ram = Math.round(flavorObj.get("ram") / 1024);
+      appData.image_name = (_ref1 = this.model.getImage()) != null ? _ref1.name : void 0;
+      appData.image_id = (_ref2 = this.model.getImage()) != null ? _ref2.id : void 0;
+      this.$el.html(template.appTemplate(_.extend(appData, addrData)));
+      this.$el.append(this.sgListView.render().el);
+      return this;
+    },
+    openSysLogModal: function() {
+      var region, reqApi, serverId, that;
+      serverId = this.model.get('appId');
+      that = this;
+      region = Design.instance().region();
+      reqApi = "os_server_GetConsoleOutput";
+      ApiRequestOs(reqApi, {
+        region: region,
+        server_id: serverId
+      }).then(this.refreshSysLog, this.refreshSysLog);
+      new modalPlus({
+        template: MC.template.modalInstanceSysLog({
+          log_content: ''
+        }),
+        width: 900,
+        title: lang.IDE.SYSTEM_LOG + serverId,
+        confirm: {
+          hide: true
+        }
+      }).tpl.attr("id", "modal-instance-sys-log");
+      return false;
+    },
+    refreshSysLog: function(result) {
+      var $contentElem, logContent;
+      $('#modal-instance-sys-log .instance-sys-log-loading').hide();
+      if (result && result.output) {
+        logContent = result.output;
+        $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
+        $contentElem.html(MC.template.convertBreaklines({
+          content: logContent
+        }));
+        $contentElem.show();
+      } else {
+        $('#modal-instance-sys-log .instance-sys-log-info').show();
+      }
+      return modal.position();
+    },
+    openImageInfoPanel: function() {
+      var serverData, _ref, _ref1, _ref2;
+      serverData = (_ref = this.getRenderData()) != null ? _ref.system_metadata : void 0;
+      serverData.image_name = (_ref1 = this.model.getImage()) != null ? _ref1.name : void 0;
+      serverData.image_id = (_ref2 = this.model.getImage()) != null ? _ref2.id : void 0;
+      return this.showFloatPanel(template.imageTemplate(serverData));
+    }
+  }, {
+    handleTypes: [constant.RESTYPE.OSSERVER],
+    handleModes: ['app']
+  });
+});

@@ -1,1 +1,25 @@
-define(["CanvasLine","constant"],function(e,t){return e.extend({type:"OsListenerAsso"}),e.extend({type:"OsPortUsage"}),e.extend({type:"OsRouterAsso",appendLineToCanvas:function(e){return this.canvas.appendGroupLine(e)}}),e.extend({type:"OsPoolMembership"})});
+define(["CanvasLine", "constant"], function(CeLine, constant) {
+  CeLine.extend({
+
+    /* env:dev                                                env:dev:end */
+    type: "OsListenerAsso"
+  });
+  CeLine.extend({
+
+    /* env:dev                                             env:dev:end */
+    type: "OsPortUsage"
+  });
+  CeLine.extend({
+
+    /* env:dev                                              env:dev:end */
+    type: "OsRouterAsso",
+    appendLineToCanvas: function(svgEl) {
+      return this.canvas.appendGroupLine(svgEl);
+    }
+  });
+  return CeLine.extend({
+
+    /* env:dev                                                  env:dev:end */
+    type: "OsPoolMembership"
+  });
+});

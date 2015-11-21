@@ -1,1 +1,78 @@
-define(["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){function f(e,t){var r="",i;r+='\n<header class="volume-pph">'+u(n.i18n.call(e,"CANVAS.CVS_POP_ATTACHED_VOLUMES",{hash:{},data:t}))+" <span>("+u((i=e&&e.length,typeof i===o?i.apply(e):i))+')</span></header>\n<ul class="popup-content popup-volume">\n\n    ',i=n.each.call(e,e,{hash:{},inverse:a.noop,fn:a.program(2,l,t),data:t});if(i||i===0)r+=i;return r+="\n</ul>\n",r}function l(e,t){var r="",i;r+='\n    <li data-id="'+u((i=e&&e.id,typeof i===o?i.apply(e):i))+'" class="',i=n["if"].call(e,e&&e.snapshot,{hash:{},inverse:a.program(5,h,t),fn:a.program(3,c,t),data:t});if(i||i===0)r+=i;r+='">\n        <div class="vpp-name">'+u((i=e&&e.name,typeof i===o?i.apply(e):i))+'</div>\n        <div class="vpp-size">'+u((i=e&&e.size,typeof i===o?i.apply(e):i))+"GB</div>\n        ",i=n["if"].call(e,e&&e.appId,{hash:{},inverse:a.noop,fn:a.program(7,p,t),data:t});if(i||i===0)r+=i;return r+="\n    </li>\n",r}function c(e,t){return"vpp-snapshot"}function h(e,t){return"vpp-volume"}function p(e,t){var n="",r;return n+='<i class="status res-state tooltip status-'+u((r=e&&e.state,typeof r===o?r.apply(e):r))+'" data-tooltip="'+u((r=e&&e.state,typeof r===o?r.apply(e):r))+'"></i>',n}function d(e,t){var r="";return r+='\n<div class="volume-pp-empty">'+u(n.i18n.call(e,"CANVAS.CVS_POP_NO_ATTACHED_VOLUME",{hash:{},data:t}))+"</div>\n",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o="function",u=this.escapeExpression,a=this;return s=n["if"].call(t,t&&t.length,{hash:{},inverse:a.program(9,d,i),fn:a.program(1,f,i),data:i}),s||s===0?s:""},n.volume=e.template(t),n});
+define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<header class=\"volume-pph\">"
+    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_POP_ATTACHED_VOLUMES", {hash:{},data:data}))
+    + " <span>("
+    + escapeExpression(((stack1 = (depth0 && depth0.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</span></header>\n<ul class=\"popup-content popup-volume\">\n\n    ";
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</ul>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshot), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n        <div class=\"vpp-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        <div class=\"vpp-size\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "GB</div>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.appId), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </li>\n";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  return "vpp-snapshot";
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "vpp-volume";
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<i class=\"status res-state tooltip status-"
+    + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-tooltip=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></i>";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n<div class=\"volume-pp-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_POP_NO_ATTACHED_VOLUME", {hash:{},data:data}))
+    + "</div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.length), {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.volume=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });

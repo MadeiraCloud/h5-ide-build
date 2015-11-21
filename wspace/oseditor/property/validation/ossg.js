@@ -1,1 +1,27 @@
-define(["constant","./ValidationBase"],function(e,t){return t.extend({limits:{port:t.limit.portICMPRange,sglist:t.limit.osname},port:function(e,t){var n,r,i;n=e,r=t.prevAll('.selection[data-target="protocol"]').getValue(),i="Port/Type/Code range invalid";if(r==="icmp"){n=this.view.getICMPRange(n);if(n===null)return i}else if(r==="tcp"||r==="udp"){n=this.view.getPortRange(n);if(n===null)return i}}},{handleTypes:[e.RESTYPE.OSSG]})});
+define(['constant', './ValidationBase'], function(constant, ValidationBase) {
+  return ValidationBase.extend({
+    limits: {
+      port: ValidationBase.limit.portICMPRange,
+      sglist: ValidationBase.limit.osname
+    },
+    port: function(value, $dom) {
+      var port, protocol, tip;
+      port = value;
+      protocol = $dom.prevAll('.selection[data-target="protocol"]').getValue();
+      tip = 'Port/Type/Code range invalid';
+      if (protocol === 'icmp') {
+        port = this.view.getICMPRange(port);
+        if (port === null) {
+          return tip;
+        }
+      } else if (protocol === 'tcp' || protocol === 'udp') {
+        port = this.view.getPortRange(port);
+        if (port === null) {
+          return tip;
+        }
+      }
+    }
+  }, {
+    handleTypes: [constant.RESTYPE.OSSG]
+  });
+});

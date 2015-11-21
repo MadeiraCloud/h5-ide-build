@@ -1,1 +1,17 @@
-define(["constant","../OsPropertyView","./template"],function(e,t,n){return t.extend({render:function(){var t,r;return r=this.model.getTarget(e.RESTYPE.OSPOOL).get("name"),t=this.model.getOtherTarget(e.RESTYPE.OSPOOL).get("name"),this.$el.html(n({poolName:r,memberName:t})),this}},{handleTypes:["OsPoolMembership"],handleModes:["stack","app","appedit"]})});
+define(['constant', '../OsPropertyView', './template'], function(constant, OsPropertyView, template) {
+  return OsPropertyView.extend({
+    render: function() {
+      var memberName, poolName;
+      poolName = this.model.getTarget(constant.RESTYPE.OSPOOL).get('name');
+      memberName = this.model.getOtherTarget(constant.RESTYPE.OSPOOL).get('name');
+      this.$el.html(template({
+        poolName: poolName,
+        memberName: memberName
+      }));
+      return this;
+    }
+  }, {
+    handleTypes: ['OsPoolMembership'],
+    handleModes: ['stack', 'app', 'appedit']
+  });
+});

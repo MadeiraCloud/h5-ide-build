@@ -1,1 +1,5 @@
-define(["constant","./ValidationBase"],function(e,t){return t.extend({},{handleTypes:[e.RESTYPE.OSNETWORK]})});
+define(['constant', './ValidationBase'], function(constant, ValidationBase) {
+  return ValidationBase.extend({}, {
+    handleTypes: [constant.RESTYPE.OSNETWORK]
+  });
+});

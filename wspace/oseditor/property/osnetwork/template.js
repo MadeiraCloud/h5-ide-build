@@ -1,1 +1,40 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){function f(e,t){var r="",i;r+="\r\n",i=n["if"].call(e,e&&e.modeIsAppEdit,{hash:{},inverse:a.noop,fn:a.program(2,l,t),data:t});if(i||i===0)r+=i;return r+='\r\n<section class="group required">\r\n    <label class="name">Name</label>\r\n    <input data-target="name" class="selection string" value="'+u((i=e&&e.name,typeof i===o?i.apply(e):i))+'"/>\r\n</section>\r\n',r}function l(e,t){var n="",r;return n+='\r\n<dl class="dl-vertical"><dt>ID</dt><dd>'+u((r=(r=e&&e.app,r==null||r===!1?r:r.id),typeof r===o?r.apply(e):r))+"</dd></dl>\r\n",n}function c(e,t){var n="",r;return n+='\r\n<dl class="dl-vertical"><dt>Name</dt><dd>'+u((r=e&&e.name,typeof r===o?r.apply(e):r))+"</dd><dt>ID</dt><dd>"+u((r=e&&e.id,typeof r===o?r.apply(e):r))+"</dd></dl>\r\n",n}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o="function",u=this.escapeExpression,a=this;return s=n.unless.call(t,t&&t.modeIsApp,{hash:{},inverse:a.program(4,c,i),fn:a.program(1,f,i),data:i}),s||s===0?s:""};return e.template(t)});
+define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n<section class=\"group required\">\r\n    <label class=\"name\">Name</label>\r\n    <input data-target=\"name\" class=\"selection string\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"/>\r\n</section>\r\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n<dl class=\"dl-vertical\"><dt>ID</dt><dd>"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd></dl>\r\n";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n<dl class=\"dl-vertical\"><dt>Name</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd><dt>ID</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd></dl>\r\n";
+  return buffer;
+  }
+
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.modeIsApp), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }; return Handlebars.template(TEMPLATE); });

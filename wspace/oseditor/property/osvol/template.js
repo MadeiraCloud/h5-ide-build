@@ -1,1 +1,126 @@
-define(["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){function l(e,t){var r="",i;return r+='\n<section class="group">\n    <dl class="dl-vertical">\n        <dt>ID</dt><dd>'+u(n.emptyStr.call(e,(i=e&&e.app,i==null||i===!1?i:i.id),{hash:{},data:t}))+"</dd>\n        <dt>Status</dt><dd>"+u(n.emptyStr.call(e,(i=e&&e.app,i==null||i===!1?i:i.status),{hash:{},data:t}))+"</dd>\n    </dl>\n</section>\n",r}function c(e,t){return'disabled="disabled"'}function h(e,t){var r="",i;r+='\n        <section class="group">\n            <label class="name">Snapshot ID</label>\n            <select id="property-os-volume-snapshot" data-target="snapshot" class="selection option" data-option-tpl="snapshotOption" ',i=n["if"].call(e,e&&e.modeIsAppEdit,{hash:{},inverse:a.noop,fn:a.program(3,c,t),data:t});if(i||i===0)r+=i;return r+="></select>\n        </section>\n    ",r}function p(e,t){return"true"}function d(e,t){return"false"}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a=this,f="function";o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:a.noop,fn:a.program(1,l,i),data:i});if(o||o===0)s+=o;s+='\n<div class="option-group-head expand">\n    Volume Details\n</div>\n<div class="option-group">\n    <section class="group required">\n        <label class="name">Volume Name</label>\n        <input data-target="name" class="selection string" value="'+u((o=t&&t.name,typeof o===f?o.apply(t):o))+'"/>\n    </section>\n    <section class="group">\n        <label class="name">Description</label>\n        <input data-target="description" class="selection string" value="'+u((o=t&&t.description,typeof o===f?o.apply(t):o))+'"/>\n    </section>\n    <section class="group required">\n        <label class="name">Mount Point</label>\n        <input data-target="mountPoint" class="selection string" value="'+u((o=t&&t.mountPoint,typeof o===f?o.apply(t):o))+'" ',o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:a.noop,fn:a.program(3,c,i),data:i});if(o||o===0)s+=o;s+='/>\n    </section>\n    <section class="group required">\n        <label class="name">Volume Size</label>\n        <input data-target="size" class="selection string" id="property-os-volume-size" value="'+u((o=t&&t.size,typeof o===f?o.apply(t):o))+'" ',o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:a.noop,fn:a.program(3,c,i),data:i});if(o||o===0)s+=o;s+="/>\n    </section>\n    ",o=n["if"].call(t,t&&t.snapshot,{hash:{},inverse:a.noop,fn:a.program(5,h,i),data:i});if(o||o===0)s+=o;s+='\n    <section class="group">\n        <label class="name">Bootable</label>\n        <select class="selection bool" data-target="bootable" value="',o=n["if"].call(t,t&&t.bootable,{hash:{},inverse:a.program(9,d,i),fn:a.program(7,p,i),data:i});if(o||o===0)s+=o;s+='" ',o=n["if"].call(t,t&&t.modeIsAppEdit,{hash:{},inverse:a.noop,fn:a.program(3,c,i),data:i});if(o||o===0)s+=o;return s+="></select>\n    </section>\n</div>",s},n.stackTemplate=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression;return s+='<div>\n    <div class="manager-content-main">'+a((o=t&&t.name,typeof o===u?o.apply(t):o))+'</div>\n    <div class="manager-content-sub" title="'+a((o=t&&t.id,typeof o===u?o.apply(t):o))+'">'+a((o=t&&t.size,typeof o===u?o.apply(t):o))+"G | "+a((o=t&&t.id,typeof o===u?o.apply(t):o))+"</div>\n</div>",s},n.snapshotOption=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<section class="group">\n    <dl class="dl-vertical">\n        <dt>ID</dt><dd>'+o(n.emptyStr.call(t,t&&t.id,{hash:{},data:i}))+"</dd>\n        <dt>Name</dt><dd>"+o(n.emptyStr.call(t,t&&t.display_name,{hash:{},data:i}))+"</dd>\n        <dt>Status</dt><dd>"+o(n.emptyStr.call(t,t&&t.status,{hash:{},data:i}))+"</dd>\n        <dt>Size</dt><dd>"+o(n.emptyStr.call(t,t&&t.size,{hash:{},data:i}))+"</dd>\n        <dt>Snapshot ID</dt><dd>"+o(n.emptyStr.call(t,t&&t.snapshot_id,{hash:{},data:i}))+"</dd>\n        <dt>Description</dt><dd>"+o(n.emptyStr.call(t,t&&t.description,{hash:{},data:i}))+"</dd>\n        <dt>Bootable</dt><dd>"+o(n.emptyStr.call(t,t&&t.bootable,{hash:{},data:i}))+"</dd>\n        <dt>Created at</dt><dd>"+o(n.emptyStr.call(t,t&&t.created_at,{hash:{},data:i}))+"</dd>\n    </dl>\n</section>",s},n.appTemplate=e.template(t),n});
+define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<section class=\"group\">\n    <dl class=\"dl-vertical\">\n        <dt>ID</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.id), {hash:{},data:data}))
+    + "</dd>\n        <dt>Status</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.status), {hash:{},data:data}))
+    + "</dd>\n    </dl>\n</section>\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "disabled=\"disabled\"";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <section class=\"group\">\n            <label class=\"name\">Snapshot ID</label>\n            <select id=\"property-os-volume-snapshot\" data-target=\"snapshot\" class=\"selection option\" data-option-tpl=\"snapshotOption\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "></select>\n        </section>\n    ";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  
+  return "true";
+  }
+
+function program9(depth0,data) {
+  
+  
+  return "false";
+  }
+
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n<div class=\"option-group-head expand\">\n    Volume Details\n</div>\n<div class=\"option-group\">\n    <section class=\"group required\">\n        <label class=\"name\">Volume Name</label>\n        <input data-target=\"name\" class=\"selection string\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"/>\n    </section>\n    <section class=\"group\">\n        <label class=\"name\">Description</label>\n        <input data-target=\"description\" class=\"selection string\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"/>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">Mount Point</label>\n        <input data-target=\"mountPoint\" class=\"selection string\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.mountPoint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">Volume Size</label>\n        <input data-target=\"size\" class=\"selection string\" id=\"property-os-volume-size\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n    </section>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshot), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <section class=\"group\">\n        <label class=\"name\">Bootable</label>\n        <select class=\"selection bool\" data-target=\"bootable\" value=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.bootable), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "></select>\n    </section>\n</div>";
+  return buffer;
+  };
+TEMPLATE.stackTemplate=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div>\n    <div class=\"manager-content-main\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    <div class=\"manager-content-sub\" title=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "G | "
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.snapshotOption=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<section class=\"group\">\n    <dl class=\"dl-vertical\">\n        <dt>ID</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
+    + "</dd>\n        <dt>Name</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.display_name), {hash:{},data:data}))
+    + "</dd>\n        <dt>Status</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.status), {hash:{},data:data}))
+    + "</dd>\n        <dt>Size</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.size), {hash:{},data:data}))
+    + "</dd>\n        <dt>Snapshot ID</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.snapshot_id), {hash:{},data:data}))
+    + "</dd>\n        <dt>Description</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n        <dt>Bootable</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.bootable), {hash:{},data:data}))
+    + "</dd>\n        <dt>Created at</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.created_at), {hash:{},data:data}))
+    + "</dd>\n    </dl>\n</section>";
+  return buffer;
+  };
+TEMPLATE.appTemplate=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });

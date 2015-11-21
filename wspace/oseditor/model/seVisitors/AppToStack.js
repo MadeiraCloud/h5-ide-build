@@ -1,1 +1,38 @@
-define(["../DesignOs","constant"],function(e,t){e.registerSerializeVisitor(function(e,n,r){var i,s,o,u,a,f,l,c,h,p;if(!r||!r.toStack)return;for(u in e){i=e[u],i.resource.hasOwnProperty("id")&&(i.resource.id="");switch(i.type){case t.RESTYPE.OSPOOL:h=i.resource.member||[];for(a=0,l=h.length;a<l;a++)s=h[a],s.id="";break;case t.RESTYPE.OSSG:p=i.resource.rules||[];for(f=0,c=p.length;f<c;f++)o=p[f],o.id="";break;case t.RESTYPE.OSLISTENER:i.resource.port_id="";break;case t.RESTYPE.OSFIP:i.resource.floating_ip_address="";break;case t.RESTYPE.OSRT:i.resource.public_ip=""}}})});
+define(["../DesignOs", "constant"], function(Design, constant) {
+  Design.registerSerializeVisitor(function(components, layouts, options) {
+    var comp, member, rule, uid, _i, _j, _len, _len1, _ref, _ref1;
+    if (!options || !options.toStack) {
+      return;
+    }
+    for (uid in components) {
+      comp = components[uid];
+      if (comp.resource.hasOwnProperty("id")) {
+        comp.resource.id = "";
+      }
+      switch (comp.type) {
+        case constant.RESTYPE.OSPOOL:
+          _ref = comp.resource.member || [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            member = _ref[_i];
+            member.id = "";
+          }
+          break;
+        case constant.RESTYPE.OSSG:
+          _ref1 = comp.resource.rules || [];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            rule = _ref1[_j];
+            rule.id = "";
+          }
+          break;
+        case constant.RESTYPE.OSLISTENER:
+          comp.resource.port_id = "";
+          break;
+        case constant.RESTYPE.OSFIP:
+          comp.resource.floating_ip_address = "";
+          break;
+        case constant.RESTYPE.OSRT:
+          comp.resource.public_ip = "";
+      }
+    }
+  });
+});

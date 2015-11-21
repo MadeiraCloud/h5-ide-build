@@ -1,1 +1,50 @@
-define(["CoreEditorView","./template/TplOsEditor","./subviews/Panel","./subviews/Toolbar","./subviews/Statusbar","./canvas/CanvasViewOs"],function(e,t,n,r,i,s){return e.extend({template:t,constructor:function(t){return _.extend(t,{TopPanel:r,RightPanel:n,BottomPanel:i,CanvasView:s}),e.apply(this,arguments)},initialize:function(){this.panel=this.propertyPanel,this.$el.addClass("openstack").find(".OEPanelLeft").addClass("force-hidden")},showProperty:function(){return this.panel.show().openProperty(),!1},showResource:function(){return this.panel.show().openResource(),!1},showGlobal:function(){return this.panel.show().openConfig(),!1},showStateEditor:function(){return this.panel.show().openState(),!1},onCanvasDoubleClick:function(){return this.panel.show().openCurrent()},onItemSelected:function(e,t){if(!t&&!e){this.panel.openConfig({uid:"",type:"default"});return}return this.panel.openProperty({uid:t,type:e})}})});
+define(["CoreEditorView", "./template/TplOsEditor", "./subviews/Panel", "./subviews/Toolbar", "./subviews/Statusbar", "./canvas/CanvasViewOs"], function(CoreEditorView, TplOsEditor, RightPanel, Toolbar, Statusbar, CanvasView) {
+  return CoreEditorView.extend({
+    template: TplOsEditor,
+    constructor: function(options) {
+      _.extend(options, {
+        TopPanel: Toolbar,
+        RightPanel: RightPanel,
+        BottomPanel: Statusbar,
+        CanvasView: CanvasView
+      });
+      return CoreEditorView.apply(this, arguments);
+    },
+    initialize: function() {
+      this.panel = this.propertyPanel;
+      this.$el.addClass("openstack").find(".OEPanelLeft").addClass("force-hidden");
+    },
+    showProperty: function() {
+      this.panel.show().openProperty();
+      return false;
+    },
+    showResource: function() {
+      this.panel.show().openResource();
+      return false;
+    },
+    showGlobal: function() {
+      this.panel.show().openConfig();
+      return false;
+    },
+    showStateEditor: function() {
+      this.panel.show().openState();
+      return false;
+    },
+    onCanvasDoubleClick: function() {
+      return this.panel.show().openCurrent();
+    },
+    onItemSelected: function(type, id) {
+      if (!id && !type) {
+        this.panel.openConfig({
+          uid: '',
+          type: 'default'
+        });
+        return;
+      }
+      return this.panel.openProperty({
+        uid: id,
+        type: type
+      });
+    }
+  });
+});

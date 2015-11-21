@@ -1,1 +1,55 @@
-define(["constant","./MarathonDepIn","i18n!/nls/lang.js"],function(e,t,n){var r;return r=t.extend({type:"MarathonDepOut",directional:!0,portDefs:[{port1:{name:"app-dep-out",type:e.RESTYPE.MRTHAPP},port2:{name:"group-dep-in",type:e.RESTYPE.MRTHGROUP}},{port1:{name:"app-dep-out",type:e.RESTYPE.MRTHAPP},port2:{name:"app-dep-in",type:e.RESTYPE.MRTHAPP}},{port1:{name:"group-dep-out",type:e.RESTYPE.MRTHGROUP},port2:{name:"group-dep-in",type:e.RESTYPE.MRTHGROUP}},{port1:{name:"group-dep-out",type:e.RESTYPE.MRTHGROUP},port2:{name:"app-dep-in",type:e.RESTYPE.MRTHAPP}}],serialize:function(e,t){var n;n=e[this.port2Comp().id],n.resource.dependencies||(n.resource.dependencies=[]),n.resource.dependencies.push(this.port1Comp().path())}}),r});
+define(["constant", "./MarathonDepIn", "i18n!/nls/lang.js"], function(constant, MarathonDepIn, lang) {
+  var C;
+  C = MarathonDepIn.extend({
+    type: "MarathonDepOut",
+    directional: true,
+    portDefs: [
+      {
+        port1: {
+          name: "app-dep-out",
+          type: constant.RESTYPE.MRTHAPP
+        },
+        port2: {
+          name: "group-dep-in",
+          type: constant.RESTYPE.MRTHGROUP
+        }
+      }, {
+        port1: {
+          name: "app-dep-out",
+          type: constant.RESTYPE.MRTHAPP
+        },
+        port2: {
+          name: "app-dep-in",
+          type: constant.RESTYPE.MRTHAPP
+        }
+      }, {
+        port1: {
+          name: "group-dep-out",
+          type: constant.RESTYPE.MRTHGROUP
+        },
+        port2: {
+          name: "group-dep-in",
+          type: constant.RESTYPE.MRTHGROUP
+        }
+      }, {
+        port1: {
+          name: "group-dep-out",
+          type: constant.RESTYPE.MRTHGROUP
+        },
+        port2: {
+          name: "app-dep-in",
+          type: constant.RESTYPE.MRTHAPP
+        }
+      }
+    ],
+    serialize: function(component_data, layout_data) {
+      var comp;
+      comp = component_data[this.port2Comp().id];
+      if (!comp.resource.dependencies) {
+        comp.resource.dependencies = [];
+      }
+      comp.resource.dependencies.push(this.port1Comp().path());
+    }
+  });
+  return C;
+});

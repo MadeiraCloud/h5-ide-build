@@ -1,1 +1,21 @@
-define(["constant","../OsPropertyView","../osport/view","./template/app","CloudResources"],function(e,t,n,r,i){return t.extend({render:function(){return this.$el.html(r(this.getRenderData())),this.$el.append(this.reg(new n({model:this.model,appModel:this.genModelForPort()})).render().el),this},genModelForPort:function(){var t,n;return n=Design.instance().region(),t=this.appModel.get("port_id"),i(e.RESTYPE.OSPORT,n).get(t)}},{handleTypes:[e.RESTYPE.OSLISTENER],handleModes:["app"]})});
+define(['constant', '../OsPropertyView', '../osport/view', './template/app', 'CloudResources'], function(constant, OsPropertyView, portView, template, CloudResources) {
+  return OsPropertyView.extend({
+    render: function() {
+      this.$el.html(template(this.getRenderData()));
+      this.$el.append(this.reg(new portView({
+        model: this.model,
+        appModel: this.genModelForPort()
+      })).render().el);
+      return this;
+    },
+    genModelForPort: function() {
+      var portId, region;
+      region = Design.instance().region();
+      portId = this.appModel.get('port_id');
+      return CloudResources(constant.RESTYPE.OSPORT, region).get(portId);
+    }
+  }, {
+    handleTypes: [constant.RESTYPE.OSLISTENER],
+    handleModes: ['app']
+  });
+});

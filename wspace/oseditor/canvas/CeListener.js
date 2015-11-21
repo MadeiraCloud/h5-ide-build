@@ -1,1 +1,67 @@
-define(["CanvasElement","constant","CanvasManager","i18n!/nls/lang.js"],function(e,t,n,r){return e.extend({type:t.RESTYPE.OSLISTENER,parentType:[t.RESTYPE.OSSUBNET],defaultSize:[8,8],portPosMap:{"elb-left":[0,60,e.constant.PORT_LEFT_ANGLE],"elb-right":[80,60,e.constant.PORT_RIGHT_ANGLE]},portDirMap:{elb:"horizontal"},events:{"mousedown .fip-status":"toggleFip","click .fip-status":"suppressEvent"},suppressEvent:function(){return!1},listenModelEvents:function(){this.listenTo(this.model,"change:fip",this.render)},labelWidth:function(){return 100},toggleFip:function(){var e;return this.canvas.design.modeIsApp()?!1:(e=!!this.model.getFloatingIp(),this.model.setFloatingIp(!e),n.updateFip(this.$el.children(".fip-status"),this.model),!1)},create:function(){var e,t,n;return e=this.model,t=this.canvas.svg,n=this.createRawNode().add([t.use("os_listener"),t.group().move(29,42).classes("fip-status cvs-hover tooltip").add([t.image("").size(26,21).classes("normal"),t.image("").size(26,21).classes("hover")]),this.createPortElement().attr({"class":"port port-green tooltip","data-name":"elb","data-alias":"elb-left","data-tooltip":r.IDE.PORT_TIP_P}),this.createPortElement().attr({"class":"port port-green tooltip","data-name":"elb","data-alias":"elb-right","data-tooltip":r.IDE.PORT_TIP_P})]),this.canvas.appendNode(n),this.initNode(n,e.x(),e.y()),n},render:function(){var e;return e=this.model,n.setLabel(this,this.$el.children(".node-label")),n.updateFip(this.$el.children(".fip-status"),e),null}})});
+define(["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  return CanvasElement.extend({
+
+    /* env:dev                                              env:dev:end */
+    type: constant.RESTYPE.OSLISTENER,
+    parentType: [constant.RESTYPE.OSSUBNET],
+    defaultSize: [8, 8],
+    portPosMap: {
+      "elb-left": [0, 60, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "elb-right": [80, 60, CanvasElement.constant.PORT_RIGHT_ANGLE]
+    },
+    portDirMap: {
+      "elb": "horizontal"
+    },
+    events: {
+      "mousedown .fip-status": "toggleFip",
+      "click .fip-status": "suppressEvent"
+    },
+    suppressEvent: function() {
+      return false;
+    },
+    listenModelEvents: function() {
+      this.listenTo(this.model, 'change:fip', this.render);
+    },
+    labelWidth: function() {
+      return 100;
+    },
+    toggleFip: function() {
+      var hasFloatingIp;
+      if (this.canvas.design.modeIsApp()) {
+        return false;
+      }
+      hasFloatingIp = !!this.model.getFloatingIp();
+      this.model.setFloatingIp(!hasFloatingIp);
+      CanvasManager.updateFip(this.$el.children(".fip-status"), this.model);
+      return false;
+    },
+    create: function() {
+      var m, svg, svgEl;
+      m = this.model;
+      svg = this.canvas.svg;
+      svgEl = this.createRawNode().add([
+        svg.use("os_listener"), svg.group().move(29, 42).classes("fip-status cvs-hover tooltip").add([svg.image("").size(26, 21).classes("normal"), svg.image("").size(26, 21).classes("hover")]), this.createPortElement().attr({
+          'class': 'port port-green tooltip',
+          'data-name': 'elb',
+          'data-alias': 'elb-left',
+          'data-tooltip': lang.IDE.PORT_TIP_P
+        }), this.createPortElement().attr({
+          'class': 'port port-green tooltip',
+          'data-name': 'elb',
+          'data-alias': 'elb-right',
+          'data-tooltip': lang.IDE.PORT_TIP_P
+        })
+      ]);
+      this.canvas.appendNode(svgEl);
+      this.initNode(svgEl, m.x(), m.y());
+      return svgEl;
+    },
+    render: function() {
+      var m;
+      m = this.model;
+      CanvasManager.setLabel(this, this.$el.children(".node-label"));
+      CanvasManager.updateFip(this.$el.children(".fip-status"), m);
+      return null;
+    }
+  });
+});

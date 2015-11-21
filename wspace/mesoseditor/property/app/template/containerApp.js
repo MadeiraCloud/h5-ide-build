@@ -1,1 +1,108 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){return"true"}function c(e,t){return"false"}function h(e,t){var r="",i;r+='\r\n            <table class="table">\r\n                  <tr>\r\n                        <th>Host</th>\r\n                        <th>Container</th>\r\n                        <th>Service Port</th>\r\n                  </tr>\r\n                  ',i=n.each.call(e,(i=e&&e.docker,i==null||i===!1?i:i.portMappings),{hash:{},inverse:f.noop,fn:f.program(6,p,t),data:t});if(i||i===0)r+=i;return r+="\r\n            </table>\r\n            ",r}function p(e,t){var n="",r;return n+="\r\n                  <tr>\r\n                        <td>"+a((r=e&&e.hostPort,typeof r===u?r.apply(e):r))+"</td>\r\n                        <td>"+a((r=e&&e.containerPort,typeof r===u?r.apply(e):r))+"/"+a((r=e&&e.protocol,typeof r===u?r.apply(e):r))+"</td>\r\n                        <td>"+a((r=e&&e.servicePort,typeof r===u?r.apply(e):r))+"</td>\r\n                  </tr>\r\n                  ",n}function d(e,t){return"\r\n            -\r\n            "}function v(e,t){var r="",i;r+='\r\n            <table class="table">\r\n                  <tr>\r\n                        <th>Host Path</th>\r\n                        <th>Container Path</th>\r\n                  </tr>\r\n                  ',i=n.each.call(e,e&&e.volumes,{hash:{},inverse:f.noop,fn:f.program(11,m,t),data:t});if(i||i===0)r+=i;return r+="\r\n            </table>\r\n            ",r}function m(e,t){var n="",r;return n+="\r\n                  <tr>\r\n                        <td>"+a((r=e&&e.hostPath,typeof r===u?r.apply(e):r))+"</td>\r\n                        <td>"+a((r=e&&e.containerPath,typeof r===u?r.apply(e):r))+":"+a((r=e&&e.mode,typeof r===u?r.apply(e):r))+"</td>\r\n                  </tr>\r\n                  ",n}function g(e,t){var r="",i;r+='\r\n            <table class="table">\r\n                  <tr>\r\n                        <th>Key</th>\r\n                        <th>Value</th>\r\n                  </tr>\r\n                  ',i=n.each.call(e,(i=e&&e.docker,i==null||i===!1?i:i.parameters),{hash:{},inverse:f.noop,fn:f.program(14,y,t),data:t});if(i||i===0)r+=i;return r+="\r\n            </table>\r\n            ",r}function y(e,t){var n="",r;return n+="\r\n                  <tr>\r\n                        <td>"+a((r=e&&e.key,typeof r===u?r.apply(e):r))+"</td>\r\n                        <td>"+a((r=e&&e.value,typeof r===u?r.apply(e):r))+"</td>\r\n                  </tr>\r\n                  ",n}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<dl class="dl-vertical container-app">\r\n      <dt>Image</dt>\r\n      <dd>'+a((o=(o=t&&t.docker,o==null||o===!1?o:o.image),typeof o===u?o.apply(t):o))+"</dd>\r\n      <dt>Network</dt>\r\n      <dd>"+a((o=(o=t&&t.docker,o==null||o===!1?o:o.network),typeof o===u?o.apply(t):o))+"</dd>\r\n      <dt>Privileged</dt>\r\n      <dd>",o=n["if"].call(t,(o=t&&t.docker,o==null||o===!1?o:o.privileged),{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+="</dd>\r\n      <dt>Port Mappings</dt>\r\n      <dd>\r\n            ",o=n["if"].call(t,(o=(o=t&&t.docker,o==null||o===!1?o:o.portMappings),o==null||o===!1?o:o.length),{hash:{},inverse:f.program(8,d,i),fn:f.program(5,h,i),data:i});if(o||o===0)s+=o;s+="\r\n      </dd>\r\n\r\n      <dt>Volumes</dt>\r\n      <dd>\r\n            ",o=n["if"].call(t,(o=t&&t.volumes,o==null||o===!1?o:o.length),{hash:{},inverse:f.program(8,d,i),fn:f.program(10,v,i),data:i});if(o||o===0)s+=o;s+="\r\n      </dd>\r\n\r\n      <dt>Volumes</dt>\r\n      <dd>\r\n            ",o=n["if"].call(t,(o=(o=t&&t.docker,o==null||o===!1?o:o.parameters),o==null||o===!1?o:o.length),{hash:{},inverse:f.program(8,d,i),fn:f.program(13,g,i),data:i});if(o||o===0)s+=o;return s+="\r\n      </dd>\r\n</dl>",s};return e.template(t)});
+define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "true";
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "false";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            <table class=\"table\">\r\n                  <tr>\r\n                        <th>Host</th>\r\n                        <th>Container</th>\r\n                        <th>Service Port</th>\r\n                  </tr>\r\n                  ";
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.portMappings), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            </table>\r\n            ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                  <tr>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.hostPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.containerPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "/"
+    + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.servicePort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                  </tr>\r\n                  ";
+  return buffer;
+  }
+
+function program8(depth0,data) {
+  
+  
+  return "\r\n            -\r\n            ";
+  }
+
+function program10(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            <table class=\"table\">\r\n                  <tr>\r\n                        <th>Host Path</th>\r\n                        <th>Container Path</th>\r\n                  </tr>\r\n                  ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.volumes), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            </table>\r\n            ";
+  return buffer;
+  }
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                  <tr>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.hostPath)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.containerPath)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ":"
+    + escapeExpression(((stack1 = (depth0 && depth0.mode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                  </tr>\r\n                  ";
+  return buffer;
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            <table class=\"table\">\r\n                  <tr>\r\n                        <th>Key</th>\r\n                        <th>Value</th>\r\n                  </tr>\r\n                  ";
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.parameters), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            </table>\r\n            ";
+  return buffer;
+  }
+function program14(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                  <tr>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\r\n                  </tr>\r\n                  ";
+  return buffer;
+  }
+
+  buffer += "<dl class=\"dl-vertical container-app\">\r\n      <dt>Image</dt>\r\n      <dd>"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.image)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n      <dt>Network</dt>\r\n      <dd>"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.network)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n      <dt>Privileged</dt>\r\n      <dd>";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.privileged), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\r\n      <dt>Port Mappings</dt>\r\n      <dd>\r\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.portMappings)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(8, program8, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n      </dd>\r\n\r\n      <dt>Volumes</dt>\r\n      <dd>\r\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.volumes)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(8, program8, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n      </dd>\r\n\r\n      <dt>Volumes</dt>\r\n      <dd>\r\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.docker)),stack1 == null || stack1 === false ? stack1 : stack1.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(8, program8, data),fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n      </dd>\r\n</dl>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });

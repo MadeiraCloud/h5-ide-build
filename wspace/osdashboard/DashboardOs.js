@@ -1,1 +1,84 @@
-var __hasProp={}.hasOwnProperty,__extends=function(e,t){function r(){this.constructor=e}for(var n in t)__hasProp.call(t,n)&&(e[n]=t[n]);return r.prototype=t.prototype,e.prototype=new r,e.__super__=t.prototype,e};define(["Workspace","./DashboardView","./DashboardModel","i18n!/nls/lang.js"],function(e,t,n,r){var i;return i=function(e){function i(){return i.__super__.constructor.apply(this,arguments)}return __extends(i,e),i.prototype.isFixed=function(){return!0},i.prototype.tabClass=function(){return"icon-dashboard"},i.prototype.title=function(){return r.IDE.NAV_TIT_DASHBOARD},i.prototype.url=function(){return"/"},i.prototype.initialize=function(){var e;this.model=new n,this.view=new t({model:this.model}),e=this,this.listenTo(App.model.stackList(),"update",function(){return e.__renderControl("updateOpsList")}),this.listenTo(App.model.appList(),"update",function(){return e.__renderControl("updateOpsList")}),this.listenTo(App.model.stackList(),"change",function(){return e.__renderControl("updateOpsList",arguments)}),this.listenTo(App.model.appList(),"change",function(){return e.__renderControl("updateOpsList",arguments)}),this.listenTo(this.model,"change:regionResources",function(t){return e.view.markUpdated(),e.__renderControl("updateRegionResources",arguments)}),this.view.listenTo(App.model.appList(),"change:progress",this.view.updateAppProgress),this.model.fetchOsResources(),this.__renderControlMap={}},i.prototype.sleep=function(){this.__renderControlMap={},this.view.sleep()},i.prototype.awake=function(){var e;for(e in this.__renderControlMap)this.view[e]();this.__renderControlMap=null,this.view.awake()},i.prototype.__renderControl=function(e,t){this.__renderControlMap?(void 0,this.__renderControlMap[e]=!0):this.view[e].apply(this.view,t)},i}(e),i});
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+define(["Workspace", "./DashboardView", "./DashboardModel", 'i18n!/nls/lang.js'], function(Workspace, DashboardView, DashboardModel, lang) {
+  var Dashboard;
+  Dashboard = (function(_super) {
+    __extends(Dashboard, _super);
+
+    function Dashboard() {
+      return Dashboard.__super__.constructor.apply(this, arguments);
+    }
+
+    Dashboard.prototype.isFixed = function() {
+      return true;
+    };
+
+    Dashboard.prototype.tabClass = function() {
+      return "icon-dashboard";
+    };
+
+    Dashboard.prototype.title = function() {
+      return lang.IDE.NAV_TIT_DASHBOARD;
+    };
+
+    Dashboard.prototype.url = function() {
+      return "/";
+    };
+
+    Dashboard.prototype.initialize = function() {
+      var self;
+      this.model = new DashboardModel();
+      this.view = new DashboardView({
+        model: this.model
+      });
+      self = this;
+      this.listenTo(App.model.stackList(), "update", function() {
+        return self.__renderControl("updateOpsList");
+      });
+      this.listenTo(App.model.appList(), "update", function() {
+        return self.__renderControl("updateOpsList");
+      });
+      this.listenTo(App.model.stackList(), "change", function() {
+        return self.__renderControl("updateOpsList", arguments);
+      });
+      this.listenTo(App.model.appList(), "change", function() {
+        return self.__renderControl("updateOpsList", arguments);
+      });
+      this.listenTo(this.model, "change:regionResources", function(type) {
+        self.view.markUpdated();
+        return self.__renderControl("updateRegionResources", arguments);
+      });
+      this.view.listenTo(App.model.appList(), "change:progress", this.view.updateAppProgress);
+      this.model.fetchOsResources();
+      this.__renderControlMap = {};
+    };
+
+    Dashboard.prototype.sleep = function() {
+      this.__renderControlMap = {};
+      this.view.sleep();
+    };
+
+    Dashboard.prototype.awake = function() {
+      var method;
+      for (method in this.__renderControlMap) {
+        this.view[method]();
+      }
+      this.__renderControlMap = null;
+      this.view.awake();
+    };
+
+    Dashboard.prototype.__renderControl = function(method, args) {
+      if (this.__renderControlMap) {
+        console.log("DashboardView's render is throttled, method name: " + method);
+        this.__renderControlMap[method] = true;
+      } else {
+        this.view[method].apply(this.view, args);
+      }
+    };
+
+    return Dashboard;
+
+  })(Workspace);
+  return Dashboard;
+});

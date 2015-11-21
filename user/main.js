@@ -1,1 +1,828 @@
-var ajaxChangePassword,ajaxLogin,ajaxRegister,api,checkAllCookie,checkInviteKey,checkPassKey,checkUserExist,deepth,getParams,getRef,getSearch,goto500,gotoRef,guid,handleErrorCode,handleNetError,i18n,init,langType,loadLang,loadPageVar,render,sendEmail,setCredit,showErrorMessage,timezone,userRoute,validPassword,xhr;(function(){var e,t,n;n=window.location;if(/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/.exec(n.hostname)){void 0;return}t=n.hostname.split("."),t.length>=3?e=t[t.length-2]+"."+t[t.length-1]:e=n.hostname,window.API_HOST="api-ericsson."+e,window.API_PROTO=n.protocol+"//",window.language=window.version="",n.hostname.toLowerCase().indexOf("visualops.io")>=0&&n.protocol==="http:"&&(window.location=n.href.replace("http:","https:"))})(),goto500=function(){var e;e=window.location.pathname,e.length===1?e="":e=e.replace("/","#"),window.location="/500/"+e},xhr=null,checkAllCookie=function(){return!!$.cookie("usercode")&&!!$.cookie("session_id")},langType=function(){return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*lang\\s*\\=\\s*([^;]*).*$)|^.*$"),"$1")||(navigator.language&&navigator.language.toLowerCase()==="zh-cn"?"zh-cn":"en-us")},deepth="RESET",timezone=(new Date).getTimezoneOffset()/-60,userRoute=function(e){var t,n,r;t=window.location.hash.split("#").pop().split("/"),n=window.location.pathname.split("/"),n.shift(),typeof e[r=n[0]]=="function"&&e[r](n,t)},guid=function(){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(e){var t,n;return t=Math.random()*16|0,n=e==="x"?t:t&3|8,n.toString(16)}).toUpperCase()},api=function(e){return xhr=$.ajax({url:API_PROTO+API_HOST+e.url,dataType:"json",type:"POST",jsonp:!1,data:JSON.stringify({jsonrpc:"2.0",id:guid(),method:e.method||"",params:e.data||{}}),success:function(t){return typeof e.success=="function"?e.success(t.result[1],t.result[0]):void 0},error:function(t,n,r){if(n!=="abort")return typeof e.error=="function"?e.error(n,-1):void 0}}),xhr},Handlebars.registerHelper("i18n",function(e){return(typeof i18n=="function"?i18n(e):void 0)||e}),loadPageVar=function(e){return decodeURI(window.location.search.replace(new RegExp("^(?:.*[&\\?]"+encodeURI(e).replace(/[\.\+\*]/g,"\\$&")+"(?:\\=([^&]*))?)?.*$","i"),"$1"))+location.hash},getRef=function(){var e;return e=loadPageVar("ref"),e.charAt(0)==="/"?e:"/"},gotoRef=function(){var e;return e=location.pathname+location.hash,location.href="/login?ref="+e},getParams=function(){var e,t;return e={},t=window.location.search||"",(t.split("?")[1]||"").split("&").forEach(function(t){var n;return t?(n=t.split("="),e[n[0]]=n[1]):!1}),e},getSearch=function(){return window.location.search||""},loadLang=function(e){return $.ajax({url:"/nls/"+langType()+"/lang.js",jsonp:!1,dataType:"jsonp",jsonpCallback:"define",beforeSend:function(){var e;return e=Handlebars.compile($("#loading-template").html()),$("#main-body").html(e())},success:function(e){window.langsrc=e},error:function(e){return goto500(),void 0}}).done(function(){var t;return t=$("[type='text/x-language-template']"),t.size()&&t.each(function(e,t){var n;return t=$(t),n=Handlebars.compile(t.html()),$("#"+t.data("target")).html(n(window.langsrc))}),e()})},window.onhashchange=function(){return init()},i18n=function(e){return langsrc[deepth][e]},render=function(e,t){var n;return n=Handlebars.compile($(e).html()),$("#main-body").html(n(t))},init=function(){var e,t,n,r;return r=navigator.userAgent.toLowerCase(),e=/(chrome)[ \/]([\w.]+)/.exec(r)||/(webkit)[ \/]([\w.]+)/.exec(r)||/(opera)(?:.*version|)[ \/]([\w.]+)/.exec(r)||/(msie) ([\w.]+)/.exec(r)||r.indexOf("compatible")<0&&/(mozilla)(?:.*? rv:([\w.]+)|)/.exec(r)||[],n={chrome:10,webkit:6,msie:10,mozilla:4,opera:10},e[1]==="webkit"&&(t=/version\/([\d\.]+).*safari/.exec(r),t&&(e[2]=t[1])),(parseInt(e[2],10)||0)<n[e[1]]&&$("header").after("<div id='unsupported-browser'><p>"+langsrc.LOGIN.browser_not_support_1+"</p> <p>"+langsrc.LOGIN.browser_not_support_2+"<a href='https://www.google.com/intl/en/chrome/browser/' target='_blank'>Chrome</a>, <a href='http://www.mozilla.org/en-US/firefox/all/' target='_blank'>Firefox</a> or <a href='http://windows.microsoft.com/en-us/internet-explorer/download-ie' target='_blank'>IE</a>"+langsrc.LOGIN.browser_not_support_3+"</p></div>"),userRoute({invite:function(e,t){var n;deepth="INVITE",n=t[0];if(n!=="member")return;return checkInviteKey(t[1]).then(function(e){var n,r;return r=e.result[0],r===0?(n=atob(t[1]).split("&")[0],location.href="/workspace/"+n):r===120?render("#expire-template",{other_user:!0}):r===110?gotoRef():r===115?$.cookie("session_id")?render("#expire-template",{other_user:!0}):location.href="/register?invitation="+t[1]:render("#expire-template")},function(){return render("#expire-template")})},reset:function(e,t){var n;return deepth="RESET",n=t[0],n==="password"?checkPassKey(t[1],function(e,n){var r;if(!e)return void 0,render("#password-template"),$("form.box-body").find("input").eq(0).focus(),$("#reset-form").on("submit",function(e){return e.preventDefault(),validPassword()&&($("#reset-password").attr("disabled",!0).val(langsrc.RESET.reset_waiting),ajaxChangePassword(t,$("#reset-pw").val())),!1});r=r||langsrc.RESET["expired-info"],langsrc.RESET["expired-info"]=langsrc.SERVICE["RESET_PASSWORD_ERROR_"+e]||r,window.location.hash="expire"}):n==="expire"?(render("#expire-template"),$(".account-instruction a").attr("href","/login"+getSearch())):n==="email"?(render("#email-template"),$("form.box-body").find("input").eq(0).focus()):n==="success"?(render("#success-template"),$(".account-instruction a").attr("href","/login"+getSearch())):(render("#default-template"),$(".title-link").find("a").eq(0).attr("href","/register/"+getSearch()),$(".title-link").find("a").eq(1).attr("href","/login/"+getSearch()),$("#reset-pw-email").focus(),$("#reset-pw-email").keyup(function(){return this.value?$("#reset-btn").removeAttr("disabled"):$("#reset-btn").attr("disabled",!0)}),$("#reset-form").on("submit",function(){return $("#reset-pw-email").off("keyup"),$("#reset-btn").attr("disabled",!0),$("#reset-pw-email").attr("disabled",!0),$("#reset-btn").val(window.langsrc.RESET.reset_waiting),sendEmail($("#reset-pw-email").val()),!1}))},login:function(e,t){var n,r,i,s,o,u;return checkAllCookie()&&(window.location=getRef()),deepth="LOGIN",render("#login-template"),$(".account-btn-wrap a").attr("href","/reset/"+getSearch()),$("#login-register").find("a").attr("href","/register/"+getSearch()),r=$("#login-user"),n=$("#login-password"),s=t[1]||"",o=s?atob(s).split("&")[1]:"",o&&s&&r.val(atob(o)).attr("disabled","disabled"),u=$("#login-btn").attr("disabled",!1),$("#login-form input").not(":disabled").eq(0).focus(),i=function(){if($(this).val().trim())return $(this).parent().removeClass("error")},r.on("keyup",i),n.on("keyup",i),$("#login-form").on("submit",function(e){return e.preventDefault(),r.val()&&n.val()?($(".error-msg").hide(),$(".control-group").removeClass("error"),u.attr("disabled",!0).val(langsrc.RESET.reset_waiting),ajaxLogin([r.val(),n.val(),{timezone:timezone}],function(e){return e===100?($("#error-msg-1").hide(),$("#error-msg-3").show().text(langsrc.SERVICE.ERROR_CODE_100_MESSAGE)):($("#error-msg-1").show(),$("#error-msg-3").hide()),u.attr("disabled",!1).val(langsrc.LOGIN["login-btn"])})):($("#error-msg-2").show(),r.val().trim()?r.parent().removeClass("error"):r.parent().addClass("error"),n.val().trim()?n.parent().removeClass("error"):n.parent().addClass("error"),!1)})},register:function(e,t){var n,r,i,s,o,u,a,f,l,c,h,p,d,v,m,g,y;return deepth="REGISTER",t[0]==="success"?(render("#success-template"),$("#register-get-start").click(function(){var e,t;e=getParams().invitation;if(e){t=atob(e).split("&")[0],window.location="/workspace/"+t;return}window.location=getRef()}),!1):(checkAllCookie()&&(window.location=getRef()),render("#register-template"),$(".title-link a").attr("href","/login/"+getSearch()),i=$("#register-form"),i.find("input").eq(0).focus(),r=$("#register-firstname"),s=$("#register-lastname"),u=$("#register-username"),n=$("#register-email"),v=getParams().invitation||"",m=v?atob(v).split("&")[1]:"",m&&v&&n.val(atob(m)).attr("disabled","disabled"),o=$("#register-password"),y=void 0,d=void 0,$("#register-btn").attr("disabled",!1),c=function(e,t){var n,i,o;return o=$("#fullname-verification-status"),n=r.val(),i=s.val(),n.trim()===""||i.trim()===""?(o.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.firstname_and_lastname_required),!1):(o.removeClass("verification-status").removeClass("error-status").text(""),!0)},p=function(e,t){var n,r;return r=u.val(),n=$("#username-verification-status"),r.trim()!==""?/[^A-Za-z0-9\_]{1}/.test(r)!==!0?r.length>40?(n.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.username_maxlength),t?t(0):!1):(n.hasClass("error-status")&&n.removeClass("verification-status").removeClass("error-status").text(""),t?f(r,n,t):!0):(n.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.username_not_matched),t?t(0):!1):(n.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.username_required),t?t(0):!1)},l=function(e,t,r){var i,s,o;return i=n.val(),o=$("#email-verification-status"),s=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,i.trim()!==""?s.test(i)?(o.hasClass("error-status")&&o.removeClass("verification-status").removeClass("error-status").text(""),t?a(i,o,t):!0):(o.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.email_not_valid),t?t(0):!1):(o.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.email_required),t?t(0):!1)},h=function(e,t){var n,r;return n=o.val(),r=$("#password-verification-status"),n!==""?n.length>5?(r.removeClass("verification-status").removeClass("error-status").text(""),t?t(1):!0):(r.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.password_shorter),t?t(0):!1):(r.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.password_required),t?t():!1)},f=function(e,t,n){xhr!=null&&xhr.abort(),window.clearTimeout(y),y=window.setTimeout(function(){return checkUserExist([e,null],function(e){return e?e==="error"?($(".error-msg").eq(0).text(langsrc.SERVICE.NETWORK_ERROR).show(),$("#register-btn").attr("disabled",!1).val(langsrc.REGISTER["register-btn"])):p()?(t.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.username_taken),typeof n=="function"?n(0):void 0):typeof n=="function"?n(0):void 0:p()?(t.removeClass("error-status").addClass("verification-status").show().text(langsrc.REGISTER.username_available),typeof n=="function"?n(1):void 0):!1})},500)},a=function(e,t,n){xhr!=null&&xhr.abort(),window.clearTimeout(d),d=window.setTimeout(function(){return checkUserExist([null,e],function(e){return e?e==="error"?($(".error-msg").eq(0).text(langsrc.SERVICE.NETWORK_ERROR).show(),$("#register-btn").attr("disabled",!1).val(langsrc.REGISTER["register-btn"])):(t.removeClass("verification-status").addClass("error-status").text(langsrc.REGISTER.email_used),typeof n=="function"?n(0):void 0):l()?(t.removeClass("error-status").addClass("verification-status").show().text(langsrc.REGISTER.email_available),typeof n=="function"?n(1):void 0):!1})},500)},g=function(e){return e&&($(".verification-status").removeAttr("style"),$(".error-status").removeClass("error-status")),$("#register-btn").attr("disabled",!1).val(langsrc.REGISTER["register-btn"])},u.on("keyup blur change",function(e){return p(e,function(e){return e||g(),e})}),r.on("keyup blur change",function(){return c()}),s.on("keyup blur change",function(){return c()}),n.on("keyup blur change",function(e){return l(e,function(e){return e||g(),e})}),o.on("keyup blur change",function(e){return h(e,function(e){return e||g(),e})}),i.on("submit",function(e){var t,i,a,f;return e.preventDefault(),$(".error-msg").removeAttr("style"),u.next().hasClass("error-status")||n.next().hasClass("error-status")?!1:(i=c(),f=p(),t=l(),a=h(),f&&t&&a&&i?($("#register-btn").attr("disabled",!0).val(langsrc.REGISTER.reginster_waiting),p(e,function(t){return t?l(e,function(i){return i?h(e,function(e){var a,f;if(!e)return g(),!1;if(t&&i&&e)return f=[u.val(),o.val(),n.val(),{first_name:r.val(),last_name:s.val(),timezone:timezone}],a=getParams().invitation,a&&(f[3].invitation_key=a),ajaxRegister(f,function(e){return g(!0),$("#register-status").show().text(langsrc.SERVICE["ERROR_CODE_"+e+"_MESSAGE"]),!1})}):(g(),!1)}):(g(),!1)})):!1)}))}})},validPassword=function(){var e,t;return e=$("#password-verification-status"),t=$("#reset-pw").val(),e.removeClass("error-status"),t!==""?t.length>5?(e.hide(),!0):(e.addClass("error-status").show().text(langsrc.RESET.reset_password_shorter),!1):(e.addClass("error-status").show().text(langsrc.RESET.reset_password_required),!1)},showErrorMessage=function(){return $("#reset-pw-email").attr("disabled",!1),$("#reset-btn").attr("disabled",!1).val(window.langsrc.RESET.reset_btn),$("#reset-status").removeClass("verification-status").addClass("error-msg").show().text(langsrc.RESET.reset_error_state),!1},handleErrorCode=function(e){return void 0},handleNetError=function(e){return goto500(),void 0},checkPassKey=function(e,t){return api({url:"/account/",method:"check_validation",data:[e,"reset"],success:function(e,n){return void 0,t(n)},error:function(e){return handleNetError(e),!1}})},checkInviteKey=function(e){return api({url:"/project/",method:"check_invitation",data:[e,$.cookie("session_id")]})},setCredit=function(e){var t,n,r,i,s;i={domain:window.location.hostname.replace("ide","")},s=$.cookie();for(r in s)n=s[r],r!=="stack_store_id_local"&&r!=="stack_store_id"&&$.removeCookie(r,i);return t={expires:30,path:"/"},$.cookie("usercode",e.username,t),$.cookie("session_id",e.session_id,t),$.cookie("has_session",!!e.session_id,{domain:window.location.hostname.replace("ide",""),path:"/",expires:30})},ajaxRegister=function(e,t){return api({url:"/account/",method:"register",data:e,success:function(e,n){if(!!n)return t(n);setCredit(e),window.location.hash="success"},error:function(e){return handleNetError(e)}})},ajaxLogin=function(e,t){return api({url:"/session/",method:"login",data:e,success:function(e,n){if(!!n)return t(n);setCredit(e),window.location=getRef()},error:function(e){return handleNetError(e)}})},sendEmail=function(e){return checkUserExist([e,null],function(t){return t?api({url:"/account/",method:"reset_password",data:[e],success:function(e,t){return t?(handleErrorCode(t),showErrorMessage(),!1):(window.location.hash="email",!0)},error:function(e){return handleNetError(e)}}):(showErrorMessage(),!1)})},checkUserExist=function(e,t){return api({url:"/account/",method:"check_repeat",data:e,success:function(e,n){return t(n)},error:function(e){return t("error")}})},ajaxChangePassword=function(e,t){return api({url:"/account/",method:"update_password",data:[e[1],t],success:function(e,t){if(!!t)return handleErrorCode(t);window.location.hash="success"},error:function(e){return handleNetError(e)}})},loadLang(init);
+var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkInviteKey, checkPassKey, checkUserExist, deepth, getParams, getRef, getSearch, goto500, gotoRef, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
+
+(function() {
+  var MC_DOMAIN, hosts, location;
+  location = window.location;
+  if (/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/.exec(location.hostname)) {
+    console.error("VisualOps IDE can not be browsed with IP address.");
+    return;
+  }
+  hosts = location.hostname.split(".");
+  if (hosts.length >= 3) {
+    MC_DOMAIN = hosts[hosts.length - 2] + "." + hosts[hosts.length - 1];
+  } else {
+    MC_DOMAIN = location.hostname;
+  }
+  window.API_HOST = "api-ericsson." + MC_DOMAIN;
+  window.API_PROTO = location.protocol + "//";
+  window.language = window.version = "";
+  if (location.hostname.toLowerCase().indexOf("visualops.io") >= 0 && location.protocol === "http:") {
+    window.location = location.href.replace("http:", "https:");
+  }
+})();
+
+goto500 = function() {
+  var hash;
+  hash = window.location.pathname;
+  if (hash.length === 1) {
+    hash = "";
+  } else {
+    hash = hash.replace("/", "#");
+  }
+  window.location = '/500/' + hash;
+};
+
+xhr = null;
+
+checkAllCookie = function() {
+  return !!($.cookie('usercode') && $.cookie('session_id'));
+};
+
+langType = function() {
+  return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || (navigator.language && navigator.language.toLowerCase() === "zh-cn" ? "zh-cn" : "en-us");
+};
+
+deepth = 'RESET';
+
+timezone = (new Date().getTimezoneOffset()) / -60;
+
+userRoute = function(routes) {
+  var hashArray, pathArray, _name;
+  hashArray = window.location.hash.split('#').pop().split('/');
+  pathArray = window.location.pathname.split('/');
+  pathArray.shift();
+  if (typeof routes[_name = pathArray[0]] === "function") {
+    routes[_name](pathArray, hashArray);
+  }
+};
+
+guid = function() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r, v;
+    r = Math.random() * 16 | 0;
+    v = c === 'x' ? r : r & 0x3 | 0x8;
+    return v.toString(16);
+  }).toUpperCase();
+};
+
+api = function(option) {
+  xhr = $.ajax({
+    url: API_PROTO + API_HOST + option.url,
+    dataType: 'json',
+    type: 'POST',
+    jsonp: false,
+    data: JSON.stringify({
+      jsonrpc: '2.0',
+      id: guid(),
+      method: option.method || '',
+      params: option.data || {}
+    }),
+    success: function(res) {
+      return typeof option.success === "function" ? option.success(res.result[1], res.result[0]) : void 0;
+    },
+    error: function(xhr, status, error) {
+      if (status !== 'abort') {
+        return typeof option.error === "function" ? option.error(status, -1) : void 0;
+      }
+    }
+  });
+  return xhr;
+};
+
+Handlebars.registerHelper('i18n', function(str) {
+  return (typeof i18n === "function" ? i18n(str) : void 0) || str;
+});
+
+loadPageVar = function(sVar) {
+  return decodeURI(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURI(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) + location.hash;
+};
+
+getRef = function() {
+  var ref;
+  ref = loadPageVar('ref');
+  if (ref.charAt(0) === "/") {
+    return ref;
+  } else {
+    return "/";
+  }
+};
+
+gotoRef = function() {
+  var ref;
+  ref = location.pathname + location.hash;
+  return location.href = "/login?ref=" + ref;
+};
+
+getParams = function() {
+  var params, queryString;
+  params = {};
+  queryString = window.location.search || "";
+  (queryString.split("?")[1] || "").split("&").forEach(function(value) {
+    var array;
+    if (!value) {
+      return false;
+    }
+    array = value.split("=");
+    return params[array[0]] = array[1];
+  });
+  return params;
+};
+
+getSearch = function() {
+  return window.location.search || "";
+};
+
+loadLang = function(cb) {
+  return $.ajax({
+    url: '/nls/' + langType() + '/lang.js',
+    jsonp: false,
+    dataType: "jsonp",
+    jsonpCallback: "define",
+    beforeSend: function() {
+      var template;
+      template = Handlebars.compile($("#loading-template").html());
+      return $("#main-body").html(template());
+    },
+    success: function(data) {
+      window.langsrc = data;
+    },
+    error: function(error) {
+      goto500();
+      return console.log(error, "error");
+    }
+  }).done(function() {
+    var templates;
+    templates = $("[type='text/x-language-template']");
+    if (templates.size()) {
+      templates.each(function(index, element) {
+        var template;
+        element = $(element);
+        template = Handlebars.compile(element.html());
+        return $("#" + element.data('target')).html(template(window.langsrc));
+      });
+    }
+    return cb();
+  });
+};
+
+window.onhashchange = function() {
+  return init();
+};
+
+i18n = function(str) {
+  return langsrc[deepth][str];
+};
+
+render = function(tempName, data) {
+  var template;
+  template = Handlebars.compile($(tempName).html());
+  return $("#main-body").html(template(data));
+};
+
+init = function() {
+  var browser, safari, support, ua;
+  ua = navigator.userAgent.toLowerCase();
+  browser = /(chrome)[ \/]([\w.]+)/.exec(ua) || /(webkit)[ \/]([\w.]+)/.exec(ua) || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) || /(msie) ([\w.]+)/.exec(ua) || ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || [];
+  support = {
+    chrome: 10,
+    webkit: 6,
+    msie: 10,
+    mozilla: 4,
+    opera: 10
+  };
+  if (browser[1] === "webkit") {
+    safari = /version\/([\d\.]+).*safari/.exec(ua);
+    if (safari) {
+      browser[2] = safari[1];
+    }
+  }
+  if ((parseInt(browser[2], 10) || 0) < support[browser[1]]) {
+    $("header").after("<div id='unsupported-browser'><p>" + langsrc.LOGIN.browser_not_support_1 + "</p> <p>" + langsrc.LOGIN.browser_not_support_2 + "<a href='https://www.google.com/intl/en/chrome/browser/' target='_blank'>Chrome</a>, <a href='http://www.mozilla.org/en-US/firefox/all/' target='_blank'>Firefox</a> or <a href='http://windows.microsoft.com/en-us/internet-explorer/download-ie' target='_blank'>IE</a>" + langsrc.LOGIN.browser_not_support_3 + "</p></div>");
+  }
+  return userRoute({
+    "invite": function(pathArray, hashArray) {
+      var hashTarget;
+      deepth = 'INVITE';
+      hashTarget = hashArray[0];
+      if (hashTarget !== 'member') {
+        return;
+      }
+      return checkInviteKey(hashArray[1]).then(function(result) {
+        var projectId, retCode;
+        retCode = result.result[0];
+        if (retCode === 0) {
+          projectId = atob(hashArray[1]).split('&')[0];
+          return location.href = "/workspace/" + projectId;
+        } else if (retCode === 120) {
+          return render('#expire-template', {
+            other_user: true
+          });
+        } else if (retCode === 110) {
+          return gotoRef();
+        } else if (retCode === 115) {
+          if ($.cookie("session_id")) {
+            return render('#expire-template', {
+              other_user: true
+            });
+          } else {
+            return location.href = "/register?invitation=" + hashArray[1];
+          }
+        } else {
+          return render('#expire-template');
+        }
+      }, function() {
+        return render('#expire-template');
+      });
+    },
+    "reset": function(pathArray, hashArray) {
+      var hashTarget;
+      deepth = 'RESET';
+      hashTarget = hashArray[0];
+      if (hashTarget === 'password') {
+        return checkPassKey(hashArray[1], function(statusCode, result) {
+          var tempLang;
+          if (!statusCode) {
+            console.log('Right Verify Code!');
+            render("#password-template");
+            $('form.box-body').find('input').eq(0).focus();
+            return $('#reset-form').on('submit', function(e) {
+              e.preventDefault();
+              if (validPassword()) {
+                $("#reset-password").attr('disabled', true).val(langsrc.RESET.reset_waiting);
+                ajaxChangePassword(hashArray, $("#reset-pw").val());
+              }
+              return false;
+            });
+          } else {
+            tempLang = tempLang || langsrc.RESET['expired-info'];
+            langsrc.RESET['expired-info'] = langsrc.SERVICE['RESET_PASSWORD_ERROR_' + statusCode] || tempLang;
+            window.location.hash = "expire";
+          }
+        });
+      } else if (hashTarget === "expire") {
+        render('#expire-template');
+        return $(".account-instruction a").attr("href", "/login" + getSearch());
+      } else if (hashTarget === "email") {
+        render("#email-template");
+        return $('form.box-body').find('input').eq(0).focus();
+      } else if (hashTarget === "success") {
+        render("#success-template");
+        return $(".account-instruction a").attr("href", "/login" + getSearch());
+      } else {
+        render('#default-template');
+        $(".title-link").find("a").eq(0).attr("href", "/register/" + getSearch());
+        $(".title-link").find("a").eq(1).attr("href", "/login/" + getSearch());
+        $("#reset-pw-email").focus();
+        $('#reset-pw-email').keyup(function() {
+          if (this.value) {
+            return $('#reset-btn').removeAttr('disabled');
+          } else {
+            return $("#reset-btn").attr('disabled', true);
+          }
+        });
+        return $('#reset-form').on('submit', function() {
+          $('#reset-pw-email').off('keyup');
+          $("#reset-btn").attr('disabled', true);
+          $("#reset-pw-email").attr('disabled', true);
+          $('#reset-btn').val(window.langsrc.RESET.reset_waiting);
+          sendEmail($("#reset-pw-email").val());
+          return false;
+        });
+      }
+    },
+    'login': function(pathArray, hashArray) {
+      var $password, $user, checkValid, invitationCode, inviteEmail, submitBtn;
+      if (checkAllCookie()) {
+        window.location = getRef();
+      }
+      deepth = 'LOGIN';
+      render("#login-template");
+      $(".account-btn-wrap a").attr("href", "/reset/" + getSearch());
+      $("#login-register").find("a").attr("href", "/register/" + getSearch());
+      $user = $("#login-user");
+      $password = $("#login-password");
+      invitationCode = hashArray[1] || "";
+      inviteEmail = invitationCode ? atob(invitationCode).split("&")[1] : "";
+      if (inviteEmail && invitationCode) {
+        $user.val(atob(inviteEmail)).attr("disabled", "disabled");
+      }
+      submitBtn = $("#login-btn").attr('disabled', false);
+      $("#login-form input").not(":disabled").eq(0).focus();
+      checkValid = function() {
+        if ($(this).val().trim()) {
+          return $(this).parent().removeClass('error');
+        }
+      };
+      $user.on('keyup', checkValid);
+      $password.on('keyup', checkValid);
+      return $("#login-form").on('submit', function(e) {
+        e.preventDefault();
+        if ($user.val() && $password.val()) {
+          $(".error-msg").hide();
+          $(".control-group").removeClass('error');
+          submitBtn.attr('disabled', true).val(langsrc.RESET.reset_waiting);
+          return ajaxLogin([
+            $user.val(), $password.val(), {
+              timezone: timezone
+            }
+          ], function(statusCode) {
+            if (statusCode === 100) {
+              $('#error-msg-1').hide();
+              $('#error-msg-3').show().text(langsrc.SERVICE.ERROR_CODE_100_MESSAGE);
+            } else {
+              $('#error-msg-1').show();
+              $('#error-msg-3').hide();
+            }
+            return submitBtn.attr('disabled', false).val(langsrc.LOGIN['login-btn']);
+          });
+        } else {
+          $("#error-msg-2").show();
+          if (!$user.val().trim()) {
+            $user.parent().addClass('error');
+          } else {
+            $user.parent().removeClass('error');
+          }
+          if (!$password.val().trim()) {
+            $password.parent().addClass('error');
+          } else {
+            $password.parent().removeClass('error');
+          }
+          return false;
+        }
+      });
+    },
+    'register': function(pathArray, hashArray) {
+      var $email, $firstName, $form, $lastName, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkFullname, checkPassword, checkUsername, emailTimeout, invitationCode, inviteEmail, resetRegForm, usernameTimeout;
+      deepth = 'REGISTER';
+      if (hashArray[0] === 'success') {
+        render("#success-template");
+        $('#register-get-start').click(function() {
+          var invitationCode, projectId;
+          invitationCode = getParams().invitation;
+          if (invitationCode) {
+            projectId = atob(invitationCode).split("&")[0];
+            window.location = "/workspace/" + projectId;
+            return;
+          }
+          window.location = getRef();
+        });
+        return false;
+      }
+      if (checkAllCookie()) {
+        window.location = getRef();
+      }
+      render('#register-template');
+      $(".title-link a").attr("href", "/login/" + getSearch());
+      $form = $("#register-form");
+      $form.find('input').eq(0).focus();
+      $firstName = $("#register-firstname");
+      $lastName = $("#register-lastname");
+      $username = $('#register-username');
+      $email = $('#register-email');
+      invitationCode = getParams().invitation || "";
+      inviteEmail = invitationCode ? atob(invitationCode).split("&")[1] : "";
+      if (inviteEmail && invitationCode) {
+        $email.val(atob(inviteEmail)).attr("disabled", "disabled");
+      }
+      $password = $('#register-password');
+      usernameTimeout = void 0;
+      emailTimeout = void 0;
+      $('#register-btn').attr('disabled', false);
+      checkFullname = function(e, cb) {
+        var firstName, lastName, status;
+        status = $("#fullname-verification-status");
+        firstName = $firstName.val();
+        lastName = $lastName.val();
+        if (firstName.trim() === "" || lastName.trim() === "") {
+          status.removeClass("verification-status").addClass('error-status').text(langsrc.REGISTER.firstname_and_lastname_required);
+          return false;
+        } else {
+          status.removeClass('verification-status').removeClass('error-status').text("");
+          return true;
+        }
+      };
+      checkUsername = function(e, cb) {
+        var status, username;
+        username = $username.val();
+        status = $('#username-verification-status');
+        if (username.trim() !== "") {
+          if (/[^A-Za-z0-9\_]{1}/.test(username) !== true) {
+            if (username.length > 40) {
+              status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_maxlength);
+              if (cb) {
+                return cb(0);
+              } else {
+                return false;
+              }
+            } else {
+              if (status.hasClass('error-status')) {
+                status.removeClass('verification-status').removeClass('error-status').text("");
+              }
+              if (cb) {
+                return ajaxCheckUsername(username, status, cb);
+              } else {
+                return true;
+              }
+            }
+          } else {
+            status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_not_matched);
+            if (cb) {
+              return cb(0);
+            } else {
+              return false;
+            }
+          }
+        } else {
+          status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_required);
+          if (cb) {
+            return cb(0);
+          } else {
+            return false;
+          }
+        }
+      };
+      checkEmail = function(e, cb, weak) {
+        var email, reg_str, status;
+        email = $email.val();
+        status = $("#email-verification-status");
+        reg_str = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (email.trim() !== "") {
+          if (reg_str.test(email)) {
+            if (status.hasClass('error-status')) {
+              status.removeClass('verification-status').removeClass('error-status').text("");
+            }
+            if (cb) {
+              return ajaxCheckEmail(email, status, cb);
+            } else {
+              return true;
+            }
+          } else {
+            status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.email_not_valid);
+            if (cb) {
+              return cb(0);
+            } else {
+              return false;
+            }
+          }
+        } else {
+          status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.email_required);
+          if (cb) {
+            return cb(0);
+          } else {
+            return false;
+          }
+        }
+      };
+      checkPassword = function(e, cb) {
+        var password, status;
+        password = $password.val();
+        status = $("#password-verification-status");
+        if (password !== "") {
+          if (password.length > 5) {
+            status.removeClass('verification-status').removeClass('error-status').text("");
+            if (cb) {
+              return cb(1);
+            } else {
+              return true;
+            }
+          } else {
+            status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.password_shorter);
+            if (cb) {
+              return cb(0);
+            } else {
+              return false;
+            }
+          }
+        } else {
+          status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.password_required);
+          if (cb) {
+            return cb();
+          } else {
+            return false;
+          }
+        }
+      };
+      ajaxCheckUsername = function(username, status, cb) {
+        if (xhr != null) {
+          xhr.abort();
+        }
+        window.clearTimeout(usernameTimeout);
+        usernameTimeout = window.setTimeout(function() {
+          return checkUserExist([username, null], function(statusCode) {
+            if (!statusCode) {
+              if (!checkUsername()) {
+                return false;
+              }
+              status.removeClass('error-status').addClass('verification-status').show().text(langsrc.REGISTER.username_available);
+              return typeof cb === "function" ? cb(1) : void 0;
+            } else if (statusCode === 'error') {
+              $('.error-msg').eq(0).text(langsrc.SERVICE.NETWORK_ERROR).show();
+              return $('#register-btn').attr('disabled', false).val(langsrc.REGISTER["register-btn"]);
+            } else if (checkUsername()) {
+              status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_taken);
+              return typeof cb === "function" ? cb(0) : void 0;
+            } else {
+              return typeof cb === "function" ? cb(0) : void 0;
+            }
+          });
+        }, 500);
+      };
+      ajaxCheckEmail = function(email, status, cb) {
+        if (xhr != null) {
+          xhr.abort();
+        }
+        window.clearTimeout(emailTimeout);
+        emailTimeout = window.setTimeout(function() {
+          return checkUserExist([null, email], function(statusCode) {
+            if (!statusCode) {
+              if (!checkEmail()) {
+                return false;
+              }
+              status.removeClass('error-status').addClass('verification-status').show().text(langsrc.REGISTER.email_available);
+              return typeof cb === "function" ? cb(1) : void 0;
+            } else if (statusCode === 'error') {
+              $('.error-msg').eq(0).text(langsrc.SERVICE.NETWORK_ERROR).show();
+              return $('#register-btn').attr('disabled', false).val(langsrc.REGISTER["register-btn"]);
+            } else {
+              status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.email_used);
+              return typeof cb === "function" ? cb(0) : void 0;
+            }
+          });
+        }, 500);
+      };
+      resetRegForm = function(force) {
+        if (force) {
+          $(".verification-status").removeAttr('style');
+          $('.error-status').removeClass('error-status');
+        }
+        return $('#register-btn').attr('disabled', false).val(langsrc.REGISTER['register-btn']);
+      };
+      $username.on('keyup blur change', function(e) {
+        return checkUsername(e, function(a) {
+          if (!a) {
+            resetRegForm();
+          }
+          return a;
+        });
+      });
+      $firstName.on('keyup blur change', function() {
+        return checkFullname();
+      });
+      $lastName.on('keyup blur change', function() {
+        return checkFullname();
+      });
+      $email.on('keyup blur change', function(e) {
+        return checkEmail(e, function(a) {
+          if (!a) {
+            resetRegForm();
+          }
+          return a;
+        });
+      });
+      $password.on('keyup blur change', function(e) {
+        return checkPassword(e, function(a) {
+          if (!a) {
+            resetRegForm();
+          }
+          return a;
+        });
+      });
+      return $form.on('submit', function(e) {
+        var emailResult, fullnameResult, passwordResult, userResult;
+        e.preventDefault();
+        $('.error-msg').removeAttr('style');
+        if ($username.next().hasClass('error-status') || $email.next().hasClass('error-status')) {
+          return false;
+        }
+        fullnameResult = checkFullname();
+        userResult = checkUsername();
+        emailResult = checkEmail();
+        passwordResult = checkPassword();
+        if (!(userResult && emailResult && passwordResult && fullnameResult)) {
+          return false;
+        }
+        $('#register-btn').attr('disabled', true).val(langsrc.REGISTER.reginster_waiting);
+        return checkUsername(e, function(usernameAvl) {
+          if (!usernameAvl) {
+            resetRegForm();
+            return false;
+          }
+          return checkEmail(e, function(emailAvl) {
+            if (!emailAvl) {
+              resetRegForm();
+              return false;
+            }
+            return checkPassword(e, function(passwordAvl) {
+              var invitation, params;
+              if (!passwordAvl) {
+                resetRegForm();
+                return false;
+              }
+              if (usernameAvl && emailAvl && passwordAvl) {
+                params = [
+                  $username.val(), $password.val(), $email.val(), {
+                    first_name: $firstName.val(),
+                    last_name: $lastName.val(),
+                    timezone: timezone
+                  }
+                ];
+                invitation = getParams().invitation;
+                if (invitation) {
+                  params[3].invitation_key = invitation;
+                }
+                return ajaxRegister(params, function(statusCode) {
+                  resetRegForm(true);
+                  $("#register-status").show().text(langsrc.SERVICE['ERROR_CODE_' + statusCode + '_MESSAGE']);
+                  return false;
+                });
+              }
+            });
+          });
+        });
+      });
+    }
+  });
+};
+
+validPassword = function() {
+  var status, value;
+  status = $("#password-verification-status");
+  value = $("#reset-pw").val();
+  status.removeClass('error-status');
+  if (value !== "") {
+    if (value.length > 5) {
+      status.hide();
+      return true;
+    } else {
+      status.addClass("error-status").show().text(langsrc.RESET.reset_password_shorter);
+      return false;
+    }
+  } else {
+    status.addClass("error-status").show().text(langsrc.RESET.reset_password_required);
+    return false;
+  }
+};
+
+showErrorMessage = function() {
+  $('#reset-pw-email').attr('disabled', false);
+  $("#reset-btn").attr('disabled', false).val(window.langsrc.RESET.reset_btn);
+  $("#reset-status").removeClass('verification-status').addClass("error-msg").show().text(langsrc.RESET.reset_error_state);
+  return false;
+};
+
+handleErrorCode = function(statusCode) {
+  return console.error('ERROR_CODE_MESSAGE', langsrc.SERVICE["ERROR_CODE_" + statusCode + "_MESSAGE"]);
+};
+
+handleNetError = function(status) {
+  goto500();
+  return console.error(status, "Net Work Error, Redirecting...");
+};
+
+checkPassKey = function(keyToValid, fn) {
+  return api({
+    url: '/account/',
+    method: 'check_validation',
+    data: [keyToValid, 'reset'],
+    success: function(result, statusCode) {
+      console.log(statusCode, result);
+      return fn(statusCode);
+    },
+    error: function(status) {
+      handleNetError(status);
+      return false;
+    }
+  });
+};
+
+checkInviteKey = function(key) {
+  return api({
+    url: '/project/',
+    method: 'check_invitation',
+    data: [key, $.cookie('session_id')]
+  });
+};
+
+setCredit = function(result) {
+  var COOKIE_OPTION, cValue, ckey, domain, _ref;
+  domain = {
+    "domain": window.location.hostname.replace("ide", "")
+  };
+  _ref = $.cookie();
+  for (ckey in _ref) {
+    cValue = _ref[ckey];
+    if (ckey !== 'stack_store_id_local' && ckey !== 'stack_store_id') {
+      $.removeCookie(ckey, domain);
+    }
+  }
+  COOKIE_OPTION = {
+    expires: 30,
+    path: '/'
+  };
+  $.cookie("usercode", result.username, COOKIE_OPTION);
+  $.cookie("session_id", result.session_id, COOKIE_OPTION);
+  return $.cookie("has_session", !!result.session_id, {
+    domain: window.location.hostname.replace("ide", ""),
+    path: "/",
+    expires: 30
+  });
+};
+
+ajaxRegister = function(params, errorCB) {
+  return api({
+    url: '/account/',
+    method: 'register',
+    data: params,
+    success: function(result, statusCode) {
+      if (!statusCode) {
+        setCredit(result);
+        window.location.hash = "success";
+      } else {
+        return errorCB(statusCode);
+      }
+    },
+    error: function(status) {
+      return handleNetError(status);
+    }
+  });
+};
+
+ajaxLogin = function(params, errorCB) {
+  return api({
+    url: '/session/',
+    method: 'login',
+    data: params,
+    success: function(result, statusCode) {
+      if (!statusCode) {
+        setCredit(result);
+        window.location = getRef();
+      } else {
+        return errorCB(statusCode);
+      }
+    },
+    error: function(status) {
+      return handleNetError(status);
+    }
+  });
+};
+
+sendEmail = function(params) {
+  return checkUserExist([params, null], function(statusCode) {
+    if (!statusCode) {
+      showErrorMessage();
+      return false;
+    }
+    return api({
+      url: '/account/',
+      method: 'reset_password',
+      data: [params],
+      success: function(result, statusCode) {
+        if (!statusCode) {
+          window.location.hash = 'email';
+          return true;
+        } else {
+          handleErrorCode(statusCode);
+          showErrorMessage();
+          return false;
+        }
+      },
+      error: function(status) {
+        return handleNetError(status);
+      }
+    });
+  });
+};
+
+checkUserExist = function(params, fn) {
+  return api({
+    url: '/account/',
+    method: 'check_repeat',
+    data: params,
+    success: function(result, statusCode) {
+      return fn(statusCode);
+    },
+    error: function(status) {
+      return fn('error');
+    }
+  });
+};
+
+ajaxChangePassword = function(hashArray, newPw) {
+  return api({
+    url: "/account/",
+    method: "update_password",
+    data: [hashArray[1], newPw],
+    success: function(result, statusCode) {
+      if (!statusCode) {
+        window.location.hash = 'success';
+      } else {
+        return handleErrorCode(statusCode);
+      }
+    },
+    error: function(status) {
+      return handleNetError(status);
+    }
+  });
+};
+
+loadLang(init);

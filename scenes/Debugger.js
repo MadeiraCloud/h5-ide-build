@@ -1,1 +1,535 @@
-var __hasProp={}.hasOwnProperty,__extends=function(e,t){function r(){this.constructor=e}for(var n in t)__hasProp.call(t,n)&&(e[n]=t[n]);return r.prototype=t.prototype,e.prototype=new r,e.__super__=t.prototype,e};define(["Scene","./DebuggerTpl","ApiRequest","ApiRequestOs","ApiRequestDefs","Design","component/jsonviewer/JsonViewer","backbone","jquery","UI.select2","UI.tooltip"],function(e,t,n,r,i,s,o){var u,a,f;window.d=function(){return s.instance()},window.dds=function(){return debug.designSerialize()},window.debug={stacks:function(){var e,t,n,r,i,s,o,u,a;n={},u=App.model.projects().models;for(r=0,s=u.length;r<s;r++){t=u[r],n[t.id]={name:t.get("name"),stacks:[]},a=t.stacks().models;for(i=0,o=a.length;i<o;i++)e=a[i],n[t.id].stacks.push(e)}return n},apps:function(){var e,t,n,r,i,s,o,u,a;n={},u=App.model.projects().models;for(r=0,s=u.length;r<s;r++){t=u[r],n[t.id]={name:t.get("name"),apps:[]},a=t.apps().models;for(i=0,o=a.length;i<o;i++)e=a[i],n[t.id].apps.push(e)}return n},selectedComp:function(){var e;e=App.sceneManager.activeScene();if(e.getAwakeSpace){e=e.getAwakeSpace();if(e.getSelectedComponent)return e.getSelectedComponent()}return null},selectedCompState:function(){var e,t;return e=(t=debug.selectedComp())!=null?t.serialize()[1]:void 0,e&&e.component&&e.component.state?'{\n	"component": {\n		"init" : {\n			"state": '+JSON.stringify(e.component.state)+"\n		}\n	}\n}\n":"no state for selected component"},designSerialize:function(){var e;if(!s.instance())return;return e=s.instance().serialize(),void 0,JSON.stringify(e)},designCheckValid:function(){return s.instance().eachComponent(function(e){return e.design()===s.instance()?void 0:void 0,null}),null},designExportToFile:function(){var e,t,n,r,i;if(!s.instance())return;return i="CanvasData.json",n=s.debug.json(),t=new Blob([n],{type:"text/json"}),r=document.createEvent("MouseEvents"),e=document.createElement("a"),e.download=i,e.href=window.URL.createObjectURL(t),e.dataset.downloadurl=["text/json",e.download,e.href].join(":"),r.initMouseEvent("click",!0,!1,window,0,0,0,0,0,!1,!1,!1,!1,0,null),e.dispatchEvent(r),null},designDiff:function(){s.instance()&&o.showDiffDialog(s.instance().__opsModel.getJsonData(),s.instance().serialize())},designView:function(){if(!s.instance())return;o.showViewDialog(s.instance().serialize())},designLayout:function(){return App.sceneManager.activeScene().getAwakeSpace().view.canvas.autoLayout()},designSet:function(e,t){var n;return(n=s.instance())!=null?n.set(e,t):void 0},designGet:function(e){var t;return(t=s.instance())!=null?t.get(e):void 0},designComps:function(){var e,t,n,r;if(!s.instance())return;t={line:{},node:{},group:{},otherResource:{},otherConnection:{}},r=s.instance().__componentMap;for(n in r)e=r[n],e.node_group?t.group[e.id]=e:e.node_line?e.isVisual()?t.line[e.id]=e:t.otherConnection[e.id]=e:e.isVisual()?t.node[e.id]=e:t.otherResource[e.id]=e;return t}},window.man="d()          Return the current Design instance \n dds()        Print JSON \n copy(dds())  Copy JSON \n debug        A object contains some debug functions",null,f=Backbone.View.extend({events:{"click li":function(e){var t;return typeof this[t=e.currentTarget.id]=="function"?this[t]():void 0}},initialize:function(){$("head").append('<link rel="stylesheet" href="/assets/css/debugger.css"></link>'),this.setElement($(t.Toolbar()).appendTo("body"))},ask:function(e,n){var r,i;r=$(t.Question({content:e,buttons:n||[]})).prependTo("body"),i=this,r.on("click","button",function(e){var t;return typeof i[t=$(e.currentTarget).attr("data-id")]=="function"?i[t]():void 0}),setTimeout(function(){return $("#DebugQuestion").addClass("ready")},18)},DtDiff:function(){return debug.designDiff()},DtView:function(){return debug.designView()},DtApi:function(){return new u},DtSession:function(){var e;e="<textarea id='DebugShareSession' spellcheck='false'>(function(){var o = {expires:30,path:'/'}, a = "+JSON.stringify($.cookie())+",k;for (k in a) { $.cookie(k,a[k],o); } window.location.href = window.location.protocol + '//' + window.location.host + '"+window.location.pathname+"'; })();</textarea>",this.ask(e),setTimeout(function(){return $("#DebugShareSession").focus().select()},200)},DtClearApp:function(){var e;return e=[{id:"debug_q_clear_project_app",text:"当前项目的App"},{id:"debug_q_clear_all_app",text:"所有项目的App"}],this.ask("えええええええっ！！你要Teminate所有App？本当ですか？",e)},DtClearStack:function(){var e;return e=[{id:"debug_q_clear_project_stack",text:"当前项目的Stack"},{id:"debug_q_clear_all_stack",text:"所有项目的Stack"}],this.ask("マジですか？你要删除所有Stack？",e)},debug_q_close:function(){$("#DebugQuestion").addClass("quick").removeClass("ready"),setTimeout(function(){return $("#DebugQuestion").remove()},100)},debug_q_clear_project_stack:function(){var e,t,n,r,i,s;n=App.sceneManager.activeScene(),_.isFunction(n.project)?t=n.project():t=App.model.getPrivateProject(),s=t.stacks().models.slice(0);for(r=0,i=s.length;r<i;r++)e=s[r],e.remove();return this.debug_q_close()},debug_q_clear_project_app:function(){var e,t,n,r,i,s;n=App.sceneManager.activeScene(),_.isFunction(n.project)?t=n.project():t=App.model.getPrivateProject(),s=t.apps().models.slice(0);for(r=0,i=s.length;r<i;r++)e=s[r],e.remove();return this.debug_q_close()},debug_q_clear_all_stack:function(){var e,t,n,r,i,s,o,u;o=App.model.projects().models;for(n=0,i=o.length;n<i;n++){t=o[n],u=t.stacks().models.slice(0);for(r=0,s=u.length;r<s;r++)e=u[r],e.remove()}return this.debug_q_close()},debug_q_clear_all_app:function(){var e,t,n,r,i,s,o,u;o=App.model.projects().models;for(n=0,i=o.length;n<i;n++){t=o[n],u=t.apps().models.slice(0);for(r=0,s=u.length;r<s;r++)e=u[r],e.terminate()}return this.debug_q_close()}}),a=Backbone.View.extend({events:{"change #ApiSelect":"onApiChange","click  #ApiDebugSend":"onSendClick","click  #ApiDebuggerClose":"close"},initialize:function(){this.setElement($(t.ApiDebugger()).appendTo("body")),this.render(),$("#ApiSelect").select2("open"),$("#s2id_autogen1_search").focus()},remove:function(){return $("#ApiSelect").select2("destroy"),this.$el.remove()},close:function(){return this.trigger("closed")},render:function(){var e,t,n,r,s,o,u,a,f,l,c;a="<option></option>",o={},c=i.Defs;for(n in c)t=c[n],e=n.split("_"),e.length===1?r="General":r=e[0].toUpperCase(),o[r]||(o[r]=[]),o[r].push(n);for(u in o){r=o[u],a+="<optgroup label='"+u+"'>";for(f=0,l=r.length;f<l;f++)s=r[f],a+="<option value='"+s+"'>"+s+"</option>";a+="</optgrouop>"}return $("#ApiSelect").html(a).select2({dropdownCssClass:"debugger",matcher:function(e,t,n){return t.match(new RegExp(e.replace(/\s+/g,"").split("").join(".*"),"i"))}})},onApiChange:function(){var e,t,n,r,s,o,u,a,f,l,c,h;o=$("#ApiSelect").select2("val"),e=i.Defs[o],$("#ApiResult").empty(),$("#ApiDebuggerLabel").text("Api : '"+o+"'");if(!e)return $("#ApiParamsWrap").empty();n="",c=e.params;for(u=0,f=c.length;u<f;u++){t=c[u],s=i.AutoFill(t),s===null&&(s="");if(t==="key_id"){s=App.model.projects().where({name:"My Workspace"})[0].credentials().models[0].id,n+="<select placeholder='"+t+"' class='tooltip' value='"+s+"' data-tooltip='"+t+"'>",h=App.model.projects().models;for(a=0,l=h.length;a<l;a++)r=h[a],n+="<option value ='"+r.credentials().models[0].id+"'>"+r.credentials().models[0].id+"("+r.get("name")+")</option>";n+="</select>"}else n+="<input placeholder='"+t+"' class='tooltip' value='"+s+"' data-tooltip='"+t+"'/>"}return $("#ApiParamsWrap").html(n),this.trigger("apiChanged",o)},onSendClick:function(){var e,t,s,o,u,a,f,l,c,h,p,d,v;e=$("#ApiSelect").select2("val"),t=i.Defs[e];if(!t)return;a={},d=$("#ApiParamsWrap").children("input");for(l=0,h=d.length;l<h;l++){s=d[l],f=s.value;if(!f)continue;u=$(s).attr("placeholder");try{a[u]=JSON.parse(f)}catch(m){o=m,a[u]=f}}v=$("#ApiParamsWrap").children("select");for(c=0,p=v.length;c<p;c++){s=v[c],f=s.value;if(!f)continue;u=$(s).attr("placeholder");try{a[u]=JSON.parse(f)}catch(m){o=m,a[u]=f}}return $("#ApiDebugSend").attr("disabled","disabled"),$("#ApiResult").text("Loading...").attr("finish","false"),(t.type==="openstack"?r:n)(e,a).then(function(e){var n,r,i,s,o,u,a,f;if(t.url.indexOf("/aws/")===0&&t.url.length>5&&typeof e[1]=="string")try{e[1]=$.xml2json($.parseXML(e[1]))}catch(l){}else if(t.url.indexOf("/os/")===0)if(t.method==="Info")for(i=o=0,a=e.length;o<a;i=++o){s=e[i];try{if($.type(e)==="array")for(r=u=0,f=s.length;u<f;r=++u)n=s[r],e[i][r]=JSON.parse(n);else e[i]=JSON.parse(s)}catch(l){}}else try{e[1]=JSON.parse(e[1])}catch(l){}return $("#ApiResult").text(JSON.stringify(e,void 0,4)),$("#ApiDebugSend").removeAttr("disabled"),$("#ApiResult").attr("finish","true")},function(e){return $("#ApiResult").text(JSON.stringify(e,void 0,4)),$("#ApiDebugSend").removeAttr("disabled"),$("#ApiResult").attr("finish","true")}),null},switchToApi:function(e){return $("#ApiSelect").select2("val",e).select2("close"),this.onApiChange()}}),u=function(t){function n(t){var n;return t=t||"",n=App.sceneManager.find("ApiDebugger"),n?(n.activate(),n.switchToApi(t),n):e.call(this,t)}return __extends(n,t),n.prototype.api="",n.prototype.initialize=function(e){return this.view=new a,this.listenTo(this.view,"apiChanged",this.onApiChange),this.listenTo(this.view,"closed",this.remove),this.activate(),this.switchToApi(e||"")},n.prototype.title=function(){return"API Debugger"},n.prototype.url=function(){return this.api?"debug/api/"+this.api:"debug/api"},n.prototype.isWorkingOn=function(e){return e==="ApiDebugger"},n.prototype.onApiChange=function(e){return this.api=e,this.updateUrl()},n.prototype.switchToApi=function(e){if(this.api===e||!e)return;return this.onApiChange(),this.view.switchToApi(e)},n}(e),new f,window.Router.route("debug/api(/:theapi)",function(e){return new u(e)})});
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+define(["Scene", "./DebuggerTpl", "ApiRequest", "ApiRequestOs", "ApiRequestDefs", "Design", "component/jsonviewer/JsonViewer", "backbone", "jquery", "UI.select2", "UI.tooltip"], function(Scene, Template, ApiRequest, ApiRequestOs, ApiRequestDefs, Design, JsonViewer) {
+  var ApiDebugger, ApiDebuggerView, AppDebugger;
+  window.d = function() {
+    return Design.instance();
+  };
+  window.dds = function() {
+    return debug.designSerialize();
+  };
+  window.debug = {
+    stacks: function() {
+      var m, p, s, _i, _j, _len, _len1, _ref, _ref1;
+      s = {};
+      _ref = App.model.projects().models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        s[p.id] = {
+          name: p.get("name"),
+          stacks: []
+        };
+        _ref1 = p.stacks().models;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          m = _ref1[_j];
+          s[p.id].stacks.push(m);
+        }
+      }
+      return s;
+    },
+    apps: function() {
+      var m, p, s, _i, _j, _len, _len1, _ref, _ref1;
+      s = {};
+      _ref = App.model.projects().models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        s[p.id] = {
+          name: p.get("name"),
+          apps: []
+        };
+        _ref1 = p.apps().models;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          m = _ref1[_j];
+          s[p.id].apps.push(m);
+        }
+      }
+      return s;
+    },
+    selectedComp: function() {
+      var s;
+      s = App.sceneManager.activeScene();
+      if (s.getAwakeSpace) {
+        s = s.getAwakeSpace();
+        if (s.getSelectedComponent) {
+          return s.getSelectedComponent();
+        }
+      }
+      return null;
+    },
+    selectedCompState: function() {
+      var comp, _ref;
+      comp = (_ref = debug.selectedComp()) != null ? _ref.serialize()[1] : void 0;
+      if (comp && comp.component && comp.component.state) {
+        return '{\n\t"component": {\n\t\t"init" : {\n\t\t\t"state": ' + JSON.stringify(comp.component.state) + '\n\t\t}\n\t}\n}\n';
+      } else {
+        return "no state for selected component";
+      }
+    },
+    designSerialize: function() {
+      var data;
+      if (!Design.instance()) {
+        return;
+      }
+      data = Design.instance().serialize();
+      console.log(data);
+      return JSON.stringify(data);
+    },
+    designCheckValid: function() {
+      Design.instance().eachComponent(function(comp) {
+        if (comp.design() === Design.instance()) {
+          console.log("Valid design");
+        } else {
+          console.log("Invalid design");
+        }
+        return null;
+      });
+      return null;
+    },
+    designExportToFile: function() {
+      var a, blob, data, e, filename;
+      if (!Design.instance()) {
+        return;
+      }
+      filename = 'CanvasData.json';
+      data = Design.debug.json();
+      blob = new Blob([data], {
+        type: 'text/json'
+      });
+      e = document.createEvent('MouseEvents');
+      a = document.createElement('a');
+      a.download = filename;
+      a.href = window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      a.dispatchEvent(e);
+      return null;
+    },
+    designDiff: function() {
+      if (Design.instance()) {
+        JsonViewer.showDiffDialog(Design.instance().__opsModel.getJsonData(), Design.instance().serialize());
+      }
+    },
+    designView: function() {
+      if (!Design.instance()) {
+        return;
+      }
+      JsonViewer.showViewDialog(Design.instance().serialize());
+    },
+    designLayout: function() {
+      return App.sceneManager.activeScene().getAwakeSpace().view.canvas.autoLayout();
+    },
+    designSet: function(a, b) {
+      var _ref;
+      return (_ref = Design.instance()) != null ? _ref.set(a, b) : void 0;
+    },
+    designGet: function(a) {
+      var _ref;
+      return (_ref = Design.instance()) != null ? _ref.get(a) : void 0;
+    },
+    designComps: function() {
+      var a, checkedMap, id, _ref;
+      if (!Design.instance()) {
+        return;
+      }
+      checkedMap = {
+        "line": {},
+        "node": {},
+        "group": {},
+        "otherResource": {},
+        "otherConnection": {}
+      };
+      _ref = Design.instance().__componentMap;
+      for (id in _ref) {
+        a = _ref[id];
+        if (a.node_group) {
+          checkedMap.group[a.id] = a;
+        } else if (a.node_line) {
+          if (a.isVisual()) {
+            checkedMap.line[a.id] = a;
+          } else {
+            checkedMap.otherConnection[a.id] = a;
+          }
+        } else {
+          if (a.isVisual()) {
+            checkedMap.node[a.id] = a;
+          } else {
+            checkedMap.otherResource[a.id] = a;
+          }
+        }
+      }
+      return checkedMap;
+    }
+  };
+  window.man = "d()          Return the current Design instance \n dds()        Print JSON \n copy(dds())  Copy JSON \n debug        A object contains some debug functions";
+  null;
+  AppDebugger = Backbone.View.extend({
+    events: {
+      "click li": function(evt) {
+        var _name;
+        return typeof this[_name = evt.currentTarget.id] === "function" ? this[_name]() : void 0;
+      }
+    },
+    initialize: function() {
+      $("head").append('<link rel="stylesheet" href="/assets/css/debugger.css"></link>');
+      this.setElement($(Template.Toolbar()).appendTo("body"));
+    },
+    ask: function(content, buttons) {
+      var q, self;
+      q = $(Template.Question({
+        content: content,
+        buttons: buttons || []
+      })).prependTo("body");
+      self = this;
+      q.on("click", "button", function(evt) {
+        var _name;
+        return typeof self[_name = $(evt.currentTarget).attr("data-id")] === "function" ? self[_name]() : void 0;
+      });
+      setTimeout(function() {
+        return $("#DebugQuestion").addClass("ready");
+      }, 18);
+    },
+    DtDiff: function() {
+      return debug.designDiff();
+    },
+    DtView: function() {
+      return debug.designView();
+    },
+    DtApi: function() {
+      return new ApiDebugger();
+    },
+    DtSession: function() {
+      var session;
+      session = "<textarea id='DebugShareSession' spellcheck='false'>(function(){var o = {expires:30,path:'/'}, a = " + (JSON.stringify($.cookie())) + ",k;for (k in a) { $.cookie(k,a[k],o); } window.location.href = window.location.protocol + '//' + window.location.host + '" + window.location.pathname + "'; })();</textarea>";
+      this.ask(session);
+      setTimeout(function() {
+        return $("#DebugShareSession").focus().select();
+      }, 200);
+    },
+    DtClearApp: function() {
+      var buttons;
+      buttons = [
+        {
+          id: "debug_q_clear_project_app",
+          text: "当前项目的App"
+        }, {
+          id: "debug_q_clear_all_app",
+          text: "所有项目的App"
+        }
+      ];
+      return this.ask("えええええええっ！！你要Teminate所有App？本当ですか？", buttons);
+    },
+    DtClearStack: function() {
+      var buttons;
+      buttons = [
+        {
+          id: "debug_q_clear_project_stack",
+          text: "当前项目的Stack"
+        }, {
+          id: "debug_q_clear_all_stack",
+          text: "所有项目的Stack"
+        }
+      ];
+      return this.ask("マジですか？你要删除所有Stack？", buttons);
+    },
+    debug_q_close: function() {
+      $("#DebugQuestion").addClass("quick").removeClass("ready");
+      setTimeout(function() {
+        return $("#DebugQuestion").remove();
+      }, 100);
+    },
+    debug_q_clear_project_stack: function() {
+      var m, p, s, _i, _len, _ref;
+      s = App.sceneManager.activeScene();
+      if (_.isFunction(s.project)) {
+        p = s.project();
+      } else {
+        p = App.model.getPrivateProject();
+      }
+      _ref = p.stacks().models.slice(0);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        m = _ref[_i];
+        m.remove();
+      }
+      return this.debug_q_close();
+    },
+    debug_q_clear_project_app: function() {
+      var m, p, s, _i, _len, _ref;
+      s = App.sceneManager.activeScene();
+      if (_.isFunction(s.project)) {
+        p = s.project();
+      } else {
+        p = App.model.getPrivateProject();
+      }
+      _ref = p.apps().models.slice(0);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        m = _ref[_i];
+        m.remove();
+      }
+      return this.debug_q_close();
+    },
+    debug_q_clear_all_stack: function() {
+      var m, p, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = App.model.projects().models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        _ref1 = p.stacks().models.slice(0);
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          m = _ref1[_j];
+          m.remove();
+        }
+      }
+      return this.debug_q_close();
+    },
+    debug_q_clear_all_app: function() {
+      var m, p, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = App.model.projects().models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        _ref1 = p.apps().models.slice(0);
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          m = _ref1[_j];
+          m.terminate();
+        }
+      }
+      return this.debug_q_close();
+    }
+  });
+  ApiDebuggerView = Backbone.View.extend({
+    events: {
+      "change #ApiSelect": "onApiChange",
+      "click  #ApiDebugSend": "onSendClick",
+      "click  #ApiDebuggerClose": "close"
+    },
+    initialize: function() {
+      this.setElement($(Template.ApiDebugger()).appendTo("body"));
+      this.render();
+      $("#ApiSelect").select2("open");
+      $("#s2id_autogen1_search").focus();
+    },
+    remove: function() {
+      $("#ApiSelect").select2("destroy");
+      return this.$el.remove();
+    },
+    close: function() {
+      return this.trigger("closed");
+    },
+    render: function() {
+      var d, def, defName, g, gg, group, groupName, option, _i, _len, _ref;
+      option = "<option></option>";
+      group = {};
+      _ref = ApiRequestDefs.Defs;
+      for (defName in _ref) {
+        def = _ref[defName];
+        d = defName.split("_");
+        if (d.length === 1) {
+          g = "General";
+        } else {
+          g = d[0].toUpperCase();
+        }
+        if (!group[g]) {
+          group[g] = [];
+        }
+        group[g].push(defName);
+      }
+      for (groupName in group) {
+        g = group[groupName];
+        option += "<optgroup label='" + groupName + "'>";
+        for (_i = 0, _len = g.length; _i < _len; _i++) {
+          gg = g[_i];
+          option += "<option value='" + gg + "'>" + gg + "</option>";
+        }
+        option += "</optgrouop>";
+      }
+      return $("#ApiSelect").html(option).select2({
+        dropdownCssClass: "debugger",
+        matcher: function(term, text, opt) {
+          return text.match(new RegExp(term.replace(/\s+/g, '').split('').join('.*'), 'i'));
+        }
+      });
+    },
+    onApiChange: function() {
+      var apiDef, p, phtml, project, v, val, _i, _j, _len, _len1, _ref, _ref1;
+      val = $("#ApiSelect").select2("val");
+      apiDef = ApiRequestDefs.Defs[val];
+      $("#ApiResult").empty();
+      $("#ApiDebuggerLabel").text("Api : '" + val + "'");
+      if (!apiDef) {
+        return $("#ApiParamsWrap").empty();
+      }
+      phtml = "";
+      _ref = apiDef.params;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        v = ApiRequestDefs.AutoFill(p);
+        if (v === null) {
+          v = "";
+        }
+        if (p === "key_id") {
+          v = App.model.projects().where({
+            name: "My Workspace"
+          })[0].credentials().models[0].id;
+          phtml += "<select placeholder='" + p + "' class='tooltip' value='" + v + "' data-tooltip='" + p + "'>";
+          _ref1 = App.model.projects().models;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            project = _ref1[_j];
+            phtml += "<option value ='" + (project.credentials().models[0].id) + "'>" + (project.credentials().models[0].id) + "(" + (project.get('name')) + ")</option>";
+          }
+          phtml += "</select>";
+        } else {
+          phtml += "<input placeholder='" + p + "' class='tooltip' value='" + v + "' data-tooltip='" + p + "'/>";
+        }
+      }
+      $("#ApiParamsWrap").html(phtml);
+      return this.trigger("apiChanged", val);
+    },
+    onSendClick: function() {
+      var api, apiDef, ch, e, k, params, v, _i, _j, _len, _len1, _ref, _ref1;
+      api = $("#ApiSelect").select2("val");
+      apiDef = ApiRequestDefs.Defs[api];
+      if (!apiDef) {
+        return;
+      }
+      params = {};
+      _ref = $("#ApiParamsWrap").children("input");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        ch = _ref[_i];
+        v = ch.value;
+        if (!v) {
+          continue;
+        }
+        k = $(ch).attr("placeholder");
+        try {
+          params[k] = JSON.parse(v);
+        } catch (_error) {
+          e = _error;
+          params[k] = v;
+        }
+      }
+      _ref1 = $("#ApiParamsWrap").children("select");
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        ch = _ref1[_j];
+        v = ch.value;
+        if (!v) {
+          continue;
+        }
+        k = $(ch).attr("placeholder");
+        try {
+          params[k] = JSON.parse(v);
+        } catch (_error) {
+          e = _error;
+          params[k] = v;
+        }
+      }
+      $("#ApiDebugSend").attr("disabled", "disabled");
+      $("#ApiResult").text("Loading...").attr("finish", "false");
+      (apiDef.type === "openstack" ? ApiRequestOs : ApiRequest)(api, params).then(function(result) {
+        var c, i, idx, item, _k, _l, _len2, _len3;
+        if (apiDef.url.indexOf("/aws/") === 0 && apiDef.url.length > 5 && (typeof result[1] === "string")) {
+          try {
+            result[1] = $.xml2json($.parseXML(result[1]));
+          } catch (_error) {
+
+          }
+        } else if (apiDef.url.indexOf("/os/") === 0) {
+          if (apiDef.method === "Info") {
+            for (idx = _k = 0, _len2 = result.length; _k < _len2; idx = ++_k) {
+              item = result[idx];
+              try {
+                if ($.type(result) === 'array') {
+                  for (i = _l = 0, _len3 = item.length; _l < _len3; i = ++_l) {
+                    c = item[i];
+                    result[idx][i] = JSON.parse(c);
+                  }
+                } else {
+                  result[idx] = JSON.parse(item);
+                }
+              } catch (_error) {
+
+              }
+            }
+          } else {
+            try {
+              result[1] = JSON.parse(result[1]);
+            } catch (_error) {
+
+            }
+          }
+        }
+        $("#ApiResult").text(JSON.stringify(result, void 0, 4));
+        $("#ApiDebugSend").removeAttr("disabled");
+        return $("#ApiResult").attr("finish", "true");
+      }, function(error) {
+        $("#ApiResult").text(JSON.stringify(error, void 0, 4));
+        $("#ApiDebugSend").removeAttr("disabled");
+        return $("#ApiResult").attr("finish", "true");
+      });
+      return null;
+    },
+    switchToApi: function(api) {
+      $("#ApiSelect").select2("val", api).select2("close");
+      return this.onApiChange();
+    }
+  });
+  ApiDebugger = (function(_super) {
+    __extends(ApiDebugger, _super);
+
+    ApiDebugger.prototype.api = "";
+
+    function ApiDebugger(api) {
+      var ss;
+      api = api || "";
+      ss = App.sceneManager.find("ApiDebugger");
+      if (ss) {
+        ss.activate();
+        ss.switchToApi(api);
+        return ss;
+      }
+      return Scene.call(this, api);
+    }
+
+    ApiDebugger.prototype.initialize = function(api) {
+      this.view = new ApiDebuggerView();
+      this.listenTo(this.view, "apiChanged", this.onApiChange);
+      this.listenTo(this.view, "closed", this.remove);
+      this.activate();
+      return this.switchToApi(api || "");
+    };
+
+    ApiDebugger.prototype.title = function() {
+      return "API Debugger";
+    };
+
+    ApiDebugger.prototype.url = function() {
+      if (this.api) {
+        return "debug/api/" + this.api;
+      } else {
+        return "debug/api";
+      }
+    };
+
+    ApiDebugger.prototype.isWorkingOn = function(attr) {
+      return attr === "ApiDebugger";
+    };
+
+    ApiDebugger.prototype.onApiChange = function(api) {
+      this.api = api;
+      return this.updateUrl();
+    };
+
+    ApiDebugger.prototype.switchToApi = function(api) {
+      if (this.api === api || !api) {
+        return;
+      }
+      this.onApiChange();
+      return this.view.switchToApi(api);
+    };
+
+    return ApiDebugger;
+
+  })(Scene);
+  new AppDebugger();
+  window.Router.route("debug/api(/:theapi)", function(theapi) {
+    return new ApiDebugger(theapi);
+  });
+});

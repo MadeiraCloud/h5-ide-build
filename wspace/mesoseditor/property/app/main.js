@@ -1,1 +1,34 @@
-define(["Design","../base/main","./view","./app_view","constant","CloudResources","event"],function(e,t,n,r,i,s){return t.extend({handleTypes:[i.RESTYPE.MRTHAPP],initStack:function(t){return this.view=n,this.model=e.instance().component(t),this.view.isAppEdit=!1,null},initApp:function(t){var n;return this.view=r,this.model=e.instance().component(t),n=this.model.path(),this.view.appData=s(e.instance().credentialId(),i.RESTYPE.MRTHAPP,e.instance().serialize().id).filter(function(e){return e.get("id")===n}),this.view.isAppEdit=!1,null},initAppEdit:function(t){var r;return this.view=n,this.view.isAppEdit=!0,this.model=e.instance().component(t),this.view.model=e.instance().component(t),r=this.view.model.path(),this.view.appData=s(e.instance().credentialId(),i.RESTYPE.MRTHAPP,e.instance().serialize().id).filter(function(e){return e.get("id")===r}),null}})});
+define(["Design", "../base/main", "./view", "./app_view", "constant", "CloudResources", "event"], function(Design, PropertyModule, view, appView, constant, CloudResources) {
+  return PropertyModule.extend({
+    handleTypes: [constant.RESTYPE.MRTHAPP],
+    initStack: function(uid) {
+      this.view = view;
+      this.model = Design.instance().component(uid);
+      this.view.isAppEdit = false;
+      return null;
+    },
+    initApp: function(uid) {
+      var path;
+      this.view = appView;
+      this.model = Design.instance().component(uid);
+      path = this.model.path();
+      this.view.appData = CloudResources(Design.instance().credentialId(), constant.RESTYPE.MRTHAPP, Design.instance().serialize().id).filter(function(model) {
+        return model.get("id") === path;
+      });
+      this.view.isAppEdit = false;
+      return null;
+    },
+    initAppEdit: function(uid) {
+      var path;
+      this.view = view;
+      this.view.isAppEdit = true;
+      this.model = Design.instance().component(uid);
+      this.view.model = Design.instance().component(uid);
+      path = this.view.model.path();
+      this.view.appData = CloudResources(Design.instance().credentialId(), constant.RESTYPE.MRTHAPP, Design.instance().serialize().id).filter(function(model) {
+        return model.get("id") === path;
+      });
+      return null;
+    }
+  });
+});

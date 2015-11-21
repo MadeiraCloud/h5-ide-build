@@ -1,1 +1,60 @@
-define(["constant","../OsPropertyView","./template","CloudResources"],function(e,t,n,r){return t.extend({events:{"change .selection[data-target]":"updateAttribute"},render:function(){var e;return this.$el.html(n.stackTemplate(this.getRenderData())),((e=this.model)!=null?e.get("snapshot"):void 0)&&this.bindSelectizeEvent(),this},bindSelectizeEvent:function(){var t,n,i,s;return s=this,this.snapshots||(this.snapshots=r(e.RESTYPE.OSSNAP,Design.instance().region())),n=_.map(this.snapshots.models,function(e){var t,n;return t=e.get("name"),n=e.get("id"),{text:t,value:n}}),i=this.$el.find("#property-os-volume-snapshot"),i.on("select_initialize",function(){return this.selectize.addOption(n),this.selectize.setValue(s.model.get("snapshot"))}),t=this.$el.find("#property-os-volume-size"),i.on("change",function(){return _.defer(function(){return t.val(s.model.get("size"))})})},updateAttribute:function(e){var n,r;t.prototype.updateAttribute.apply(this,arguments),n=e.currentTarget||e.target;if($(n).data("target")==="snapshot")return r=this.snapshots.get($(n).val()).get("size"),this.model.set("size",r)},selectTpl:{snapshotOption:function(t){var i,s;return s=r(e.RESTYPE.OSSNAP,Design.instance().region()),i=s.get(t.value),n.snapshotOption(i!=null?i.toJSON():void 0)}}},{handleTypes:[e.RESTYPE.OSVOL],handleModes:["stack","appedit"]})});
+define(['constant', '../OsPropertyView', './template', 'CloudResources'], function(constant, OsPropertyView, template, CloudResources) {
+  return OsPropertyView.extend({
+    events: {
+      "change .selection[data-target]": "updateAttribute"
+    },
+    render: function() {
+      var _ref;
+      this.$el.html(template.stackTemplate(this.getRenderData()));
+      if ((_ref = this.model) != null ? _ref.get('snapshot') : void 0) {
+        this.bindSelectizeEvent();
+      }
+      return this;
+    },
+    bindSelectizeEvent: function() {
+      var sizeInputElement, snapshotOptions, snapshotSelectElem, that;
+      that = this;
+      this.snapshots || (this.snapshots = CloudResources(constant.RESTYPE.OSSNAP, Design.instance().region()));
+      snapshotOptions = _.map(this.snapshots.models, function(e) {
+        var text, value;
+        text = e.get('name');
+        value = e.get('id');
+        return {
+          text: text,
+          value: value
+        };
+      });
+      snapshotSelectElem = this.$el.find("#property-os-volume-snapshot");
+      snapshotSelectElem.on('select_initialize', function() {
+        this.selectize.addOption(snapshotOptions);
+        return this.selectize.setValue(that.model.get('snapshot'));
+      });
+      sizeInputElement = this.$el.find("#property-os-volume-size");
+      return snapshotSelectElem.on('change', function() {
+        return _.defer(function() {
+          return sizeInputElement.val(that.model.get('size'));
+        });
+      });
+    },
+    updateAttribute: function(event) {
+      var targetDom, volumeSize;
+      OsPropertyView.prototype.updateAttribute.apply(this, arguments);
+      targetDom = event.currentTarget || event.target;
+      if ($(targetDom).data('target') === "snapshot") {
+        volumeSize = this.snapshots.get($(targetDom).val()).get('size');
+        return this.model.set('size', volumeSize);
+      }
+    },
+    selectTpl: {
+      snapshotOption: function(item) {
+        var snapModel, snapshots;
+        snapshots = CloudResources(constant.RESTYPE.OSSNAP, Design.instance().region());
+        snapModel = snapshots.get(item.value);
+        return template.snapshotOption(snapModel != null ? snapModel.toJSON() : void 0);
+      }
+    }
+  }, {
+    handleTypes: [constant.RESTYPE.OSVOL],
+    handleModes: ['stack', 'appedit']
+  });
+});

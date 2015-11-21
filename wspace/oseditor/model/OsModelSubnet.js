@@ -1,1 +1,97 @@
-define(["GroupModel","constant"],function(e,t){var n;return n=e.extend({type:t.RESTYPE.OSSUBNET,newNameTmpl:"subnet",defaults:function(){return{"public":!1,cidr:"",dhcp:!0,nameservers:[]}},initialize:function(e,t){if(t.createByUser)return this.set("cidr",this.generateCidr())},generateCidr:function(){var e,t,r,i,s,o,u,a,f,l,c,h,p,d,v,m,g;r="10.0.0.0/8",c=r.split("/"),h=c[0],p=h.split("."),d=Number(c[1]),i=-1,g=n.allObjects();for(v=0,m=g.length;v<m;v++)e=g[v],o=e.get("cidr"),u=o.split("/"),f=u[0],l=Number(u[1]),a=f.split("."),t=Number(a[1]),i<t&&(i=t);return s=i+1,s>255?"":(p[1]=String(s),p.join(".")+"/16")},resetAllChildIP:function(){var e,n,r;return n=Design.modelClassForType(t.RESTYPE.OSPORT).allObjects(),e=Design.modelClassForType(t.RESTYPE.OSLISTENER).allObjects(),r=n.concat(e),_.each(r,function(e){return e.assignIP(),null})},serialize:function(){return{layout:this.generateLayout(),component:{name:this.get("name"),type:this.type,uid:this.id,resource:{id:this.get("appId"),name:this.get("name"),cidr:this.get("cidr"),enable_dhcp:this.get("dhcp"),dns_nameservers:this.get("nameservers"),network_id:this.parent().createRef("id"),gateway_ip:"",ip_version:"4",allocation_pools:{}}}}}},{handleTypes:t.RESTYPE.OSSUBNET,deserialize:function(e,t,r){new n({id:e.uid,name:e.resource.name,appId:e.resource.id,parent:r(MC.extractID(e.resource.network_id)),cidr:e.resource.cidr,dhcp:e.resource.enable_dhcp,x:t.coordinate[0],y:t.coordinate[1],width:t.size[0],height:t.size[1],nameservers:_.isArray(e.resource.dns_nameservers)?e.resource.dns_nameservers:[]})}}),n});
+define(["GroupModel", "constant"], function(GroupModel, constant) {
+  var Model;
+  Model = GroupModel.extend({
+    type: constant.RESTYPE.OSSUBNET,
+    newNameTmpl: "subnet",
+    defaults: function() {
+      return {
+        "public": false,
+        cidr: "",
+        dhcp: true,
+        nameservers: []
+      };
+    },
+    initialize: function(attributes, option) {
+      if (option.createByUser) {
+        return this.set('cidr', this.generateCidr());
+      }
+    },
+    generateCidr: function() {
+      var comp, currentSubnetNum, currentVPCCIDR, maxSubnetNum, resultSubnetNum, subnetCIDR, subnetCIDRAry, subnetCIDRIPAry, subnetCIDRIPStr, subnetCIDRSuffix, vpcCIDRAry, vpcCIDRIPStr, vpcCIDRIPStrAry, vpcCIDRSuffix, _i, _len, _ref;
+      currentVPCCIDR = '10.0.0.0/8';
+      vpcCIDRAry = currentVPCCIDR.split('/');
+      vpcCIDRIPStr = vpcCIDRAry[0];
+      vpcCIDRIPStrAry = vpcCIDRIPStr.split('.');
+      vpcCIDRSuffix = Number(vpcCIDRAry[1]);
+      maxSubnetNum = -1;
+      _ref = Model.allObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        comp = _ref[_i];
+        subnetCIDR = comp.get("cidr");
+        subnetCIDRAry = subnetCIDR.split('/');
+        subnetCIDRIPStr = subnetCIDRAry[0];
+        subnetCIDRSuffix = Number(subnetCIDRAry[1]);
+        subnetCIDRIPAry = subnetCIDRIPStr.split('.');
+        currentSubnetNum = Number(subnetCIDRIPAry[1]);
+        if (maxSubnetNum < currentSubnetNum) {
+          maxSubnetNum = currentSubnetNum;
+        }
+      }
+      resultSubnetNum = maxSubnetNum + 1;
+      if (resultSubnetNum > 255) {
+        return "";
+      }
+      vpcCIDRIPStrAry[1] = String(resultSubnetNum);
+      return vpcCIDRIPStrAry.join('.') + '/16';
+    },
+    resetAllChildIP: function() {
+      var allListenerModels, allPortModels, models;
+      allPortModels = Design.modelClassForType(constant.RESTYPE.OSPORT).allObjects();
+      allListenerModels = Design.modelClassForType(constant.RESTYPE.OSLISTENER).allObjects();
+      models = allPortModels.concat(allListenerModels);
+      return _.each(models, function(model) {
+        model.assignIP();
+        return null;
+      });
+    },
+    serialize: function() {
+      return {
+        layout: this.generateLayout(),
+        component: {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            id: this.get("appId"),
+            name: this.get("name"),
+            cidr: this.get("cidr"),
+            enable_dhcp: this.get("dhcp"),
+            dns_nameservers: this.get('nameservers'),
+            network_id: this.parent().createRef("id"),
+            gateway_ip: "",
+            ip_version: "4",
+            allocation_pools: {}
+          }
+        }
+      };
+    }
+  }, {
+    handleTypes: constant.RESTYPE.OSSUBNET,
+    deserialize: function(data, layout_data, resolve) {
+      new Model({
+        id: data.uid,
+        name: data.resource.name,
+        appId: data.resource.id,
+        parent: resolve(MC.extractID(data.resource.network_id)),
+        cidr: data.resource.cidr,
+        dhcp: data.resource.enable_dhcp,
+        x: layout_data.coordinate[0],
+        y: layout_data.coordinate[1],
+        width: layout_data.size[0],
+        height: layout_data.size[1],
+        nameservers: _.isArray(data.resource.dns_nameservers) ? data.resource.dns_nameservers : []
+      });
+    }
+  });
+  return Model;
+});

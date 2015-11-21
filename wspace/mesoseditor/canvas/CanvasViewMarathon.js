@@ -1,1 +1,105 @@
-define(["CanvasView","constant","i18n!/nls/lang.js","../template/TplOpsEditor","Design"],function(e,t,n,r,i){var s;return s=function(e,t){return t.x1<=e.x&&t.y1<=e.y&&t.x2>=e.x&&t.y2>=e.y},e.extend({initialize:function(){return e.prototype.initialize.apply(this,arguments),this.$el.addClass("marathon").toggleClass("empty",!this.hasItems()).append(r.canvas.placeholder())},hasItems:function(){return this.items().length>1},recreateStructure:function(){this.svg.clear().add([this.svg.group().classes("layer_group"),this.svg.group().classes("layer_line"),this.svg.group().classes("layer_node")])},appendGroup:function(e){var t,n;return t=this.__appendSvg(e,".layer_group"),n=this,setTimeout(function(){return n.sortGroup()},0),t},sortGroup:function(){var e,n,r,i,s,o,u,a,f,l,c,h,p;i=_.chain(this.items()).filter(function(e){return e.type===t.RESTYPE.MRTHGROUP}).sortBy(function(e){return e.parentCount()}).map(function(e){return e.$el[0]}).value(),u=$(this.svg.node).children(".layer_group")[0],n=$(u).children().splice(0),o=!1;for(s=a=0,c=n.length;a<c;s=++a){r=n[s];if(i[s]!==r){o=!0;break}}if(!o)return;for(f=0,h=n.length;f<h;f++)e=n[f],u.removeChild(e);for(s=l=0,p=i.length;l<p;s=++l)r=i[s],u.appendChild(r)},fixConnection:function(e,t,n){},highLightItems:function(){},appendNode:function(e){return this.__appendSvg(e,".layer_node")},appendline:function(e){return this.__appendSvg(e,".layer_line")},addItem:function(){return this.$el.removeClass("empty"),e.prototype.addItem.apply(this,arguments)},removeItem:function(){return e.prototype.removeItem.apply(this,arguments),this.$el.toggleClass("empty",!this.hasItems())},errorMessageForDrop:function(e){switch(e){case t.RESTYPE.VOL:return n.CANVAS.WARN_NOTMATCH_VOLUME;case t.RESTYPE.SUBNET:return n.CANVAS.WARN_NOTMATCH_SUBNET;case t.RESTYPE.INSTANCE:return n.CANVAS.WARN_NOTMATCH_INSTANCE_SUBNET;case t.RESTYPE.ENI:return n.CANVAS.WARN_NOTMATCH_ENI;case t.RESTYPE.RT:return n.CANVAS.WARN_NOTMATCH_RTB;case t.RESTYPE.ELB:return n.CANVAS.WARN_NOTMATCH_ELB;case t.RESTYPE.CGW:return n.CANVAS.WARN_NOTMATCH_CGW;case t.RESTYPE.ASG:return n.CANVAS.WARN_NOTMATCH_ASG;case t.RESTYPE.IGW:return n.CANVAS.WARN_NOTMATCH_IGW;case t.RESTYPE.VGW:return n.CANVAS.WARN_NOTMATCH_VGW;case t.RESTYPE.DBSBG:return n.CANVAS.WARN_NOTMATCH_SGP_VPC;case t.RESTYPE.DBINSTANCE:return n.CANVAS.WARN_NOTMATCH_DBINSTANCE_SGP}},isReadOnly:function(){return this.design.modeIsApp()}})});
+define(["CanvasView", "constant", "i18n!/nls/lang.js", "../template/TplOpsEditor", "Design"], function(CanvasView, constant, lang, TplOpsEditor, Design) {
+  var isPointInRect;
+  isPointInRect = function(point, rect) {
+    return rect.x1 <= point.x && rect.y1 <= point.y && rect.x2 >= point.x && rect.y2 >= point.y;
+  };
+  return CanvasView.extend({
+    initialize: function() {
+      CanvasView.prototype.initialize.apply(this, arguments);
+      return this.$el.addClass("marathon").toggleClass("empty", !this.hasItems()).append(TplOpsEditor.canvas.placeholder());
+    },
+    hasItems: function() {
+      return this.items().length > 1;
+    },
+    recreateStructure: function() {
+      this.svg.clear().add([this.svg.group().classes("layer_group"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_node")]);
+    },
+    appendGroup: function(svgEl) {
+      var el, self;
+      el = this.__appendSvg(svgEl, ".layer_group");
+      self = this;
+      setTimeout((function() {
+        return self.sortGroup();
+      }), 0);
+      return el;
+    },
+    sortGroup: function() {
+      var ch, childrens, g, groups, idx, needToUpdate, parent, _i, _j, _k, _len, _len1, _len2;
+      groups = _.chain(this.items()).filter(function(i) {
+        return i.type === constant.RESTYPE.MRTHGROUP;
+      }).sortBy(function(i) {
+        return i.parentCount();
+      }).map(function(i) {
+        return i.$el[0];
+      }).value();
+      parent = $(this.svg.node).children(".layer_group")[0];
+      childrens = $(parent).children().splice(0);
+      needToUpdate = false;
+      for (idx = _i = 0, _len = childrens.length; _i < _len; idx = ++_i) {
+        g = childrens[idx];
+        if (groups[idx] !== g) {
+          needToUpdate = true;
+          break;
+        }
+      }
+      if (!needToUpdate) {
+        return;
+      }
+      for (_j = 0, _len1 = childrens.length; _j < _len1; _j++) {
+        ch = childrens[_j];
+        parent.removeChild(ch);
+      }
+      for (idx = _k = 0, _len2 = groups.length; _k < _len2; idx = ++_k) {
+        g = groups[idx];
+        parent.appendChild(g);
+      }
+    },
+    fixConnection: function(coord, initiator, target) {},
+    highLightItems: function() {},
+    appendNode: function(svgEl) {
+      return this.__appendSvg(svgEl, ".layer_node");
+    },
+    appendline: function(svgEl) {
+      return this.__appendSvg(svgEl, ".layer_line");
+    },
+    addItem: function() {
+      this.$el.removeClass("empty");
+      return CanvasView.prototype.addItem.apply(this, arguments);
+    },
+    removeItem: function() {
+      CanvasView.prototype.removeItem.apply(this, arguments);
+      return this.$el.toggleClass("empty", !this.hasItems());
+    },
+    errorMessageForDrop: function(type) {
+      switch (type) {
+        case constant.RESTYPE.VOL:
+          return lang.CANVAS.WARN_NOTMATCH_VOLUME;
+        case constant.RESTYPE.SUBNET:
+          return lang.CANVAS.WARN_NOTMATCH_SUBNET;
+        case constant.RESTYPE.INSTANCE:
+          return lang.CANVAS.WARN_NOTMATCH_INSTANCE_SUBNET;
+        case constant.RESTYPE.ENI:
+          return lang.CANVAS.WARN_NOTMATCH_ENI;
+        case constant.RESTYPE.RT:
+          return lang.CANVAS.WARN_NOTMATCH_RTB;
+        case constant.RESTYPE.ELB:
+          return lang.CANVAS.WARN_NOTMATCH_ELB;
+        case constant.RESTYPE.CGW:
+          return lang.CANVAS.WARN_NOTMATCH_CGW;
+        case constant.RESTYPE.ASG:
+          return lang.CANVAS.WARN_NOTMATCH_ASG;
+        case constant.RESTYPE.IGW:
+          return lang.CANVAS.WARN_NOTMATCH_IGW;
+        case constant.RESTYPE.VGW:
+          return lang.CANVAS.WARN_NOTMATCH_VGW;
+        case constant.RESTYPE.DBSBG:
+          return lang.CANVAS.WARN_NOTMATCH_SGP_VPC;
+        case constant.RESTYPE.DBINSTANCE:
+          return lang.CANVAS.WARN_NOTMATCH_DBINSTANCE_SGP;
+      }
+    },
+    isReadOnly: function() {
+      return this.design.modeIsApp();
+    }
+  });
+});

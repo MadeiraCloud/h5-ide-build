@@ -1,1 +1,401 @@
-define(["OpsModel","../template/TplOpsEditor","ThumbnailUtil","JsonExporter","ApiRequest","i18n!/nls/lang.js","UI.modalplus","ResDiff","constant","TaGui","CloudResources","AppAction","UI.notification","backbone"],function(e,t,n,r,i,s,o,u,a,f,l,c){return Backbone.View.extend({events:{"click .icon-save":"saveStack","click .icon-delete":"deleteStack","click .icon-duplicate":"duplicateStack","click .icon-new-stack":"createStack","click .icon-zoom-in":"zoomIn","click .icon-zoom-out":"zoomOut","click .icon-export-png":"exportPNG","click .icon-export-json":"exportJson","click .runApp":"runStack","OPTION_CHANGE .toolbar-line-style":"setTbLineStyle","click .icon-terminate":"terminateApp","click .icon-refresh":"refreshResource","click .icon-update-app":"switchToAppEdit","click .icon-apply-app":"applyAppEdit","click .icon-cancel-update-app":"cancelAppEdit"},initialize:function(e){var n,r,i,s,o,u;_.extend(this,e),this.appAction=new c({workspace:this.workspace}),i=this.workspace.opsModel,i.isStack()?r=["BtnRunStack","BtnStackOps","BtnZoom","BtnExport","BtnLinestyle"]:r=["BtnEditApp","BtnAppOps","BtnReloadRes"],s="";for(o=0,u=r.length;o<u;o++)n=r[o],s+=t.toolbar[n]();this.setElement(this.parent.$el.find(".OEPanelTop").html(s)),this.updateZoomButtons(),this.updateTbBtns(),this.listenTo(this.workspace.opsModel,"change:state",this.updateTbBtns)},updateTbBtns:function(){var t,n,r,i,s,o;if(this.workspace.isRemoved())return;i=this.workspace.opsModel,this.$el.children(".toolbar-line-style").children(".dropdown").children().eq(parseInt(localStorage.getItem("canvas/lineStyle"),10)||2).click(),i.isApp()&&(r=this.workspace.isAppEditMode&&this.workspace.isAppEditMode(),this.$el.children(".icon-update-app").toggle(!r),this.$el.children(".icon-apply-app, .icon-cancel-update-app").toggle(r),r?(this.$el.children(".icon-terminate, .icon-forget-app, .icon-stop, .icon-play, .icon-refresh, .icon-save-app, .icon-reload").hide(),this.$el.find(".icon-refresh").hide()):(s=i.testState(e.State.Running),o=i.testState(e.State.Stopped),this.$el.children(".icon-terminate, .icon-forget-app, .icon-refresh, .icon-save-app, .icon-reload").show(),this.$el.children(".icon-stop").toggle(i.get("stoppable")&&s),this.$el.children(".icon-play").toggle(o).toggleClass("toolbar-btn-primary seperator",i.testState(e.State.Stopped)).find("span").toggle(o),this.$el.children(".icon-update-app").toggle(!o),this.$el.find(".icon-refresh").toggle(s),t=[].concat(this.workspace.design.componentsOfType(a.RESTYPE.INSTANCE),this.workspace.design.componentsOfType(a.RESTYPE.LC)),n=_.find(t,function(e){var t;return e&&((t=e.attributes.state)!=null?t.length:void 0)>0}),this.$el.find(".reload-states").toggle(!!n))),this.workspace.opsModel.testState(e.State.Saving)?this.$el.children(".icon-save").attr("disabled","disabled"):this.$el.children(".icon-save").removeAttr("disabled"),this.updateZoomButtons()},setTbLineStyle:function(e,t){localStorage.setItem("canvas/lineStyle",t),this.parent.canvas&&this.parent.canvas.updateLineStyle()},toggleSgLine:function(){var e,t;e=$(".icon-hide-sg"),t=e.hasClass("selected"),t?e.data("tooltip",s.TOOLBAR.LBL_LINESTYLE_HIDE_SG).removeClass("selected"):e.data("tooltip",s.TOOLBAR.LBL_LINESTYLE_SHOW_SG).addClass("selected"),this.parent.canvas.toggleSgLine(t)},saveStack:function(e){var n;n=this,this.workspace.saveStack().then(function(){return notification("info",sprintf(s.NOTIFY.ERR_SAVE_SUCCESS,n.workspace.opsModel.get("name")))},function(e){var n;return e.error===i.Errors.StackConflict?n=new o({title:s.IDE.TITLE_OPS_CONFLICT,width:"420",disableClose:!0,template:t.modal.confliction(),cancel:{hide:!0},confirm:{color:"blue",text:s.IDE.HEAD_BTN_DONE},onConfirm:function(){return n.close()}}):notification("error",e.msg)})},deleteStack:function(){return this.appAction.deleteStack(this.workspace.opsModel.cid,this.workspace.opsModel.get("name"),this.workspace)},createStack:function(){return App.loadUrl(this.workspace.scene.project.createStack(this.workspace.design.region()).url())},duplicateStack:function(){return App.loadUrl(this.workspace.scene.project.createStackByJson(this.workspace.design.serialize()).url())},zoomIn:function(){return this.parent.canvas.zoomIn(),this.updateZoomButtons()},zoomOut:function(){return this.parent.canvas.zoomOut(),this.updateZoomButtons()},updateZoomButtons:function(){var e;e=this.parent.canvas?this.parent.canvas.scale():1,e<=1?this.$el.find(".icon-zoom-in").attr("disabled","disabled"):this.$el.find(".icon-zoom-in").removeAttr("disabled"),e>=1.6?this.$el.find(".icon-zoom-out").attr("disabled","disabled"):this.$el.find(".icon-zoom-out").removeAttr("disabled")},exportPNG:function(){var e,i,u;i=new o({title:s.IDE.TITLE_EXPORT_PNG,template:t["export"].PNG(),width:"470",disableFooter:!0,compact:!0,onClose:function(){i=null}}),e=this.workspace.design,u=e.get("name"),n.exportPNG(this.parent.getSvgElement(),{isExport:!0,createBlob:!0,name:u,id:e.get("id"),onFinish:function(e){var t;if(!i)return;i.tpl.find(".loading-spinner").remove(),i.tpl.find("section").show().prepend("<img style='max-height:100%;display:inline-block;' src='"+e.image+"' />"),t=i.tpl.find("a.btn-blue").click(function(){return i.close()}),e.blob?t.click(function(){return r.download(e.blob,""+u+".png"),!1}):t.attr({href:e.image,download:""+u+".png"}),i.resize()}})},exportJson:function(){var e,n,i,u,a;i=this.workspace.design,a=App.user.get("username"),n=MC.dateFormat(new Date,"yyyy-MM-dd"),u=[i.get("name"),a,n].join("-"),e=r.exportJson(i.serialize(),""+u+".json");if(e)return new o({title:s.TOOLBAR.EXPORT_AS_JSON,template:t["export"].JSON(e),width:"470",disableFooter:!0,compact:!0})},runStack:function(e){var t;return t=this,$(e.currentTarget).attr("disabled")?!1:this.doRunStack()},doRunStack:function(){var e,t,n,r,i,u;return r=this.workspace.opsModel.type,i=this,this.modal=new o({title:"Run Marathon on Mesos Cluster",template:MC.template.modalRunMesos,disableClose:!0,width:"465px",compact:!0,confirm:{text:"Run",disabled:!0}}),this.modal.find(".modal-input-value").val(this.workspace.opsModel.get("name")),e=this.modal.find("#app-name"),t=this.modal.find("#app-url"),n=this.checkAppNameRepeat.bind(this),u=function(){var r,s;return r=!n(e.val()),s=t.length>0,r&&s?i.modal.toggleConfirm(!1):i.modal.toggleConfirm(!0)},e.keyup(u),t.keyup(u),this.modal.on("confirm",function(n){return function(){return i.checkAppNameRepeat(e.val())?!1:(n.modal.toggleConfirm(!0),n.json=n.workspace.design.serialize({usage:"runStack"}),n.json.name=e.val(),n.json.host=t.val(),n.workspace.opsModel.run(n.json,e.val()).then(function(e){return i.modal.close(),App.loadUrl(e.url())},function(e){var t;return i.modal.close(),t=e.awsError?e.error+"."+e.awsError:" "+e.error+" : "+(e.result||e.msg),notification("error",sprintf(s.NOTIFY.FAILA_TO_RUN_STACK_BECAUSE_OF_XXX,i.workspace.opsModel.get("name"),t))}))}}(this))},checkAppNameRepeat:function(e){return this.workspace.scene.project.apps().findWhere({name:e})?(this.showError("appname",s.PROP.MSG_WARN_REPEATED_APP_NAME),!0):e?(this.hideError("appname"),!1):(this.showError("appname",s.PROP.MSG_WARN_NO_APP_NAME),!0)},hideError:function(e){var t;return t=e?$("#runtime-error-"+e):$(".runtime-error"),t.hide()},showError:function(e,t){return $("#runtime-error-"+e).text(t).show()},terminateApp:function(){return this.appAction.terminateApp(this.workspace.opsModel.id,!0),!1},refreshResource:function(){return this.workspace.reloadAppData(),!1},switchToAppEdit:function(){return this.workspace.switchToEditMode(),!1},applyAppEdit:function(){var t,n,r,i,a,l,c,h,p;p=this,a=this.workspace.opsModel.getJsonData(),i=this.workspace.design.serialize({usage:"updateApp"}),r=new u({old:a,"new":i}),h=r.getDiffInfo();if(!h.compChange&&!h.layoutChange&&!h.stateChange)return this.workspace.applyAppEdit();c=r.removedComps,n=i.component,this.updateModal=new o({title:s.IDE.HEAD_INFO_LOADING,template:MC.template.loadingSpinner,disableClose:!0,cancel:"Close"}),this.updateModal.tpl.find(".modal-footer").hide(),l=[],p.updateModal.tpl.children().css("width","450px").find(".modal-footer").show(),p.updateModal.find(".modal-wrapper-fix").width(455).find(".modal-body").css("padding",0),p.updateModal.setContent(MC.template.updateApp({isRunning:p.workspace.opsModel.testState(e.State.Running),removeList:l})),p.updateModal.find(".payment-wrapper-right").hide(),p.updateModal.find(".modal-header").find("h3").text(s.IDE.UPDATE_APP_MODAL_TITLE),p.updateModal.find(".modal-confirm").prop("disabled",!0).text(Design.instance().credential()?s.IDE.UPDATE_APP_CONFIRM_BTN:s.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL),p.updateModal.resize(),window.setTimeout(function(){return p.updateModal.resize()},100),p.updateModal.on("confirm",function(){var e;return Design.instance().credential()?(i=p.workspace.design.serialize({usage:"updateApp"}),p.workspace.applyAppEdit(i,!h.compChange),(e=p.updateModal)!=null?e.close():void 0):(Design.instance().project().showCredential(),!1)}),h.compChange&&(t=r.renderAppUpdateView(),$("#app-update-summary-table").html(t)),p.appAction.renderKpDropdown(p.updateModal),f.loadModule("stack").then(function(){var e;return p.updateModal&&p.updateModal.toggleConfirm(!1),(e=p.updateModal)!=null?e.resize():void 0},function(e){var t;return void 0,p.updateModal&&p.updateModal.toggleConfirm(!0),p.updateModal&&p.updateModal.tpl.find("#take-rds-snapshot").off("change"),(t=p.updateModal)!=null?t.resize():void 0})},cancelAppEdit:function(){var e,n;return this.workspace.cancelEditMode()||(n=this,e=new o({title:s.IDE.TITLE_CHANGE_NOT_APPLIED,template:t.modal.cancelUpdate(),width:"400",confirm:{text:"Discard",color:"red"},onConfirm:function(){e.close(),n.workspace.cancelEditMode(!0)}})),!1}})});
+define(["OpsModel", "../template/TplOpsEditor", "ThumbnailUtil", "JsonExporter", "ApiRequest", "i18n!/nls/lang.js", "UI.modalplus", "ResDiff", 'constant', 'TaGui', "CloudResources", "AppAction", "UI.notification", "backbone"], function(OpsModel, OpsEditorTpl, Thumbnail, JsonExporter, ApiRequest, lang, Modal, ResDiff, constant, TA, CloudResources, AppAction) {
+  return Backbone.View.extend({
+    events: {
+      "click .icon-save": "saveStack",
+      "click .icon-delete": "deleteStack",
+      "click .icon-duplicate": "duplicateStack",
+      "click .icon-new-stack": "createStack",
+      "click .icon-zoom-in": "zoomIn",
+      "click .icon-zoom-out": "zoomOut",
+      "click .icon-export-png": "exportPNG",
+      "click .icon-export-json": "exportJson",
+      "click .runApp": 'runStack',
+      "OPTION_CHANGE .toolbar-line-style": "setTbLineStyle",
+      "click .icon-terminate": "terminateApp",
+      "click .icon-refresh": "refreshResource",
+      "click .icon-update-app": "switchToAppEdit",
+      "click .icon-apply-app": "applyAppEdit",
+      "click .icon-cancel-update-app": "cancelAppEdit"
+    },
+    initialize: function(options) {
+      var btn, btns, opsModel, tpl, _i, _len;
+      _.extend(this, options);
+      this.appAction = new AppAction({
+        workspace: this.workspace
+      });
+      opsModel = this.workspace.opsModel;
+      if (opsModel.isStack()) {
+        btns = ["BtnRunStack", "BtnStackOps", "BtnZoom", "BtnExport", "BtnLinestyle"];
+      } else {
+        btns = ["BtnEditApp", "BtnAppOps", "BtnReloadRes"];
+      }
+      tpl = "";
+      for (_i = 0, _len = btns.length; _i < _len; _i++) {
+        btn = btns[_i];
+        tpl += OpsEditorTpl.toolbar[btn]();
+      }
+      this.setElement(this.parent.$el.find(".OEPanelTop").html(tpl));
+      this.updateZoomButtons();
+      this.updateTbBtns();
+      this.listenTo(this.workspace.opsModel, "change:state", this.updateTbBtns);
+    },
+    updateTbBtns: function() {
+      var ami, hasState, isAppEdit, opsModel, running, stopped;
+      if (this.workspace.isRemoved()) {
+        return;
+      }
+      opsModel = this.workspace.opsModel;
+      this.$el.children(".toolbar-line-style").children(".dropdown").children().eq(parseInt(localStorage.getItem("canvas/lineStyle"), 10) || 2).click();
+      if (opsModel.isApp()) {
+        isAppEdit = this.workspace.isAppEditMode && this.workspace.isAppEditMode();
+        this.$el.children(".icon-update-app").toggle(!isAppEdit);
+        this.$el.children(".icon-apply-app, .icon-cancel-update-app").toggle(isAppEdit);
+        if (isAppEdit) {
+          this.$el.children(".icon-terminate, .icon-forget-app, .icon-stop, .icon-play, .icon-refresh, .icon-save-app, .icon-reload").hide();
+          this.$el.find(".icon-refresh").hide();
+        } else {
+          running = opsModel.testState(OpsModel.State.Running);
+          stopped = opsModel.testState(OpsModel.State.Stopped);
+          this.$el.children(".icon-terminate, .icon-forget-app, .icon-refresh, .icon-save-app, .icon-reload").show();
+          this.$el.children(".icon-stop").toggle(opsModel.get("stoppable") && running);
+          this.$el.children(".icon-play").toggle(stopped).toggleClass("toolbar-btn-primary seperator", opsModel.testState(OpsModel.State.Stopped)).find("span").toggle(stopped);
+          this.$el.children('.icon-update-app').toggle(!stopped);
+          this.$el.find(".icon-refresh").toggle(running);
+          ami = [].concat(this.workspace.design.componentsOfType(constant.RESTYPE.INSTANCE), this.workspace.design.componentsOfType(constant.RESTYPE.LC));
+          hasState = _.find(ami, function(comp) {
+            var _ref;
+            return comp && (((_ref = comp.attributes.state) != null ? _ref.length : void 0) > 0);
+          });
+          this.$el.find('.reload-states').toggle(!!hasState);
+        }
+      }
+      if (this.workspace.opsModel.testState(OpsModel.State.Saving)) {
+        this.$el.children(".icon-save").attr("disabled", "disabled");
+      } else {
+        this.$el.children(".icon-save").removeAttr("disabled");
+      }
+      this.updateZoomButtons();
+    },
+    setTbLineStyle: function(ls, attr) {
+      localStorage.setItem("canvas/lineStyle", attr);
+      if (this.parent.canvas) {
+        this.parent.canvas.updateLineStyle();
+      }
+    },
+    toggleSgLine: function() {
+      var sgBtn, show;
+      sgBtn = $(".icon-hide-sg");
+      show = sgBtn.hasClass("selected");
+      if (show) {
+        sgBtn.data("tooltip", lang.TOOLBAR.LBL_LINESTYLE_HIDE_SG).removeClass("selected");
+      } else {
+        sgBtn.data("tooltip", lang.TOOLBAR.LBL_LINESTYLE_SHOW_SG).addClass("selected");
+      }
+      this.parent.canvas.toggleSgLine(show);
+    },
+    saveStack: function(evt) {
+      var self;
+      self = this;
+      this.workspace.saveStack().then(function() {
+        return notification("info", sprintf(lang.NOTIFY.ERR_SAVE_SUCCESS, self.workspace.opsModel.get("name")));
+      }, function(e) {
+        var modal;
+        if (e.error === ApiRequest.Errors.StackConflict) {
+          return modal = new Modal({
+            title: lang.IDE.TITLE_OPS_CONFLICT,
+            width: "420",
+            disableClose: true,
+            template: OpsEditorTpl.modal.confliction(),
+            cancel: {
+              hide: true
+            },
+            confirm: {
+              color: "blue",
+              text: lang.IDE.HEAD_BTN_DONE
+            },
+            onConfirm: function() {
+              return modal.close();
+            }
+          });
+        } else {
+          return notification("error", e.msg);
+        }
+      });
+    },
+    deleteStack: function() {
+      return this.appAction.deleteStack(this.workspace.opsModel.cid, this.workspace.opsModel.get("name"), this.workspace);
+    },
+    createStack: function() {
+      return App.loadUrl(this.workspace.scene.project.createStack(this.workspace.design.region()).url());
+    },
+    duplicateStack: function() {
+      return App.loadUrl(this.workspace.scene.project.createStackByJson(this.workspace.design.serialize()).url());
+    },
+    zoomIn: function() {
+      this.parent.canvas.zoomIn();
+      return this.updateZoomButtons();
+    },
+    zoomOut: function() {
+      this.parent.canvas.zoomOut();
+      return this.updateZoomButtons();
+    },
+    updateZoomButtons: function() {
+      var scale;
+      scale = this.parent.canvas ? this.parent.canvas.scale() : 1;
+      if (scale <= 1) {
+        this.$el.find(".icon-zoom-in").attr("disabled", "disabled");
+      } else {
+        this.$el.find(".icon-zoom-in").removeAttr("disabled");
+      }
+      if (scale >= 1.6) {
+        this.$el.find(".icon-zoom-out").attr("disabled", "disabled");
+      } else {
+        this.$el.find(".icon-zoom-out").removeAttr("disabled");
+      }
+    },
+    exportPNG: function() {
+      var design, modal, name;
+      modal = new Modal({
+        title: lang.IDE.TITLE_EXPORT_PNG,
+        template: OpsEditorTpl["export"].PNG(),
+        width: "470",
+        disableFooter: true,
+        compact: true,
+        onClose: function() {
+          modal = null;
+        }
+      });
+      design = this.workspace.design;
+      name = design.get("name");
+      Thumbnail.exportPNG(this.parent.getSvgElement(), {
+        isExport: true,
+        createBlob: true,
+        name: name,
+        id: design.get("id"),
+        onFinish: function(data) {
+          var btn;
+          if (!modal) {
+            return;
+          }
+          modal.tpl.find(".loading-spinner").remove();
+          modal.tpl.find("section").show().prepend("<img style='max-height:100%;display:inline-block;' src='" + data.image + "' />");
+          btn = modal.tpl.find("a.btn-blue").click(function() {
+            return modal.close();
+          });
+          if (data.blob) {
+            btn.click(function() {
+              JsonExporter.download(data.blob, "" + name + ".png");
+              return false;
+            });
+          } else {
+            btn.attr({
+              href: data.image,
+              download: "" + name + ".png"
+            });
+          }
+          modal.resize();
+        }
+      });
+    },
+    exportJson: function() {
+      var data, date, design, name, username;
+      design = this.workspace.design;
+      username = App.user.get('username');
+      date = MC.dateFormat(new Date(), "yyyy-MM-dd");
+      name = [design.get("name"), username, date].join("-");
+      data = JsonExporter.exportJson(design.serialize(), "" + name + ".json");
+      if (data) {
+        return new Modal({
+          title: lang.TOOLBAR.EXPORT_AS_JSON,
+          template: OpsEditorTpl["export"].JSON(data),
+          width: "470",
+          disableFooter: true,
+          compact: true
+        });
+      }
+    },
+    runStack: function(event) {
+      var that;
+      that = this;
+      if ($(event.currentTarget).attr('disabled')) {
+        return false;
+      }
+      return this.doRunStack();
+    },
+    doRunStack: function() {
+      var appNameDom, appUrlDom, checkAppNameRepeat, cloudType, self, validate;
+      cloudType = this.workspace.opsModel.type;
+      self = this;
+      this.modal = new Modal({
+        title: 'Run Marathon on Mesos Cluster',
+        template: MC.template.modalRunMesos,
+        disableClose: true,
+        width: '465px',
+        compact: true,
+        confirm: {
+          text: 'Run',
+          disabled: true
+        }
+      });
+      this.modal.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
+      appNameDom = this.modal.find('#app-name');
+      appUrlDom = this.modal.find('#app-url');
+      checkAppNameRepeat = this.checkAppNameRepeat.bind(this);
+      validate = function() {
+        var nameValid, urlValid;
+        nameValid = !checkAppNameRepeat(appNameDom.val());
+        urlValid = appUrlDom.length > 0;
+        if (nameValid && urlValid) {
+          return self.modal.toggleConfirm(false);
+        } else {
+          return self.modal.toggleConfirm(true);
+        }
+      };
+      appNameDom.keyup(validate);
+      appUrlDom.keyup(validate);
+      return this.modal.on('confirm', (function(_this) {
+        return function() {
+          if (self.checkAppNameRepeat(appNameDom.val())) {
+            return false;
+          }
+          _this.modal.toggleConfirm(true);
+          _this.json = _this.workspace.design.serialize({
+            usage: 'runStack'
+          });
+          _this.json.name = appNameDom.val();
+          _this.json.host = appUrlDom.val();
+          return _this.workspace.opsModel.run(_this.json, appNameDom.val()).then(function(ops) {
+            self.modal.close();
+            return App.loadUrl(ops.url());
+          }, function(err) {
+            var error;
+            self.modal.close();
+            error = err.awsError ? err.error + "." + err.awsError : " " + err.error + " : " + (err.result || err.msg);
+            return notification('error', sprintf(lang.NOTIFY.FAILA_TO_RUN_STACK_BECAUSE_OF_XXX, self.workspace.opsModel.get('name'), error));
+          });
+        };
+      })(this));
+    },
+    checkAppNameRepeat: function(nameVal) {
+      if (this.workspace.scene.project.apps().findWhere({
+        name: nameVal
+      })) {
+        this.showError('appname', lang.PROP.MSG_WARN_REPEATED_APP_NAME);
+        return true;
+      } else if (!nameVal) {
+        this.showError('appname', lang.PROP.MSG_WARN_NO_APP_NAME);
+        return true;
+      } else {
+        this.hideError('appname');
+        return false;
+      }
+    },
+    hideError: function(type) {
+      var selector;
+      selector = type ? $("#runtime-error-" + type) : $(".runtime-error");
+      return selector.hide();
+    },
+    showError: function(id, msg) {
+      return $("#runtime-error-" + id).text(msg).show();
+    },
+    terminateApp: function() {
+      this.appAction.terminateApp(this.workspace.opsModel.id, true);
+      return false;
+    },
+    refreshResource: function() {
+      this.workspace.reloadAppData();
+      return false;
+    },
+    switchToAppEdit: function() {
+      this.workspace.switchToEditMode();
+      return false;
+    },
+    applyAppEdit: function() {
+      var $diffTree, components, differ, newJson, oldJson, removeList, removes, result, that;
+      that = this;
+      oldJson = this.workspace.opsModel.getJsonData();
+      newJson = this.workspace.design.serialize({
+        usage: 'updateApp'
+      });
+      differ = new ResDiff({
+        old: oldJson,
+        "new": newJson
+      });
+      result = differ.getDiffInfo();
+      if (!result.compChange && !result.layoutChange && !result.stateChange) {
+        return this.workspace.applyAppEdit();
+      }
+      removes = differ.removedComps;
+      components = newJson.component;
+      this.updateModal = new Modal({
+        title: lang.IDE.HEAD_INFO_LOADING,
+        template: MC.template.loadingSpinner,
+        disableClose: true,
+        cancel: "Close"
+      });
+      this.updateModal.tpl.find(".modal-footer").hide();
+      removeList = [];
+      that.updateModal.tpl.children().css("width", "450px").find(".modal-footer").show();
+      that.updateModal.find(".modal-wrapper-fix").width(455).find('.modal-body').css('padding', 0);
+      that.updateModal.setContent(MC.template.updateApp({
+        isRunning: that.workspace.opsModel.testState(OpsModel.State.Running),
+        removeList: removeList
+      }));
+      that.updateModal.find('.payment-wrapper-right').hide();
+      that.updateModal.find(".modal-header").find("h3").text(lang.IDE.UPDATE_APP_MODAL_TITLE);
+      that.updateModal.find('.modal-confirm').prop("disabled", true).text((Design.instance().credential() ? lang.IDE.UPDATE_APP_CONFIRM_BTN : lang.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL));
+      that.updateModal.resize();
+      window.setTimeout(function() {
+        return that.updateModal.resize();
+      }, 100);
+      that.updateModal.on('confirm', function() {
+        var _ref;
+        if (!Design.instance().credential()) {
+          Design.instance().project().showCredential();
+          return false;
+        }
+        newJson = that.workspace.design.serialize({
+          usage: 'updateApp'
+        });
+        that.workspace.applyAppEdit(newJson, !result.compChange);
+        return (_ref = that.updateModal) != null ? _ref.close() : void 0;
+      });
+      if (result.compChange) {
+        $diffTree = differ.renderAppUpdateView();
+        $('#app-update-summary-table').html($diffTree);
+      }
+      that.appAction.renderKpDropdown(that.updateModal);
+      TA.loadModule('stack').then(function() {
+        var _ref;
+        that.updateModal && that.updateModal.toggleConfirm(false);
+        return (_ref = that.updateModal) != null ? _ref.resize() : void 0;
+      }, function(err) {
+        var _ref;
+        console.log(err);
+        that.updateModal && that.updateModal.toggleConfirm(true);
+        that.updateModal && that.updateModal.tpl.find("#take-rds-snapshot").off('change');
+        return (_ref = that.updateModal) != null ? _ref.resize() : void 0;
+      });
+    },
+    cancelAppEdit: function() {
+      var modal, self;
+      if (!this.workspace.cancelEditMode()) {
+        self = this;
+        modal = new Modal({
+          title: lang.IDE.TITLE_CHANGE_NOT_APPLIED,
+          template: OpsEditorTpl.modal.cancelUpdate(),
+          width: "400",
+          confirm: {
+            text: "Discard",
+            color: "red"
+          },
+          onConfirm: function() {
+            modal.close();
+            self.workspace.cancelEditMode(true);
+          }
+        });
+      }
+      return false;
+    }
+  });
+});

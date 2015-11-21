@@ -1,1 +1,24 @@
-define(["Design","../base/main","./view","constant","event"],function(e,t,n,r){return t.extend({handleTypes:["MarathonDepIn","MarathonDepOut"],initStack:function(t){return this.view=n,this.model=e.instance().component(t),this.view.mode="stack",null},afterLoadStack:function(){},initApp:function(t){return this.view=n,this.model=e.instance().component(t),this.view.mode="app",null},initAppEdit:function(t){return this.view=n,this.model=e.instance().component(t),this.view.mode="appedit",null}})});
+define(["Design", "../base/main", "./view", "constant", "event"], function(Design, PropertyModule, view, constant) {
+  return PropertyModule.extend({
+    handleTypes: ["MarathonDepIn", "MarathonDepOut"],
+    initStack: function(uid) {
+      this.view = view;
+      this.model = Design.instance().component(uid);
+      this.view.mode = 'stack';
+      return null;
+    },
+    afterLoadStack: function() {},
+    initApp: function(uid) {
+      this.view = view;
+      this.model = Design.instance().component(uid);
+      this.view.mode = 'app';
+      return null;
+    },
+    initAppEdit: function(uid) {
+      this.view = view;
+      this.model = Design.instance().component(uid);
+      this.view.mode = 'appedit';
+      return null;
+    }
+  });
+});

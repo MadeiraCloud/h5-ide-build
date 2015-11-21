@@ -1,1 +1,125 @@
-define(["backbone","constant","CloudResources","./template/TplResourcePanel","OsSnapshot","OsKp"],function(e,t,n,r,i,s){return MC.template.resPanelOsAmiInfo=function(e){var r;if(!e.region||!e.imageId)return;return r=n(t.RESTYPE.OSIMAGE,e.region).get(e.imageId),MC.template.bubbleOsAmiInfo((r!=null?r.toJSON():void 0)||{})},MC.template.resPanelOsSnapshot=function(e){var r;if(!e.region||!e.id)return;return r=n(t.RESTYPE.OSSNAP,e.region).get(e.id),MC.template.bubbleOsSnapshotInfo((r!=null?r.toJSON():void 0)||{})},e.View.extend({events:{"mousedown .resource-item":"startDrag","OPTION_CHANGE .ami-type-select":"changeAmiType","click .btn-refresh-panel":"refreshPanelData","click .manage-snapshot":"manageSnapshot","click .resources-dropdown-wrapper li":"resourcesMenuClick"},amiType:"public",initialize:function(e){var r;return _.extend(this,e),r=this.workspace.opsModel.get("region"),this.listenTo(n(t.RESTYPE.OSSNAP,r),"update",this.renderSnapshot),this.listenTo(n(t.RESTYPE.OSIMAGE,r),"update",this.renderAmi)},resourcesMenuClick:function(e){var t,n;t=$(e.currentTarget),n=t.data("action");switch(n){case"keypair":return(new s).manage();case"snapshot":return(new i).render()}},changeAmiType:function(e,t){return this.amiType=t,this.renderAmi()},render:function(){return this.$el.html(r.frame({})),this.renderAmi(),this.renderSnapshot(),this},renderSnapshot:function(){var e,i,s;return i=this.workspace.opsModel.get("region"),s=n(t.RESTYPE.OSSNAP,i).toJSON(),e=_.map(s,function(e){return _.extend({region:i},e)}),this.$(".resource-list-volume").html(r.snapshot(e)),this},manageSnapshot:function(){var e;return e=new i,e.render()},renderAmi:function(){var e,i,s,o,u;return u=this,o=this.workspace.opsModel.get("region"),e=n(t.RESTYPE.OSIMAGE,o).toJSON(),i=_.filter(e,function(e){return e.visibility===u.amiType}),s=_.map(i,function(e){return _.extend({region:o},e)}),this.$(".resource-list-ami").html(r.ami(s)),this},refreshPanelData:function(e){var r,i,s;r=$(e.currentTarget);if(r.hasClass("reloading"))return;r.addClass("reloading"),s=this.workspace.opsModel.get("region"),i=[n(t.RESTYPE.OSIMAGE,s).fetchForce(),n(t.RESTYPE.OSSNAP,s).fetchForce()],Q.all(i).done(function(){return r.removeClass("reloading")})},startDrag:function(e){var n,r,i,s;if(e.button!==0)return!1;n=$(e.currentTarget);if(n.hasClass("disabled"))return!1;if(e.target&&$(e.target).hasClass("btn-fav-ami"))return;return s=t.RESTYPE[n.attr("data-type")],r="#OpsEditor .OEPanelCenter",i=$.extend(!0,{},n.data("option")||{}),i.type=s,n.dnd(e,{dropTargets:$(r),dataTransfer:i,eventPrefix:s===t.RESTYPE.OSVOL?"addVol_":"addItem_"}),!1}})});
+define(['backbone', 'constant', 'CloudResources', './template/TplResourcePanel', 'OsSnapshot', 'OsKp'], function(Backbone, constant, CloudResources, ResourcePanelTpl, OsSnapshot, OsKp) {
+  MC.template.resPanelOsAmiInfo = function(data) {
+    var ami;
+    if (!data.region || !data.imageId) {
+      return;
+    }
+    ami = CloudResources(constant.RESTYPE.OSIMAGE, data.region).get(data.imageId);
+    return MC.template.bubbleOsAmiInfo((ami != null ? ami.toJSON() : void 0) || {});
+  };
+  MC.template.resPanelOsSnapshot = function(data) {
+    var snapshot;
+    if (!data.region || !data.id) {
+      return;
+    }
+    snapshot = CloudResources(constant.RESTYPE.OSSNAP, data.region).get(data.id);
+    return MC.template.bubbleOsSnapshotInfo((snapshot != null ? snapshot.toJSON() : void 0) || {});
+  };
+  return Backbone.View.extend({
+    events: {
+      'mousedown .resource-item': 'startDrag',
+      'OPTION_CHANGE .ami-type-select': 'changeAmiType',
+      'click .btn-refresh-panel': 'refreshPanelData',
+      'click .manage-snapshot': 'manageSnapshot',
+      'click .resources-dropdown-wrapper li': 'resourcesMenuClick'
+    },
+    amiType: 'public',
+    initialize: function(options) {
+      var region;
+      _.extend(this, options);
+      region = this.workspace.opsModel.get("region");
+      this.listenTo(CloudResources(constant.RESTYPE.OSSNAP, region), 'update', this.renderSnapshot);
+      return this.listenTo(CloudResources(constant.RESTYPE.OSIMAGE, region), 'update', this.renderAmi);
+    },
+    resourcesMenuClick: function(event) {
+      var $currentDom, currentAction;
+      $currentDom = $(event.currentTarget);
+      currentAction = $currentDom.data('action');
+      switch (currentAction) {
+        case 'keypair':
+          return new OsKp().manage();
+        case 'snapshot':
+          return new OsSnapshot().render();
+      }
+    },
+    changeAmiType: function(event, type) {
+      this.amiType = type;
+      return this.renderAmi();
+    },
+    render: function() {
+      this.$el.html(ResourcePanelTpl.frame({}));
+      this.renderAmi();
+      this.renderSnapshot();
+      return this;
+    },
+    renderSnapshot: function() {
+      var data, region, snapshots;
+      region = this.workspace.opsModel.get("region");
+      snapshots = CloudResources(constant.RESTYPE.OSSNAP, region).toJSON();
+      data = _.map(snapshots, function(ss) {
+        return _.extend({
+          region: region
+        }, ss);
+      });
+      this.$('.resource-list-volume').html(ResourcePanelTpl.snapshot(data));
+      return this;
+    },
+    manageSnapshot: function() {
+      var snapshotManager;
+      snapshotManager = new OsSnapshot();
+      return snapshotManager.render();
+    },
+    renderAmi: function() {
+      var amis, currentTypeAmis, data, region, that;
+      that = this;
+      region = this.workspace.opsModel.get("region");
+      amis = CloudResources(constant.RESTYPE.OSIMAGE, region).toJSON();
+      currentTypeAmis = _.filter(amis, function(ami) {
+        return ami.visibility === that.amiType;
+      });
+      data = _.map(currentTypeAmis, function(ami) {
+        return _.extend({
+          region: region
+        }, ami);
+      });
+      this.$('.resource-list-ami').html(ResourcePanelTpl.ami(data));
+      return this;
+    },
+    refreshPanelData: function(evt) {
+      var $tgt, jobs, region;
+      $tgt = $(evt.currentTarget);
+      if ($tgt.hasClass("reloading")) {
+        return;
+      }
+      $tgt.addClass("reloading");
+      region = this.workspace.opsModel.get("region");
+      jobs = [CloudResources(constant.RESTYPE.OSIMAGE, region).fetchForce(), CloudResources(constant.RESTYPE.OSSNAP, region).fetchForce()];
+      Q.all(jobs).done(function() {
+        return $tgt.removeClass("reloading");
+      });
+    },
+    startDrag: function(evt) {
+      var $tgt, dropTargets, option, type;
+      if (evt.button !== 0) {
+        return false;
+      }
+      $tgt = $(evt.currentTarget);
+      if ($tgt.hasClass("disabled")) {
+        return false;
+      }
+      if (evt.target && $(evt.target).hasClass("btn-fav-ami")) {
+        return;
+      }
+      type = constant.RESTYPE[$tgt.attr("data-type")];
+      dropTargets = "#OpsEditor .OEPanelCenter";
+      option = $.extend(true, {}, $tgt.data("option") || {});
+      option.type = type;
+      $tgt.dnd(evt, {
+        dropTargets: $(dropTargets),
+        dataTransfer: option,
+        eventPrefix: type === constant.RESTYPE.OSVOL ? "addVol_" : "addItem_"
+      });
+      return false;
+    }
+  });
+});

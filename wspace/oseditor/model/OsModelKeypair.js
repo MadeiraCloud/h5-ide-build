@@ -1,1 +1,138 @@
-define(["constant","ComplexResModel","ConnectionModel"],function(e,t,n){var r,i;return i=n.extend({type:"KeypairUsage",oneToMany:e.RESTYPE.OSKP,serialize:function(t){var n,r,i,s,o,u,a,f;r=this.getTarget(e.RESTYPE.OSKP);if(r){s=this.getOtherTarget(r),o=t[s.id];if(!o)return;u=r.createRef("keyName"),o.resource.keyName=u,n=s.groupMembers?s.groupMembers():[];for(a=0,f=n.length;a<f;a++)i=n[a],t[i.id]&&(t[i.id].resource.keyName=u)}return null}}),r=t.extend({type:e.RESTYPE.OSKP,defaults:{fingerprint:"",isSet:!1},isVisual:function(){return!1},isDefault:function(){return this.get("name")==="DefaultKP"},remove:function(){var e,n,s,o,u;e=r.getDefaultKP(),u=this.connectionTargets("KeypairUsage");for(s=0,o=u.length;s<o;s++)n=u[s],new i(e,n);return t.prototype.remove.call(this),null},assignTo:function(e){return new i(this,e)},dissociate:function(t){var n;return n=this.connections(),_.each(n,function(n){if(n.getOtherTarget(e.RESTYPE.OSKP)===t)return n.remove()})},isSet:function(){return this.get("appId")&&this.get("fingerprint")},getKPList:function(){var e,t,n,i,s;t=[],s=r.allObjects();for(n=0,i=s.length;n<i;n++)e=s[n],t.push({id:e.id,name:e.get("name"),selected:e===this,using:e.connections("KeypairUsage").length>1});return _.sortBy(t,function(e,t){if(e.name==="DefaultKP")return-1;if(t.name==="DefaultKP")return 1;if(e.name>t.name)return 1;if(e.name===t.name)return 0;if(e.name<t.name)return-1})},serialize:function(){return{component:{name:this.get("name"),type:this.type,uid:this.id,resource:{fingerprint:this.get("fingerprint")||"",keyName:this.get("keyName")||""}}}}},{getDefaultKP:function(){return _.find(r.allObjects(),function(e){return e.get("name")==="DefaultKP"})},setDefaultKP:function(e,t){var n;return n=_.find(r.allObjects(),function(e){return e.get("name")==="DefaultKP"}),n.set("appId",e||""),n.set("fingerprint",t||""),n.set("isSet",!0)},diffJson:function(){},handleTypes:e.RESTYPE.OSKP,deserialize:function(e,t,n){return new r({id:e.uid,name:e.name,keyName:e.resource.keyName,fingerprint:e.resource.fingerprint}),null}}),r});
+define(["constant", "ComplexResModel", "ConnectionModel"], function(constant, ComplexResModel, ConnectionModel) {
+  var KeypairModel, KeypairUsage;
+  KeypairUsage = ConnectionModel.extend({
+    type: "KeypairUsage",
+    oneToMany: constant.RESTYPE.OSKP,
+    serialize: function(components) {
+      var groupMembers, kp, member, otherTarget, otherTargetComp, ref, _i, _len;
+      kp = this.getTarget(constant.RESTYPE.OSKP);
+      if (kp) {
+        otherTarget = this.getOtherTarget(kp);
+        otherTargetComp = components[otherTarget.id];
+        if (!otherTargetComp) {
+          return;
+        }
+        ref = kp.createRef("keyName");
+        otherTargetComp.resource.keyName = ref;
+        groupMembers = otherTarget.groupMembers ? otherTarget.groupMembers() : [];
+        for (_i = 0, _len = groupMembers.length; _i < _len; _i++) {
+          member = groupMembers[_i];
+          if (components[member.id]) {
+            components[member.id].resource.keyName = ref;
+          }
+        }
+      }
+      return null;
+    }
+  });
+  KeypairModel = ComplexResModel.extend({
+    type: constant.RESTYPE.OSKP,
+    defaults: {
+      fingerprint: "",
+      isSet: false
+    },
+    isVisual: function() {
+      return false;
+    },
+    isDefault: function() {
+      return this.get('name') === 'DefaultKP';
+    },
+    remove: function() {
+      var defaultKp, i, _i, _len, _ref;
+      defaultKp = KeypairModel.getDefaultKP();
+      _ref = this.connectionTargets("KeypairUsage");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        new KeypairUsage(defaultKp, i);
+      }
+      ComplexResModel.prototype.remove.call(this);
+      return null;
+    },
+    assignTo: function(target) {
+      return new KeypairUsage(this, target);
+    },
+    dissociate: function(target) {
+      var conns;
+      conns = this.connections();
+      return _.each(conns, function(c) {
+        if (c.getOtherTarget(constant.RESTYPE.OSKP) === target) {
+          return c.remove();
+        }
+      });
+    },
+    isSet: function() {
+      return this.get('appId') && this.get('fingerprint');
+    },
+    getKPList: function() {
+      var kp, kps, _i, _len, _ref;
+      kps = [];
+      _ref = KeypairModel.allObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        kp = _ref[_i];
+        kps.push({
+          id: kp.id,
+          name: kp.get("name"),
+          selected: kp === this,
+          using: kp.connections("KeypairUsage").length > 1
+        });
+      }
+      return _.sortBy(kps, function(a, b) {
+        if (a.name === "DefaultKP") {
+          return -1;
+        }
+        if (b.name === "DefaultKP") {
+          return 1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name === b.name) {
+          return 0;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+      });
+    },
+    serialize: function() {
+      return {
+        component: {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            fingerprint: this.get("fingerprint") || '',
+            keyName: this.get("keyName") || ''
+          }
+        }
+      };
+    }
+  }, {
+    getDefaultKP: function() {
+      return _.find(KeypairModel.allObjects(), function(obj) {
+        return obj.get("name") === "DefaultKP";
+      });
+    },
+    setDefaultKP: function(keyName, fingerprint) {
+      var defaultKP;
+      defaultKP = _.find(KeypairModel.allObjects(), function(obj) {
+        return obj.get("name") === "DefaultKP";
+      });
+      defaultKP.set('appId', keyName || '');
+      defaultKP.set('fingerprint', fingerprint || '');
+      return defaultKP.set('isSet', true);
+    },
+    diffJson: function() {},
+    handleTypes: constant.RESTYPE.OSKP,
+    deserialize: function(data, layout_data, resolve) {
+      new KeypairModel({
+        id: data.uid,
+        name: data.name,
+        keyName: data.resource.keyName,
+        fingerprint: data.resource.fingerprint
+      });
+      return null;
+    }
+  });
+  return KeypairModel;
+});

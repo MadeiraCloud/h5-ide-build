@@ -1,1 +1,226 @@
-define(["constant","../OsPropertyView","./template","CloudResources","underscore","OsKp","../ossglist/view"],function(e,t,n,r,i,s,o){return t.extend({events:{"change #property-os-server-credential":"onChangeCredential","change #property-os-server-name":"updateServerAttr","change #property-os-server-image":"updateServerAttr","change #property-os-server-CPU":"updateServerAttr","change #property-os-server-RAM":"updateServerAttr","change #property-os-server-keypair":"updateServerAttr","change #property-os-server-adminPass":"updateServerAttr","change #property-os-server-userdata":"updateServerAttr","change #property-os-server-fip":"updateServerAttr","change #property-os-server-aip":"updateServerAttr","change #property-os-server-volsize":"updateServerAttr","select_initialize #property-os-server-image":"initImage","select_initialize #property-os-server-credential":"initCredential","select_initialize #property-os-server-RAM":"initRAM","select_initialize #property-os-server-CPU":"initCPU"},initialize:function(){return this.listenTo(this.model,"change:fip",this.render)},render:function(){var t,i,u,a;return this.$el.empty(),i=this.model.toJSON(),t=r(e.RESTYPE.OSIMAGE,Design.instance().region()).get(this.model.get("imageId")),this.flavorList=App.model.getOpenstackFlavors(Design.instance().get("provider"),Design.instance().region()),i.imageList=r(e.RESTYPE.OSIMAGE,Design.instance().region()).toJSON(),i.floatingIp=!!this.model.embedPort().getFloatingIp(),i.fixedIp=this.model.embedPort().get("ip"),i.isAppEdit=this.modeIsAppEdit(),i.agentEnabled=Design.instance().get("agent").enabled,i.volumeSize||(i.volumeSize=t.get("vol_size")),this.$el.html(n.stackTemplate(i)),u=new s(this.model,n.kpSelection({isAppEdit:this.modeIsAppEdit()})),this.$el.find("#property-os-server-keypair").html(u.render().$el),this.stopListening(this.workspace.design),this.listenTo(this.workspace.design,"change:agent",this.render),this.sgListView=this.reg(new o({targetModel:(a=this.model)!=null?a.embedPort():void 0})),this.$el.append(this.sgListView.render().el),this},initImage:function(e){return $(e.target)[0].selectize.setValue(this.model.get("imageId"))},initCredential:function(e){return this.checkWindowsDistro(this.model.get("imageId"))},initRAM:function(e){var t,n,r;return r=i.groupBy(this.flavorList.toJSON(),"vcpus"),n=this.flavorList.get(this.model.get("flavorId")),t=i.map(i.pluck(r[n.get("vcpus")],"ram"),function(e){return{text:e/1024+" G",value:e}}),$(e.target)[0].selectize.addOption(t),$(e.target)[0].selectize.setValue(n.get("ram"))},initCPU:function(e){var t,n,r;return r=i.groupBy(this.flavorList.toJSON(),"vcpus"),n=this.flavorList.get(this.model.get("flavorId")),t=i.map(r,function(e,t){return{text:t+" Core",value:t}}),$(e.target)[0].selectize.addOption(t),$(e.target)[0].selectize.setValue(n.get("vcpus"))},onChangeCredential:function(e,t){var n;return n=e?$(e.currentTarget).getValue():t,this.model.set("credential",n),n==="keypair"?(this.$el.find("#property-os-server-keypair").parent().show(),this.$el.find("#property-os-server-adminPass").parent().hide()):(this.$el.find("#property-os-server-keypair").parent().hide(),this.$el.find("#property-os-server-adminPass").parent().show())},checkWindowsDistro:function(t){var n,i,s,o,u,a;o=r(e.RESTYPE.OSIMAGE,Design.instance().region()).get(t),i=o.get("os_distro"),u=o.get("vol_size"),(this.model.get("volumeSize")||0)<u&&this.model.set("volumeSize",u),$("#property-os-server-volsize").val(this.model.get("volumeSize")||o.get("vol_size")),s=i==="windows",n=this.$el.find("#property-os-server-credential"),n.parents(".group").toggle(!s);if(s)return this.model.set("credential","adminPass"),(a=n[0].selectize)!=null&&a.setValue("adminPass"),this.onChangeCredential(null,"adminPass")},updateServerAttr:function(e){var t,n,r,s,o,u,a,f,l,c,h,p;h=$(e.currentTarget),t=h.data("target"),l=h[0].selectize;switch(t){case"imageId":this.checkWindowsDistro(h.val()),this.model.setImage(h.val());break;case"name":this.setTitle(h.val());break;case"CPU":o=i.groupBy(this.flavorList.models,function(e){return e.get("vcpus")}),n=o[h.val()];if(n!=null?!n.length:!void 0)return!1;a=this.$el.find("#property-os-server-RAM")[0].selectize;if(!a)return!1;return f=a.getValue(),r=i.map(i.pluck(i.map(n,function(e){return e.toJSON()}),"ram"),function(e){return{text:e/1024+" G",value:e}}),s=i.find(n,function(e){return e.get("ram")===+f}),s||(f=i.min(i.pluck(r,"value")),s=i.find(n,function(e){return e.get("ram")===+f})),this.model.set("flavorId",s.get("id")),this.updateRamOptions(r,f),!1;case"RAM":return u=this.flavorList.get(this.model.get("flavorId")),o=i.groupBy(this.flavorList.models,function(e){return e.get("vcpus")}),n=o[u.get("vcpus")],p=i.find(n,function(e){return e.get("ram")===+l.getValue()}),this.model.set("flavorId",p.get("id")),!1;case"fixedIp":return c=this.model.embedPort(),c.setIp(h.val()),!1;case"associateFip":return c=this.model.embedPort(),c.setFloatingIp(h.getValue()),!1}void 0;if(t)return this.model.set(t,h.val())},updateRamOptions:function(e,t){var n;return n=this.$el.find("#property-os-server-RAM")[0].selectize,n.clearOptions(),n.load(function(r){return r(e),n.refreshOptions(!1),n.setValue(t)})},selectTpl:{imageSelect:function(t){var i,s,o;return i=r(e.RESTYPE.OSIMAGE,Design.instance().region()),s=(o=i.get(t.value))!=null?o.toJSON():void 0,s?(s.distro=s.os_type+"."+s.architecture,n.imageListKey(s)):(t.distro="ami-unknown",n.imageListKey(t))},imageValue:function(t){var i,s,o;return i=r(e.RESTYPE.OSIMAGE,Design.instance().region()),s=(o=i.get(t.value))!=null?o.toJSON():void 0,s?(s.distro=s.os_type+"."+s.architecture,n.imageValue(s)):(t.distro="ami-unknown",t.text=t.text||"Unknow",n.imageValue(t))},kpButton:function(){return n.kpButton()}}},{handleTypes:[e.RESTYPE.OSSERVER],handleModes:["stack","appedit"]})});
+define(['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView) {
+  return OsPropertyView.extend({
+    events: {
+      "change #property-os-server-credential": "onChangeCredential",
+      "change #property-os-server-name": "updateServerAttr",
+      "change #property-os-server-image": "updateServerAttr",
+      "change #property-os-server-CPU": "updateServerAttr",
+      "change #property-os-server-RAM": "updateServerAttr",
+      "change #property-os-server-keypair": "updateServerAttr",
+      "change #property-os-server-adminPass": "updateServerAttr",
+      "change #property-os-server-userdata": "updateServerAttr",
+      'change #property-os-server-fip': "updateServerAttr",
+      'change #property-os-server-aip': "updateServerAttr",
+      'change #property-os-server-volsize': "updateServerAttr",
+      'select_initialize #property-os-server-image': "initImage",
+      'select_initialize #property-os-server-credential': "initCredential",
+      'select_initialize #property-os-server-RAM': "initRAM",
+      'select_initialize #property-os-server-CPU': "initCPU"
+    },
+    initialize: function() {
+      return this.listenTo(this.model, 'change:fip', this.render);
+    },
+    render: function() {
+      var currentImage, json, kpDropdown, _ref;
+      this.$el.empty();
+      json = this.model.toJSON();
+      currentImage = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).get(this.model.get('imageId'));
+      this.flavorList = App.model.getOpenstackFlavors(Design.instance().get("provider"), Design.instance().region());
+      json.imageList = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).toJSON();
+      json.floatingIp = !!this.model.embedPort().getFloatingIp();
+      json.fixedIp = this.model.embedPort().get('ip');
+      json.isAppEdit = this.modeIsAppEdit();
+      json.agentEnabled = Design.instance().get('agent').enabled;
+      json.volumeSize || (json.volumeSize = currentImage.get("vol_size"));
+      this.$el.html(template.stackTemplate(json));
+      kpDropdown = new OsKp(this.model, template.kpSelection({
+        isAppEdit: this.modeIsAppEdit()
+      }));
+      this.$el.find("#property-os-server-keypair").html(kpDropdown.render().$el);
+      this.stopListening(this.workspace.design);
+      this.listenTo(this.workspace.design, "change:agent", this.render);
+      this.sgListView = this.reg(new SgListView({
+        targetModel: (_ref = this.model) != null ? _ref.embedPort() : void 0
+      }));
+      this.$el.append(this.sgListView.render().el);
+      return this;
+    },
+    initImage: function(event) {
+      return $(event.target)[0].selectize.setValue(this.model.get('imageId'));
+    },
+    initCredential: function(event) {
+      return this.checkWindowsDistro(this.model.get("imageId"));
+    },
+    initRAM: function(event) {
+      var avaliableRams, currentFlavor, flavorGroup;
+      flavorGroup = _.groupBy(this.flavorList.toJSON(), 'vcpus');
+      currentFlavor = this.flavorList.get(this.model.get('flavorId'));
+      avaliableRams = _.map(_.pluck(flavorGroup[currentFlavor.get('vcpus')], 'ram'), function(e) {
+        return {
+          text: e / 1024 + " G",
+          value: e
+        };
+      });
+      $(event.target)[0].selectize.addOption(avaliableRams);
+      return $(event.target)[0].selectize.setValue(currentFlavor.get('ram'));
+    },
+    initCPU: function(event) {
+      var avaliableCPUs, currentFlavor, flavorGroup;
+      flavorGroup = _.groupBy(this.flavorList.toJSON(), 'vcpus');
+      currentFlavor = this.flavorList.get(this.model.get('flavorId'));
+      avaliableCPUs = _.map(flavorGroup, function(e, index) {
+        return {
+          text: index + " Core",
+          value: index
+        };
+      });
+      $(event.target)[0].selectize.addOption(avaliableCPUs);
+      return $(event.target)[0].selectize.setValue(currentFlavor.get('vcpus'));
+    },
+    onChangeCredential: function(event, value) {
+      var result;
+      result = event ? $(event.currentTarget).getValue() : value;
+      this.model.set('credential', result);
+      if (result === "keypair") {
+        this.$el.find("#property-os-server-keypair").parent().show();
+        return this.$el.find('#property-os-server-adminPass').parent().hide();
+      } else {
+        this.$el.find("#property-os-server-keypair").parent().hide();
+        return this.$el.find('#property-os-server-adminPass').parent().show();
+      }
+    },
+    checkWindowsDistro: function(imageId) {
+      var $serverCredential, distro, distroIsWindows, image, volumeSize, _ref;
+      image = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
+      distro = image.get("os_distro");
+      volumeSize = image.get("vol_size");
+      if ((this.model.get("volumeSize") || 0) < volumeSize) {
+        this.model.set("volumeSize", volumeSize);
+      }
+      $("#property-os-server-volsize").val(this.model.get("volumeSize") || image.get("vol_size"));
+      distroIsWindows = distro === 'windows';
+      $serverCredential = this.$el.find("#property-os-server-credential");
+      $serverCredential.parents(".group").toggle(!distroIsWindows);
+      if (distroIsWindows) {
+        this.model.set('credential', 'adminPass');
+        if ((_ref = $serverCredential[0].selectize) != null) {
+          _ref.setValue('adminPass');
+        }
+        return this.onChangeCredential(null, 'adminPass');
+      }
+    },
+    updateServerAttr: function(event) {
+      var attr, availableRams, availableRamsValue, currentRamFlavor, flavorGroup, oldRamFlavor, ramSelectize, ramValue, selectize, serverPort, target, targetFlavor;
+      target = $(event.currentTarget);
+      attr = target.data('target');
+      selectize = target[0].selectize;
+      switch (attr) {
+        case 'imageId':
+          this.checkWindowsDistro(target.val());
+          this.model.setImage(target.val());
+          break;
+        case 'name':
+          this.setTitle(target.val());
+          break;
+        case 'CPU':
+          flavorGroup = _.groupBy(this.flavorList.models, function(e) {
+            return e.get('vcpus');
+          });
+          availableRams = flavorGroup[target.val()];
+          if (availableRams != null ? availableRams.length : void 0) {
+            ramSelectize = this.$el.find("#property-os-server-RAM")[0].selectize;
+            if (!ramSelectize) {
+              return false;
+            }
+            ramValue = ramSelectize.getValue();
+            availableRamsValue = _.map(_.pluck(_.map(availableRams, function(ram) {
+              return ram.toJSON();
+            }), 'ram'), function(e) {
+              return {
+                text: e / 1024 + " G",
+                value: e
+              };
+            });
+            currentRamFlavor = _.find(availableRams, function(e) {
+              return e.get('ram') === +ramValue;
+            });
+            if (!currentRamFlavor) {
+              ramValue = _.min(_.pluck(availableRamsValue, 'value'));
+              currentRamFlavor = _.find(availableRams, function(e) {
+                return e.get('ram') === +ramValue;
+              });
+            }
+            this.model.set("flavorId", currentRamFlavor.get('id'));
+            this.updateRamOptions(availableRamsValue, ramValue);
+          } else {
+            return false;
+          }
+          return false;
+        case 'RAM':
+          oldRamFlavor = this.flavorList.get(this.model.get('flavorId'));
+          flavorGroup = _.groupBy(this.flavorList.models, function(e) {
+            return e.get('vcpus');
+          });
+          availableRams = flavorGroup[oldRamFlavor.get('vcpus')];
+          targetFlavor = _.find(availableRams, function(e) {
+            return e.get('ram') === +selectize.getValue();
+          });
+          this.model.set('flavorId', targetFlavor.get('id'));
+          return false;
+        case "fixedIp":
+          serverPort = this.model.embedPort();
+          serverPort.setIp(target.val());
+          return false;
+        case 'associateFip':
+          serverPort = this.model.embedPort();
+          serverPort.setFloatingIp(target.getValue());
+          return false;
+      }
+      console.log(attr, target.val());
+      if (attr) {
+        return this.model.set(attr, target.val());
+      }
+    },
+    updateRamOptions: function(availableRams, currentRam) {
+      var ramSelection;
+      ramSelection = this.$el.find("#property-os-server-RAM")[0].selectize;
+      ramSelection.clearOptions();
+      return ramSelection.load(function(callback) {
+        callback(availableRams);
+        ramSelection.refreshOptions(false);
+        return ramSelection.setValue(currentRam);
+      });
+    },
+    selectTpl: {
+      imageSelect: function(item) {
+        var imageList, imageObj, _ref;
+        imageList = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region());
+        imageObj = (_ref = imageList.get(item.value)) != null ? _ref.toJSON() : void 0;
+        if (!imageObj) {
+          item.distro = "ami-unknown";
+          return template.imageListKey(item);
+        }
+        imageObj.distro = imageObj.os_type + "." + imageObj.architecture;
+        return template.imageListKey(imageObj);
+      },
+      imageValue: function(item) {
+        var imageList, imageObj, _ref;
+        imageList = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region());
+        imageObj = (_ref = imageList.get(item.value)) != null ? _ref.toJSON() : void 0;
+        if (!imageObj) {
+          item.distro = "ami-unknown";
+          item.text = item.text || "Unknow";
+          return template.imageValue(item);
+        }
+        imageObj.distro = imageObj.os_type + "." + imageObj.architecture;
+        return template.imageValue(imageObj);
+      },
+      kpButton: function() {
+        return template.kpButton();
+      }
+    }
+  }, {
+    handleTypes: [constant.RESTYPE.OSSERVER],
+    handleModes: ['stack', 'appedit']
+  });
+});

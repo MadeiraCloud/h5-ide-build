@@ -1,1 +1,265 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){var r="",i;r+='\r\n                    <li data-id="'+a(typeof e===u?e.apply(e):e)+'" class="item ',i=n.ifCond.call(e,e,e&&e.version,{hash:{},inverse:f.noop,fn:f.program(2,c,t),data:t});if(i||i===0)r+=i;return r+='">'+a(typeof e===u?e.apply(e):e)+"</li>\r\n                    ",r}function c(e,t){return"selected"}function h(e,t){var r="",i;r+='\r\n    <div class="option-group-head expand" id="mesos-execution-settings">Execution Settings</div>\r\n    <div class="option-group" data-bind="true">\r\n        <dl class="dl-vertical">\r\n            ',i=n["if"].call(e,e&&e.isCommand,{hash:{},inverse:f.program(7,d,t),fn:f.program(5,p,t),data:t});if(i||i===0)r+=i;r+="\r\n            <dt>Environment</dt>\r\n            ",i=n["if"].call(e,e&&e.env,{hash:{},inverse:f.program(12,g,t),fn:f.program(9,v,t),data:t});if(i||i===0)r+=i;r+="\r\n            <dt>Ports</dt>\r\n            ",i=n["if"].call(e,(i=e&&e.ports,i==null||i===!1?i:i.length),{hash:{},inverse:f.program(12,g,t),fn:f.program(14,y,t),data:t});if(i||i===0)r+=i;r+="\r\n            <dt>Executor</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.executor,{hash:{},data:t}))+"</dd>\r\n            <dt>URIs</dt>\r\n            ",i=n["if"].call(e,(i=e&&e.uris,i==null||i===!1?i:i.length),{hash:{},inverse:f.program(20,S,t),fn:f.program(17,w,t),data:t});if(i||i===0)r+=i;return r+="\r\n        </dl>\r\n    </div>\r\n    ",r}function p(e,t){var r="";return r+="<dt>Command</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.command,{hash:{},data:t}))+"</dd>\r\n            ",r}function d(e,t){var r="";return r+="\r\n            <dt>Command</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.command,{hash:{},data:t}))+"</dd>",r}function v(e,t){var r="",i;r+="\r\n            ",i=n.each.call(e,e&&e.env,{hash:{},inverse:f.noop,fn:f.program(10,m,t),data:t});if(i||i===0)r+=i;return r+="\r\n            ",r}function m(e,t){var n="",r;return n+="\r\n                <dd>"+a((r=t==null||t===!1?t:t.key,typeof r===u?r.apply(e):r))+": "+a((r=t==null||t===!1?t:t.value,typeof r===u?r.apply(e):r))+"</dd>\r\n            ",n}function g(e,t){return"\r\n            <dd>-</dd>\r\n            "}function y(e,t){var r="",i;r+="\r\n            ",i=n.each.call(e,e&&e.ports,{hash:{},inverse:f.noop,fn:f.program(15,b,t),data:t});if(i||i===0)r+=i;return r+="\r\n            ",r}function b(e,t){var r="";return r+="<dd>"+a(n.emptyStr.call(e,e,{hash:{},data:t}))+"</dd>",r}function w(e,t){var r="",i;r+="\r\n            ",i=n.each.call(e,e&&e.uris,{hash:{},inverse:f.noop,fn:f.program(18,E,t),data:t});if(i||i===0)r+=i;return r+="\r\n            ",r}function E(e,t){var r="";return r+="\r\n                <dd>"+a(n.emptyStr.call(e,e,{hash:{},data:t}))+"</dd>\r\n            ",r}function S(e,t){return"\r\n                <dd>-</dd>\r\n            "}function x(e,t){var r="",i;r+="\r\n            ",i=n.each.call(e,e&&e.constraints,{hash:{},inverse:f.noop,fn:f.program(23,T,t),data:t});if(i||i===0)r+=i;return r+="\r\n            ",r}function T(e,t){var r="",i;r+="\r\n                <dd>",i=n.each.call(e,e,{hash:{},inverse:f.noop,fn:f.program(24,N,t),data:t});if(i||i===0)r+=i;return r+="</dd>\r\n            ",r}function N(e,t){var n="";return n+=a(typeof e===u?e.apply(e):e)+" ",n}function C(e,t){var r="",i;r+='\r\n        <dl class="dl-vertical mesos-health-check-li">\r\n            ',i=n["if"].call(e,e&&e.protocol,{hash:{},inverse:f.noop,fn:f.program(27,k,t),data:t});if(i||i===0)r+=i;r+="\r\n\r\n            ",i=n["if"].call(e,e&&e.path,{hash:{},inverse:f.noop,fn:f.program(29,L,t),data:t});if(i||i===0)r+=i;r+="\r\n\r\n            ",i=n["if"].call(e,e&&e.portIndex,{hash:{},inverse:f.noop,fn:f.program(31,A,t),data:t});if(i||i===0)r+=i;return r+="\r\n\r\n            <dt>Grace Period Seconds</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.gracePeriodSeconds,{hash:{},data:t}))+"</dd>\r\n\r\n            <dt>Interval Seconds</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.intervalSeconds,{hash:{},data:t}))+"</dd>\r\n\r\n            <dt>Timeout Seconds</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.timeoutSeconds,{hash:{},data:t}))+"</dd>\r\n\r\n            <dt>Max Consecutive Failures</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.maxConsecutiveFailures,{hash:{},data:t}))+"</dd>\r\n        </dl>\r\n        ",r}function k(e,t){var r="";return r+="\r\n            <dt>Protocol</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.protocol,{hash:{},data:t}))+"</dd>\r\n            ",r}function L(e,t){var r="";return r+="\r\n                <dt>Path</dt>\r\n                <dd>"+a(n.emptyStr.call(e,e&&e.path,{hash:{},data:t}))+"</dd>\r\n            ",r}function A(e,t){var r="";return r+="\r\n            <dt>Port Index</dt>\r\n            <dd>"+a(n.emptyStr.call(e,e&&e.portIndex,{hash:{},data:t}))+"</dd>\r\n            ",r}function O(e,t){return'\r\n        <dl class="dl-vertical">\r\n            <dt>Health Checks</dt>\r\n            <dd>-</dd>\r\n        </dl>\r\n        '}function M(e,t){var r="";return r+="\r\n            <dd>id: "+a(n.emptyStr.call(e,e&&e.id,{hash:{},data:t}))+"</dd>\r\n            ",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<article>\r\n    <div class="option-group-head expand" id="mesos-switch-versions">Switch Versions</div>\r\n    <div class="option-group" data-bind="true">\r\n        <section class="property-control-group clearfix">\r\n            <label class="left">Switch Version</label>\r\n            <div class="selectbox mesos-switch-versions">\r\n                <div class="selection">'+a((o=t&&t.version,typeof o===u?o.apply(t):o))+'</div>\r\n                <ul class="dropdown">\r\n                    ',o=n.each.call(t,t&&t.versions,{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+='\r\n                </ul>\r\n            </div>\r\n        </section>\r\n        <dl class="dl-vertical">\r\n            <dt>Tasks</dt>\r\n            <dd><a href="'+a((o=t&&t.task,typeof o===u?o.apply(t):o))+'" target="_blank">Task Details</a></dd>\r\n        </dl>\r\n    </div>\r\n    <div class="option-group-head expand" id="mesos-container-settings">Container Setting</div>\r\n    <div class="option-group" data-bind="true">\r\n        <section class="clearfix">\r\n            <button class="open-container btn-blue btn">Container Setting</button>\r\n        </section>\r\n    </div>\r\n    <div class="option-group-head expand" id="mesos-basic-settings">Basic Settings</div>\r\n    <div class="option-group" data-bind="true">\r\n        <dl class="dl-vertical">\r\n            <dt>ID</dt>\r\n            <dd>'+a(n.emptyStr.call(t,t&&t.id,{hash:{},data:i}))+"</dd>\r\n            <dt>CPUs</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.cpus,{hash:{},data:i}))+"</dd>\r\n            <dt>Memory</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.mem,{hash:{},data:i}))+"</dd>\r\n            <dt>Instances</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.instances,{hash:{},data:i}))+"</dd>\r\n        </dl>\r\n    </div>\r\n\r\n    ",o=n.unless.call(t,t&&t.hideExecutionSettings,{hash:{},inverse:f.noop,fn:f.program(4,h,i),data:i});if(o||o===0)s+=o;s+='\r\n\r\n    <div class="option-group-head expand" id="mesos-constraints">Constraints</div>\r\n    <div class="option-group" data-bind="true">\r\n        <dl class="dl-vertical">\r\n            <dt>Constraints</dt>\r\n            ',o=n["if"].call(t,(o=t&&t.constraints,o==null||o===!1?o:o.length),{hash:{},inverse:f.program(20,S,i),fn:f.program(22,x,i),data:i});if(o||o===0)s+=o;s+='\r\n        </dl>\r\n    </div>\r\n\r\n    <div class="option-group-head expand" id="mesos-health-checks">Health Checks</div>\r\n    <div class="option-group" data-bind="true">\r\n        ',o=n.each.call(t,t&&t.healthChecks,{hash:{},inverse:f.program(33,O,i),fn:f.program(26,C,i),data:i});if(o||o===0)s+=o;s+='\r\n\r\n    </div>\r\n\r\n    <div class="option-group-head expand" id="mesos-update-strategy">Update Strategy</div>\r\n    <div class="option-group" data-bind="true">\r\n        <dl class="dl-vertical">\r\n            <dt>Minimum Health Capacity  </dt>\r\n            <dd>'+a(n.emptyStr.call(t,(o=t&&t.upgradeStrategy,o==null||o===!1?o:o.minimumHealthCapacity),{hash:{},data:i}))+"</dd>\r\n            <dt>Maximum Over Capacity</dt>\r\n            <dd>"+a(n.emptyStr.call(t,(o=t&&t.upgradeStrategy,o==null||o===!1?o:o.maximumOverCapacity),{hash:{},data:i}))+'</dd>\r\n        </dl>\r\n    </div>\r\n\r\n    <div class="option-group-head expand" id="mesos-advanced-details  ">Advanced Details</div>\r\n    <div class="option-group" data-bind="true">\r\n\r\n        <dl class="dl-vertical">\r\n            <dt>Deployments</dt>\r\n            ',o=n.each.call(t,t&&t.deployments,{hash:{},inverse:f.program(12,g,i),fn:f.program(35,M,i),data:i});if(o||o===0)s+=o;return s+="\r\n            <dt>Backoff Seconds</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.backoffSeconds,{hash:{},data:i}))+"</dd>\r\n\r\n            <dt>Backoff Factor</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.backoffFactor,{hash:{},data:i}))+"</dd>\r\n\r\n\r\n            <dt>Max Launch Delay Seconds</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.maxLaunchDelaySeconds,{hash:{},data:i}))+"</dd>\r\n\r\n\r\n            <dt>Tasks Running</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.tasksRunning,{hash:{},data:i}))+"</dd>\r\n\r\n\r\n            <dt>Tasks Staged</dt>\r\n            <dd>"+a(n.emptyStr.call(t,t&&t.tasksStaged,{hash:{},data:i}))+"</dd>\r\n\r\n        </dl>\r\n    </div>\r\n\r\n</article>",s};return e.template(t)});
+define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                    <li data-id=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\" class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, depth0, (depth0 && depth0.version), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</li>\r\n                    ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "selected";
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n    <div class=\"option-group-head expand\" id=\"mesos-execution-settings\">Execution Settings</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        <dl class=\"dl-vertical\">\r\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isCommand), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            <dt>Environment</dt>\r\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.env), {hash:{},inverse:self.program(12, program12, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            <dt>Ports</dt>\r\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ports)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(12, program12, data),fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            <dt>Executor</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.executor), {hash:{},data:data}))
+    + "</dd>\r\n            <dt>URIs</dt>\r\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.uris)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(20, program20, data),fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n        </dl>\r\n    </div>\r\n    ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<dt>Command</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.command), {hash:{},data:data}))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n            <dt>Command</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.command), {hash:{},data:data}))
+    + "</dd>";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.env), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            ";
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                <dd>"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ": "
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "\r\n            <dd>-</dd>\r\n            ";
+  }
+
+function program14(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.ports), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            ";
+  return buffer;
+  }
+function program15(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, depth0, {hash:{},data:data}))
+    + "</dd>";
+  return buffer;
+  }
+
+function program17(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.uris), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            ";
+  return buffer;
+  }
+function program18(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n                <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, depth0, {hash:{},data:data}))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+function program20(depth0,data) {
+  
+  
+  return "\r\n                <dd>-</dd>\r\n            ";
+  }
+
+function program22(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.constraints), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            ";
+  return buffer;
+  }
+function program23(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                <dd>";
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\r\n            ";
+  return buffer;
+  }
+function program24(depth0,data) {
+  
+  var buffer = "";
+  buffer += escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + " ";
+  return buffer;
+  }
+
+function program26(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n        <dl class=\"dl-vertical mesos-health-check-li\">\r\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.protocol), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.path), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.portIndex), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n            <dt>Grace Period Seconds</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.gracePeriodSeconds), {hash:{},data:data}))
+    + "</dd>\r\n\r\n            <dt>Interval Seconds</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.intervalSeconds), {hash:{},data:data}))
+    + "</dd>\r\n\r\n            <dt>Timeout Seconds</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.timeoutSeconds), {hash:{},data:data}))
+    + "</dd>\r\n\r\n            <dt>Max Consecutive Failures</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.maxConsecutiveFailures), {hash:{},data:data}))
+    + "</dd>\r\n        </dl>\r\n        ";
+  return buffer;
+  }
+function program27(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n            <dt>Protocol</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.protocol), {hash:{},data:data}))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+function program29(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n                <dt>Path</dt>\r\n                <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.path), {hash:{},data:data}))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+function program31(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n            <dt>Port Index</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.portIndex), {hash:{},data:data}))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+function program33(depth0,data) {
+  
+  
+  return "\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Health Checks</dt>\r\n            <dd>-</dd>\r\n        </dl>\r\n        ";
+  }
+
+function program35(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n            <dd>id: "
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
+    + "</dd>\r\n            ";
+  return buffer;
+  }
+
+  buffer += "<article>\r\n    <div class=\"option-group-head expand\" id=\"mesos-switch-versions\">Switch Versions</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        <section class=\"property-control-group clearfix\">\r\n            <label class=\"left\">Switch Version</label>\r\n            <div class=\"selectbox mesos-switch-versions\">\r\n                <div class=\"selection\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.version)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\r\n                <ul class=\"dropdown\">\r\n                    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.versions), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n                </ul>\r\n            </div>\r\n        </section>\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Tasks</dt>\r\n            <dd><a href=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.task)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">Task Details</a></dd>\r\n        </dl>\r\n    </div>\r\n    <div class=\"option-group-head expand\" id=\"mesos-container-settings\">Container Setting</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        <section class=\"clearfix\">\r\n            <button class=\"open-container btn-blue btn\">Container Setting</button>\r\n        </section>\r\n    </div>\r\n    <div class=\"option-group-head expand\" id=\"mesos-basic-settings\">Basic Settings</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        <dl class=\"dl-vertical\">\r\n            <dt>ID</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
+    + "</dd>\r\n            <dt>CPUs</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.cpus), {hash:{},data:data}))
+    + "</dd>\r\n            <dt>Memory</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.mem), {hash:{},data:data}))
+    + "</dd>\r\n            <dt>Instances</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.instances), {hash:{},data:data}))
+    + "</dd>\r\n        </dl>\r\n    </div>\r\n\r\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideExecutionSettings), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n    <div class=\"option-group-head expand\" id=\"mesos-constraints\">Constraints</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Constraints</dt>\r\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.constraints)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(20, program20, data),fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n        </dl>\r\n    </div>\r\n\r\n    <div class=\"option-group-head expand\" id=\"mesos-health-checks\">Health Checks</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.healthChecks), {hash:{},inverse:self.program(33, program33, data),fn:self.program(26, program26, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n    </div>\r\n\r\n    <div class=\"option-group-head expand\" id=\"mesos-update-strategy\">Update Strategy</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Minimum Health Capacity  </dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.upgradeStrategy)),stack1 == null || stack1 === false ? stack1 : stack1.minimumHealthCapacity), {hash:{},data:data}))
+    + "</dd>\r\n            <dt>Maximum Over Capacity</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.upgradeStrategy)),stack1 == null || stack1 === false ? stack1 : stack1.maximumOverCapacity), {hash:{},data:data}))
+    + "</dd>\r\n        </dl>\r\n    </div>\r\n\r\n    <div class=\"option-group-head expand\" id=\"mesos-advanced-details  \">Advanced Details</div>\r\n    <div class=\"option-group\" data-bind=\"true\">\r\n\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Deployments</dt>\r\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.deployments), {hash:{},inverse:self.program(12, program12, data),fn:self.program(35, program35, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n            <dt>Backoff Seconds</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.backoffSeconds), {hash:{},data:data}))
+    + "</dd>\r\n\r\n            <dt>Backoff Factor</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.backoffFactor), {hash:{},data:data}))
+    + "</dd>\r\n\r\n\r\n            <dt>Max Launch Delay Seconds</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.maxLaunchDelaySeconds), {hash:{},data:data}))
+    + "</dd>\r\n\r\n\r\n            <dt>Tasks Running</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.tasksRunning), {hash:{},data:data}))
+    + "</dd>\r\n\r\n\r\n            <dt>Tasks Staged</dt>\r\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.tasksStaged), {hash:{},data:data}))
+    + "</dd>\r\n\r\n        </dl>\r\n    </div>\r\n\r\n</article>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
