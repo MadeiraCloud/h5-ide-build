@@ -2556,12 +2556,7 @@ define('ide/ApplicationModel',["OpsModel", "./submodels/Notification", "Project"
         first_name: attr.firstname,
         last_name: attr.lastname,
         email: attr.email,
-        credit_card: {
-          full_number: attr.card.number,
-          expiration_month: attr.card.expire.split("/")[0] || "",
-          expiration_year: attr.card.expire.split("/")[1] || "",
-          cvv: attr.card.cvv
-        }
+        credit_card: null
       }).then(function(projectObj) {
         var p;
         p = new Project(projectObj);
