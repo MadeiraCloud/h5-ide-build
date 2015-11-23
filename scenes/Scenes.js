@@ -2163,52 +2163,11 @@ function program1(depth0,data) {
 
 function program3(depth0,data) {
   
-  var stack1;
-  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.cardNumber)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  }
-
-function program5(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "NO_CARD", {hash:{},data:data}));
-  }
-
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "<p class=\"payment-username\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</p>";
-  return buffer;
-  }
-
-function program9(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<button class=\"btn btn-blue update-payment\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROVIDE_BILLING_INFORMATION", {hash:{},data:data}))
-    + "<i class=\"icon-right\"></i></button>\n                ";
-  return buffer;
-  }
-
-function program11(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<button class=\"btn btn-blue update-payment\">"
-    + escapeExpression(helpers.i18n.call(depth0, "UPDATE_BILLING_INFORMATION", {hash:{},data:data}))
-    + "<i class=\"icon-right\"></i></button>\n                ";
-  return buffer;
-  }
-
-function program13(depth0,data) {
-  
   
   return "\n        <dl class=\"billing-history settings-item\"></dl>\n    ";
   }
 
-function program15(depth0,data) {
+function program5(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dl class=\"billing-history settings-item\">\n            <dt>"
@@ -2218,12 +2177,12 @@ function program15(depth0,data) {
     + " "
     + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.nextPeriod), "yyyy-MM-d", {hash:{},data:data}))
     + "</span>\n            <dd class=\"table-head-fix\">\n                ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentHistory)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(22, program22, data),fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentHistory)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(12, program12, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </div>\n    ";
   return buffer;
   }
-function program16(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <table class=\"table-head\">\n                        <thead>\n                        <tr>\n                            <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">"
@@ -2235,12 +2194,12 @@ function program16(depth0,data) {
     + "</th>\n                            <th data-row-type=\"string\" style=\"width:25%;\">"
     + escapeExpression(helpers.i18n.call(depth0, "ACTION", {hash:{},data:data}))
     + "</th>\n                        </tr>\n                        </thead>\n                    </table>\n                    <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <table class=\"table\">\n                                <thead>\n                                <tr>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                                </tbody>\n                            </table>\n                        </div>\n                    </dd>\n                ";
   return buffer;
   }
-function program17(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                    <tr class=\"item\" data-id=\""
@@ -2250,20 +2209,20 @@ function program17(depth0,data) {
     + "</td>\n                                        <td>$ "
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
     + "</td>\n                                        <td>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n                                        <td>\n                                            <a class=\"payment-receipt\" href=\"#\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_VIEW_RECEIPT", {hash:{},data:data}))
     + "</a></td>\n                                    </tr>\n                                ";
   return buffer;
   }
-function program18(depth0,data) {
+function program8(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program20(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<span class=\"link-red\">"
@@ -2272,7 +2231,7 @@ function program20(depth0,data) {
   return buffer;
   }
 
-function program22(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"full-space\">\n                        "
@@ -2292,19 +2251,8 @@ function program22(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
     + "</button>\n                <button class=\"btn btn-silver modal-close editEmailCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n            </div>\n        </dd>\n    </dl>\n    <dl class=\"settings-item credit-card-info\">\n        <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "CREDIT_CARD_INFORMATION", {hash:{},data:data}))
-    + "</dt>\n        <dd>\n            <div class=\"payment-credit-middle payment-credit-card\">\n\n            </div>\n            <div class=\"credit-meta\">\n                <p class=\"payment-number\">";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.cardNumber), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</p>\n                ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.firstName), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </div>\n            <div class=\"credit-update\">\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSubscription), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </div>\n        </dd>\n    </dl>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSubscription), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+    + "</button>\n            </div>\n        </dd>\n    </dl>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSubscription), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
   return buffer;
