@@ -27654,17 +27654,19 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
   }, {
     handleTypes: constant.RESTYPE.INSTANCE,
     isMesosMaster: function(data) {
-      var states;
+      var last_state, states;
       states = data.state;
-      if (states && states[0] && states[0].module === 'linux.mesos.master') {
+      last_state = states[states.length - 1];
+      if (states && last_state && last_state.module === 'linux.mesos.master') {
         return true;
       }
       return false;
     },
     isMesosSlave: function(data) {
-      var states;
+      var last_state, states;
       states = data.state;
-      if (states && states[0] && states[0].module === 'linux.mesos.slave') {
+      last_state = states[states.length - 1];
+      if (states && last_state && last_state.module === 'linux.mesos.slave') {
         return true;
       }
       return false;
