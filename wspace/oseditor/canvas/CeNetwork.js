@@ -1,7 +1,7 @@
 define(["CanvasElement", "constant", "CanvasManager", "CanvasView"], function(CanvasElement, constant, CanvasManager, CanvasView) {
   return CanvasElement.extend({
 
-    /* env:dev                                             env:dev:end */
+    /* env:dev                                           env:dev:end */
     type: constant.RESTYPE.OSNETWORK,
     parentType: ["SVG"],
     defaultSize: [60, 60],
