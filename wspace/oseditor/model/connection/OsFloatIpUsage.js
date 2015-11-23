@@ -1,13 +1,1 @@
-define(["ConnectionModel", "constant", "Design"], function(ConnectionModel, constant, Design) {
-  return ConnectionModel.extend({
-    type: "OsFloatIpUsage",
-    constructor: function(p1comp, p2comp, attr, options) {
-      var FloatIpModel;
-      if (!p2comp && p1comp.type !== constant.RESTYPE.OSFIP) {
-        FloatIpModel = Design.modelClassForType(constant.RESTYPE.OSFIP);
-        p2comp = new FloatIpModel();
-      }
-      return ConnectionModel.call(this, p1comp, p2comp, attr, options);
-    }
-  });
-});
+define(["ConnectionModel","constant","Design"],function(e,t,n){return e.extend({type:"OsFloatIpUsage",constructor:function(r,i,s,o){var u;return!i&&r.type!==t.RESTYPE.OSFIP&&(u=n.modelClassForType(t.RESTYPE.OSFIP),i=new u),e.call(this,r,i,s,o)}})});

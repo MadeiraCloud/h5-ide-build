@@ -1,5 +1,1 @@
-define(['constant', './ValidationBase'], function(constant, ValidationBase) {
-  return ValidationBase.extend({}, {
-    handleTypes: [constant.RESTYPE.OSRT]
-  });
-});
+define(["constant","./ValidationBase"],function(e,t){return t.extend({},{handleTypes:[e.RESTYPE.OSRT]})});

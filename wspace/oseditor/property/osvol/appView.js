@@ -1,11 +1,1 @@
-define(['constant', '../OsPropertyView', './template', 'CloudResources'], function(constant, OsPropertyView, template, CloudResources) {
-  return OsPropertyView.extend({
-    render: function() {
-      this.$el.html(template.appTemplate(this.getRenderData()));
-      return this;
-    }
-  }, {
-    handleTypes: [constant.RESTYPE.OSVOL],
-    handleModes: ['app']
-  });
-});
+define(["constant","../OsPropertyView","./template","CloudResources"],function(e,t,n,r){return t.extend({render:function(){return this.$el.html(n.appTemplate(this.getRenderData())),this}},{handleTypes:[e.RESTYPE.OSVOL],handleModes:["app"]})});

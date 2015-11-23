@@ -1,13 +1,1 @@
-define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"os-property-message\">\r\n    This is an association of "
-    + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " and "
-    + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".\r\n</div>";
-  return buffer;
-  }; return Handlebars.template(TEMPLATE); });
+define(["handlebars"],function(e){var t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression;return s+='<div class="os-property-message">\r\n    This is an association of '+a((o=t&&t.namePort1,typeof o===u?o.apply(t):o))+" and "+a((o=t&&t.namePort2,typeof o===u?o.apply(t):o))+".\r\n</div>",s};return e.template(t)});

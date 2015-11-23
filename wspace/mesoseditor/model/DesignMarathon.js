@@ -1,3 +1,1 @@
-define(["Design", "constant"], function(Design, constant) {
-  return Design.extend({});
-});
+define(["Design","constant"],function(e,t){return e.extend({})});

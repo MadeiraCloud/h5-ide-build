@@ -1,11 +1,1 @@
-define(['constant', '../OsPropertyView', './template'], function(constant, OsPropertyView, template) {
-  return OsPropertyView.extend({
-    render: function() {
-      this.$el.html(template({}));
-      return this;
-    }
-  }, {
-    handleTypes: ['default'],
-    handleModes: ['stack', 'app', 'appedit']
-  });
-});
+define(["constant","../OsPropertyView","./template"],function(e,t,n){return t.extend({render:function(){return this.$el.html(n({})),this}},{handleTypes:["default"],handleModes:["stack","app","appedit"]})});

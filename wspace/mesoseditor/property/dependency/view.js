@@ -1,17 +1,1 @@
-define(['../base/view', './template', 'i18n!/nls/lang.js', 'constant', 'UI.modalplus'], function(PropertyView, Tpl, lang, constant) {
-  var view;
-  view = PropertyView.extend({
-    initialize: function(options) {},
-    render: function() {
-      var afterComp, beforeComp;
-      afterComp = this.model.port1Comp();
-      beforeComp = this.model.port2Comp();
-      this.$el.html(Tpl.stack({
-        before: beforeComp.get('name'),
-        after: afterComp.get('name')
-      }));
-      return 'Dependency';
-    }
-  });
-  return new view();
-});
+define(["../base/view","./template","i18n!/nls/lang.js","constant","UI.modalplus"],function(e,t,n,r){var i;return i=e.extend({initialize:function(e){},render:function(){var e,n;return e=this.model.port1Comp(),n=this.model.port2Comp(),this.$el.html(t.stack({before:n.get("name"),after:e.get("name")})),"Dependency"}}),new i});

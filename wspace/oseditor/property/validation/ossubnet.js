@@ -1,16 +1,1 @@
-define(['constant', './ValidationBase'], function(constant, ValidationBase) {
-  return ValidationBase.extend({
-    limits: {
-      cidr: ValidationBase.limit.cidrv4,
-      iplist: ValidationBase.limit.ipv4
-    },
-    cidr: function(value) {
-      if (!MC.validate('cidr', value)) {
-        return 'Invalid CIDR Address';
-      }
-      return null;
-    }
-  }, {
-    handleTypes: [constant.RESTYPE.OSSUBNET]
-  });
-});
+define(["constant","./ValidationBase"],function(e,t){return t.extend({limits:{cidr:t.limit.cidrv4,iplist:t.limit.ipv4},cidr:function(e){return MC.validate("cidr",e)?null:"Invalid CIDR Address"}},{handleTypes:[e.RESTYPE.OSSUBNET]})});

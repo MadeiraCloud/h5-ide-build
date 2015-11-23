@@ -1,18 +1,1 @@
-define(["CanvasElement", "constant", "CanvasManager", "CanvasView"], function(CanvasElement, constant, CanvasManager, CanvasView) {
-  return CanvasElement.extend({
-
-    /* env:dev                                             env:dev:end */
-    type: constant.RESTYPE.OSNETWORK,
-    parentType: ["SVG"],
-    defaultSize: [60, 60],
-    create: function() {
-      return this.canvas.appendNetwork(this.createGroup());
-    },
-    render: function() {
-      var m;
-      m = this.model;
-      CanvasManager.setLabel(this, this.$el.children("text"));
-      return this.$el[0].instance.move(m.x() * CanvasView.GRID_WIDTH, m.y() * CanvasView.GRID_WIDTH);
-    }
-  });
-});
+define(["CanvasElement","constant","CanvasManager","CanvasView"],function(e,t,n,r){return e.extend({type:t.RESTYPE.OSNETWORK,parentType:["SVG"],defaultSize:[60,60],create:function(){return this.canvas.appendNetwork(this.createGroup())},render:function(){var e;return e=this.model,n.setLabel(this,this.$el.children("text")),this.$el[0].instance.move(e.x()*r.GRID_WIDTH,e.y()*r.GRID_WIDTH)}})});
