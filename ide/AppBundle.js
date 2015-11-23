@@ -2556,7 +2556,7 @@ define('ide/ApplicationModel',["OpsModel", "./submodels/Notification", "Project"
         first_name: attr.firstname,
         last_name: attr.lastname,
         email: attr.email,
-        credit_card: null
+        credit_card: {}
       }).then(function(projectObj) {
         var p;
         p = new Project(projectObj);
