@@ -2553,9 +2553,9 @@ define('ide/ApplicationModel',["OpsModel", "./submodels/Notification", "Project"
       self = this;
       return ApiRequest("project_create", {
         project_name: attr.name,
-        first_name: attr.firstname,
-        last_name: attr.lastname,
-        email: attr.email,
+        first_name: null,
+        last_name: null,
+        email: null,
         credit_card: null
       }).then(function(projectObj) {
         var p;

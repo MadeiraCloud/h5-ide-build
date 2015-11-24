@@ -264,25 +264,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<section class=\"new-project-modal\" data-bind=\"true\">\n  <label for=\"new-project-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_NAME", {hash:{},data:data}))
-    + "</label>\n  <input type=\"text\" class=\"input\" id=\"new-project-name\" data-required=\"true\" required>\n  <div class=\"new-project-billing-wrap\">\n    <h4>"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING", {hash:{},data:data}))
-    + "</h4>\n    <span class=\"billing-info-tip tooltip icon-password\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT_TIT", {hash:{},data:data}))
-    + "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT", {hash:{},data:data}))
-    + "</span>\n    <div class=\"new-project-info\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_TIP", {hash:{},data:data}))
-    + "</div>\n    <div class=\"billing-info-err warning-red\"></div>\n    <div class=\"billing-info-item billing-info-item-owner\">\n      <label for=\"new-project-fn\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_OWNER", {hash:{},data:data}))
-    + "</label>\n      <input class=\"input\" id=\"new-project-fn\" type=\"text\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_FIRST_NAME", {hash:{},data:data}))
-    + "\" data-required=\"true\">\n      <input class=\"input\" id=\"new-project-ln\" type=\"text\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_LAST_NAME", {hash:{},data:data}))
-    + "\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-email\">\n      <label for=\"new-project-email\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_EMAIL", {hash:{},data:data}))
-    + "</label>\n      <input class=\"input\" id=\"new-project-email\" type=\"text\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_PL_EMAIL", {hash:{},data:data}))
-    + "\" data-required=\"true\">\n    </div>\n  </div>\n  <div class=\"modal-footer\">\n    <button class=\"btn new-project-create btn-blue\">"
+    + "</label>\n  <input type=\"text\" class=\"input\" id=\"new-project-name\" data-required=\"true\" required>\n  <div class=\"modal-footer\">\n    <button class=\"btn new-project-create btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "LBL_CREATE", {hash:{},data:data}))
     + "</button>\n    <button class=\"btn modal-close new-project-cancel btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
