@@ -393,7 +393,7 @@ define('cloudres/CrCollection',["ApiRequest", "./CrModel", "constant", "backbone
       return ApiRequest(api, params);
     },
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                     env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                            env:dev:end */
     where: function(option, first) {
       var hasOtherAttr, key, res;
       if (option.category && option.category === this.category) {
@@ -621,7 +621,7 @@ define('cloudres/CrOpsResource',["./CrCollection", "constant", "CloudResources",
   /* This Connection is used to fetch all the resource of an vpc */
   return CrCollection.extend({
 
-    /* env:dev                                                 env:dev:end */
+    /* env:dev                                               env:dev:end */
     type: "OpsResource",
 
     /*
@@ -695,7 +695,7 @@ define('cloudres/CrOpsResource',["./CrCollection", "constant", "CloudResources",
 define('cloudres/aws/CrModelDhcp',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                             env:dev:end */
+    /* env:dev                                           env:dev:end */
     defaults: function() {
       return {
         "domain-name": [],
@@ -769,7 +769,7 @@ define('cloudres/aws/CrModelDhcp',["../CrModel", "ApiRequest"], function(CrModel
 define('cloudres/aws/CrModelKeypair',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                                env:dev:end */
+    /* env:dev                                              env:dev:end */
     defaults: {
       keyName: "",
       keyData: "",
@@ -818,7 +818,7 @@ define('cloudres/aws/CrModelKeypair',["../CrModel", "ApiRequest"], function(CrMo
 define('cloudres/aws/CrModelSslcert',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                                env:dev:end */
+    /* env:dev                                              env:dev:end */
     taggable: false,
     defaults: {
       Path: "",
@@ -884,7 +884,7 @@ define('cloudres/aws/CrModelSslcert',["../CrModel", "ApiRequest"], function(CrMo
 define('cloudres/aws/CrModelTopic',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
     taggable: false,
     defaults: {
       Name: "",
@@ -941,7 +941,7 @@ define('cloudres/aws/CrModelSubscription',["../CrModel", "ApiRequest"], function
   var CrSubscriptionModel;
   CrSubscriptionModel = CrModel.extend({
 
-    /* env:dev                                                     env:dev:end */
+    /* env:dev                                                   env:dev:end */
     taggable: false,
     defaults: {
       Endpoint: "",
@@ -1015,7 +1015,7 @@ define('cloudres/aws/CrModelSubscription',["../CrModel", "ApiRequest"], function
 define('cloudres/aws/CrModelSnapshot',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                                 env:dev:end */
+    /* env:dev                                               env:dev:end */
     defaults: {
       volumeId: "",
       status: "pending",
@@ -1121,7 +1121,7 @@ define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "cons
   /* Dhcp */
   CrCollection.extend({
 
-    /* env:dev                                                  env:dev:end */
+    /* env:dev                                                env:dev:end */
     type: constant.RESTYPE.DHCP,
     model: CrDhcpModel,
     doFetch: function() {
@@ -1144,7 +1144,7 @@ define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "cons
   /* Keypair */
   CrCollection.extend({
 
-    /* env:dev                                                     env:dev:end */
+    /* env:dev                                                   env:dev:end */
     type: constant.RESTYPE.KP,
     model: CrKeypairModel,
     doFetch: function() {
@@ -1167,7 +1167,7 @@ define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "cons
   /* Ssl cert */
   CrCollection.extend({
 
-    /* env:dev                                                     env:dev:end */
+    /* env:dev                                                   env:dev:end */
     type: constant.RESTYPE.IAM,
     model: CrSslcertModel,
     doFetch: function() {
@@ -1193,7 +1193,7 @@ define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "cons
   /* Sns Topic */
   CrCollection.extend({
 
-    /* env:dev                                                   env:dev:end */
+    /* env:dev                                                 env:dev:end */
     type: constant.RESTYPE.TOPIC,
     model: CrTopicModel,
     constructor: function() {
@@ -1250,7 +1250,7 @@ define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "cons
   /* Sns Subscription */
   CrCollection.extend({
 
-    /* env:dev                                                          env:dev:end */
+    /* env:dev                                                        env:dev:end */
     type: constant.RESTYPE.SUBSCRIPTION,
     model: CrSubscriptionModel,
     doFetch: function() {
@@ -1273,7 +1273,7 @@ define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "cons
   /* Snapshot */
   return CrCollection.extend({
 
-    /* env:dev                                                      env:dev:end */
+    /* env:dev                                                    env:dev:end */
     type: constant.RESTYPE.SNAP,
     model: CrSnapshotModel,
     initialize: function() {
@@ -1466,7 +1466,7 @@ define('cloudres/aws/CrCommonCollection',["../CrCollection", "../CrModel", "cons
 define('cloudres/aws/CrModelElb',["../CrModel"], function(CrModel) {
   return CrModel.extend({
 
-    /* env:dev                                            env:dev:end */
+    /* env:dev                                          env:dev:end */
     initialize: function() {
       var self;
       self = this;
@@ -2513,7 +2513,7 @@ define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "Cl
   /* This Collection is used to fetch generic ami */
   CrCollection.extend({
 
-    /* env:dev                                                 env:dev:end */
+    /* env:dev                                               env:dev:end */
     type: constant.RESTYPE.AMI,
     __selfParseData: true,
     localStorageKey: function() {
@@ -2674,7 +2674,7 @@ define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "Cl
   });
   SpecificAmiCollection = CrCollection.extend({
 
-    /* env:dev                                                         env:dev:end */
+    /* env:dev                                                       env:dev:end */
     type: "SpecificAmiCollection",
     initialize: function() {
       this.__models = [];
@@ -2699,7 +2699,7 @@ define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "Cl
   /* This Collection is used to fetch quickstart ami */
   SpecificAmiCollection.extend({
 
-    /* env:dev                                                           env:dev:end */
+    /* env:dev                                                         env:dev:end */
     type: "QuickStartAmi",
     doFetch: function() {
       return this.sendRequest("aws_quickstart");
@@ -2722,7 +2722,7 @@ define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "Cl
   /* This Collection is used to fetch my ami */
   SpecificAmiCollection.extend({
 
-    /* env:dev                                                   env:dev:end */
+    /* env:dev                                                 env:dev:end */
     type: "MyAmi",
     doFetch: function() {
       var self, selfParam1, selfParam2;
@@ -2791,7 +2791,7 @@ define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "Cl
   /* This Collection is used to fetch favorite ami */
   return SpecificAmiCollection.extend({
 
-    /* env:dev                                                    env:dev:end */
+    /* env:dev                                                  env:dev:end */
     type: "FavoriteAmi",
     doFetch: function() {
       var d, p, region, self;
@@ -2884,7 +2884,7 @@ define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "Cl
 define('cloudres/aws/CrModelRdsSnapshot',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                                    env:dev:end */
+    /* env:dev                                                  env:dev:end */
     taggable: false,
     isComplete: function() {
       return this.attributes.Status === "available";
@@ -3006,7 +3006,7 @@ define('cloudres/aws/CrModelRdsInstance',["../CrModel", "CloudResources", "ApiRe
 define('cloudres/aws/CrModelRdsPGroup',["../CrModel", "CloudResources", "constant"], function(CrModel, CloudResources, constant) {
   return CrModel.extend({
 
-    /* env:dev                                                     env:dev:end */
+    /* env:dev                                                   env:dev:end */
     taggable: false,
     isDefault: function() {
       return (this.get("DBParameterGroupName") || "").indexOf("default.") === 0;
@@ -3400,7 +3400,7 @@ var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; 
 define('cloudres/aws/CrModelRdsParameter',["../CrModel", "CloudResources"], function(CrModel, CloudResources) {
   return CrModel.extend({
 
-    /* env:dev                                                env:dev:end */
+    /* env:dev                                              env:dev:end */
     taggable: false,
     isValidValue: function(value) {
       var allowed, range, second_minus, valueNum, _i, _len, _ref;
@@ -3463,7 +3463,7 @@ define('cloudres/aws/CrClnRdsParam',["../CrCollection", "constant", "./CrModelRd
   /* Parameter */
   return CrCollection.extend({
 
-    /* env:dev                                                      env:dev:end */
+    /* env:dev                                                    env:dev:end */
     type: constant.RESTYPE.DBPARAM,
     model: CrRdsParamModel,
     __selfParseData: true,
@@ -3663,7 +3663,7 @@ define('cloudres/openstack/CrClnSharedRes',["../CrCollection", "CloudResources",
 define('cloudres/openstack/CrClnImage',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
   CrCollection.extend({
 
-    /* env:dev                                                     env:dev:end */
+    /* env:dev                                                   env:dev:end */
     type: constant.RESTYPE.OSIMAGE,
     doFetch: function() {
       return ApiRequest("os_image_List", {
@@ -3686,7 +3686,7 @@ define('cloudres/openstack/CrClnImage',["ApiRequestOs", "../CrCollection", "cons
   });
   return CrCollection.extend({
 
-    /* env:dev                                                      env:dev:end */
+    /* env:dev                                                    env:dev:end */
     type: constant.RESTYPE.OSFLAVOR,
     doFetch: function() {
       var region;
@@ -3709,7 +3709,7 @@ define('cloudres/openstack/CrClnImage',["ApiRequestOs", "../CrCollection", "cons
 define('cloudres/openstack/CrClnNetwork',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
   return CrCollection.extend({
 
-    /* env:dev                                                       env:dev:end */
+    /* env:dev                                                     env:dev:end */
     type: constant.RESTYPE.OSNETWORK,
     getExtNetworks: function() {
       return this.where({
@@ -4062,7 +4062,7 @@ define('cloudres/openstack/CrClnCommonRes',["../CrCollection", "../CrModel", "Ap
 define('cloudres/mesos/CrModelDockerImage',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
   return CrModel.extend({
 
-    /* env:dev                                                    env:dev:end */
+    /* env:dev                                                  env:dev:end */
     defaults: {
       "is_automated": false,
       "name": "",
@@ -4079,7 +4079,7 @@ define('cloudres/mesos/CrClnDockerImage',["../CrCollection", "constant", "./CrMo
   /* Snapshot */
   return CrCollection.extend({
 
-    /* env:dev                                                         env:dev:end */
+    /* env:dev                                                       env:dev:end */
     type: constant.RESTYPE.DOCKERIMAGE,
     model: CrRdsDockerImageModel,
     doFetch: function() {
@@ -4100,7 +4100,7 @@ define('cloudres/mesos/CrClnDockerImage',["../CrCollection", "constant", "./CrMo
 define('cloudres/mesos/CrClnMarathonApp',["../CrCollection", "constant", "ApiRequest"], function(CrCollection, constant) {
   return CrCollection.extend({
 
-    /* env:dev                                                         env:dev:end */
+    /* env:dev                                                       env:dev:end */
     type: constant.RESTYPE.MRTHAPP,
     __selfParseData: true,
     doFetch: function() {
@@ -4120,7 +4120,7 @@ define('cloudres/mesos/CrClnMarathonApp',["../CrCollection", "constant", "ApiReq
 define('cloudres/mesos/CrClnMarathonGroup',["../CrCollection", "constant", "ApiRequest"], function(CrCollection, constant) {
   return CrCollection.extend({
 
-    /* env:dev                                                           env:dev:end */
+    /* env:dev                                                         env:dev:end */
     type: constant.RESTYPE.MRTHGROUP,
     __selfParseData: true,
     doFetch: function() {

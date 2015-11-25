@@ -1,7 +1,7 @@
 define(["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js", "CanvasView", "CloudResources"], function(CanvasElement, constant, CanvasManager, lang, CanvasView, CloudResources) {
   return CanvasElement.extend({
 
-    /* env:dev                                               env:dev:end */
+    /* env:dev                                             env:dev:end */
     type: constant.RESTYPE.MRTHAPP,
     parentType: [constant.RESTYPE.MRTHGROUP, "SVG"],
     defaultSize: [18, 8],

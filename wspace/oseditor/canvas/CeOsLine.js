@@ -1,17 +1,17 @@
 define(["CanvasLine", "constant"], function(CeLine, constant) {
   CeLine.extend({
 
-    /* env:dev                                                env:dev:end */
+    /* env:dev                                              env:dev:end */
     type: "OsListenerAsso"
   });
   CeLine.extend({
 
-    /* env:dev                                             env:dev:end */
+    /* env:dev                                           env:dev:end */
     type: "OsPortUsage"
   });
   CeLine.extend({
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
     type: "OsRouterAsso",
     appendLineToCanvas: function(svgEl) {
       return this.canvas.appendGroupLine(svgEl);
@@ -19,7 +19,7 @@ define(["CanvasLine", "constant"], function(CeLine, constant) {
   });
   return CeLine.extend({
 
-    /* env:dev                                                  env:dev:end */
+    /* env:dev                                                env:dev:end */
     type: "OsPoolMembership"
   });
 });

@@ -290,7 +290,7 @@ define('api/define/aws/autoscaling',['ApiRequestDefs'], function( ApiRequestDefs
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -306,7 +306,7 @@ define('api/define/aws/aws',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -323,7 +323,7 @@ define('api/define/aws/cloudwatch',['ApiRequestDefs'], function( ApiRequestDefs 
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -401,7 +401,7 @@ define('api/define/aws/ec2',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -417,7 +417,7 @@ define('api/define/aws/elb',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -433,7 +433,7 @@ define('api/define/aws/iam',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -458,7 +458,7 @@ define('api/define/aws/opsworks',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -496,7 +496,7 @@ define('api/define/aws/rds',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -510,7 +510,7 @@ define('api/define/aws/sdb',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -532,7 +532,7 @@ define('api/define/aws/sns',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -559,7 +559,7 @@ define('api/define/aws/vpc',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -757,7 +757,7 @@ define('api/define/openstack/os',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -783,7 +783,7 @@ define('api/define/marathon',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                           nv:dev:end */
+		/* env:dev                                                                                       nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -816,7 +816,7 @@ define('ApiRequest',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHa
   };
   logAndThrow = function(obj) {
 
-    /* env:dev                                     env:dev:end */
+    /* env:dev                                   env:dev:end */
     throw obj;
   };
   tryParseAws = function(xml, findError) {
