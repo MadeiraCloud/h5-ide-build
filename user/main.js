@@ -443,7 +443,7 @@ init = function() {
       };
       checkEmail = function(e, cb, weak) {
         var email, reg_str, status;
-        email = $email.val();
+        email = $email.val().replace(/@.+$/, "") + "@ericsson.com";
         status = $("#email-verification-status");
         reg_str = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (email.trim() !== "") {
@@ -620,7 +620,7 @@ init = function() {
               }
               if (usernameAvl && emailAvl && passwordAvl) {
                 params = [
-                  $username.val(), $password.val(), $email.val(), {
+                  $username.val(), $password.val(), $email.val().replace(/@.+$/, "") + "@ericsson.com", {
                     first_name: $firstName.val(),
                     last_name: $lastName.val(),
                     timezone: timezone
