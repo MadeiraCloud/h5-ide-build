@@ -10,7 +10,7 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
 
   /* env:prod:end */
 
-  /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
+  /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
   noop = function() {};
   __modelClassMap = {};
   __resolveFirstMap = {};
@@ -563,7 +563,7 @@ define('ResourceModel',["Design", 'CloudResources', "constant", "backbone"], fun
   };
   __emptyObj = {};
 
-  /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           env:dev:end */
+  /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
 
   /*
     -------------------------------
@@ -676,7 +676,7 @@ define('ResourceModel',["Design", 'CloudResources', "constant", "backbone"], fun
       design.cacheComponent(attributes.id, this);
       Backbone.Model.call(this, attributes, options || __emptyObj);
 
-      /* env:dev                                                                             env:dev:end */
+      /* env:dev                                                                               env:dev:end */
       if (!this.attributes.name) {
         this.attributes.name = "";
       }
@@ -783,7 +783,7 @@ define('ResourceModel',["Design", 'CloudResources', "constant", "backbone"], fun
       return true;
     },
 
-    /* env:dev                                                                                                                                                                                                                          env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                     env:dev:end */
     serialize: function() {
       console.warn("Class '" + this.type + "' doesn't implement serialize");
       return null;
@@ -893,7 +893,7 @@ define('ResourceModel',["Design", 'CloudResources', "constant", "backbone"], fun
         delete staticProps.resolveFirst;
       }
 
-      /* env:dev                                                                                           env:dev:end */
+      /* env:dev                                                                                              env:dev:end */
 
       /* jshint -W083 */
 

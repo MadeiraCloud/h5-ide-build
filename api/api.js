@@ -16,7 +16,7 @@ define('ApiRequestDefs',[], function() {
       result: params || void 0,
       reason: errorMsg
 
-      /* env:dev                                                     env:dev:end */
+      /* env:dev                                                       env:dev:end */
     };
   };
 
@@ -263,7 +263,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -599,7 +599,7 @@ define('api/define/openstack/cinder',['ApiRequestDefs'], function( ApiRequestDef
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -655,7 +655,7 @@ define('api/define/openstack/neutron',['ApiRequestDefs'], function( ApiRequestDe
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -729,7 +729,7 @@ define('api/define/openstack/nova',['ApiRequestDefs'], function( ApiRequestDefs 
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -742,7 +742,7 @@ define('api/define/openstack/glance',['ApiRequestDefs'], function( ApiRequestDef
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -979,7 +979,7 @@ define('ApiRequestR',["ApiRequestRDefs", "api/ApiRequestErrors", "MC"], function
   EmptyObject = {};
   logAndThrow = function(obj) {
 
-    /* env:dev                                   env:dev:end */
+    /* env:dev                                     env:dev:end */
     throw obj;
   };
   AjaxErrorHandler = function(jqXHR, textStatus, error) {
@@ -1068,7 +1068,7 @@ define('ApiRequestOs',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequest
   };
   logAndThrow = function(obj) {
 
-    /* env:dev                                   env:dev:end */
+    /* env:dev                                     env:dev:end */
     throw obj;
   };
   AjaxSuccessHandler = function(res, apiName, apiParameters) {

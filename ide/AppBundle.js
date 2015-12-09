@@ -569,7 +569,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       }
       this.__userTriggerAppProgress = false;
 
-      /* env:dev                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                       env:dev:end */
 
       /* env:debug */
       this.listenTo(this, "change:state", function() {
@@ -2553,15 +2553,10 @@ define('ide/ApplicationModel',["OpsModel", "./submodels/Notification", "Project"
       self = this;
       return ApiRequest("project_create", {
         project_name: attr.name,
-        first_name: attr.firstname,
-        last_name: attr.lastname,
-        email: attr.email,
-        credit_card: {
-          full_number: attr.card.number,
-          expiration_month: attr.card.expire.split("/")[0] || "",
-          expiration_year: attr.card.expire.split("/")[1] || "",
-          cvv: attr.card.cvv
-        }
+        first_name: null,
+        last_name: null,
+        email: null,
+        credit_card: null
       }).then(function(projectObj) {
         var p;
         p = new Project(projectObj);
