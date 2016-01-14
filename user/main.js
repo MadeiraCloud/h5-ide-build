@@ -13,7 +13,7 @@ var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkInvit
   } else {
     MC_DOMAIN = location.hostname;
   }
-  window.API_HOST = "api-ericsson." + MC_DOMAIN;
+  window.API_HOST = "api." + MC_DOMAIN;
   window.API_PROTO = location.protocol + "//";
   window.language = window.version = "";
   if (location.hostname.toLowerCase().indexOf("visualops.io") >= 0 && location.protocol === "http:") {
@@ -443,7 +443,7 @@ init = function() {
       };
       checkEmail = function(e, cb, weak) {
         var email, reg_str, status;
-        email = $email.val().replace(/@.+$/, "") + "@ericsson.com";
+        email = $email.val();
         status = $("#email-verification-status");
         reg_str = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (email.trim() !== "") {
@@ -620,7 +620,7 @@ init = function() {
               }
               if (usernameAvl && emailAvl && passwordAvl) {
                 params = [
-                  $username.val(), $password.val(), $email.val().replace(/@.+$/, "") + "@ericsson.com", {
+                  $username.val(), $password.val(), $email.val(), {
                     first_name: $firstName.val(),
                     last_name: $lastName.val(),
                     timezone: timezone

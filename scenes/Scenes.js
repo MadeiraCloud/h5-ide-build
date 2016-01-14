@@ -14,7 +14,7 @@ function program1(depth0,data) {
   buffer += "<div class=\"project-scene ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.observer), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <!--\n      <a class=\"ph-nav-btn cloudfielder-btn\" href=\"http://cloudfielder.com/\" target=\"_blank\"><img src=\"/assets/images/ide/cf-favicon.ico\" /> CloudFielder<span>NEW</span></a>\n      -->\n      <button class=\"ph-nav-btn user-guide-btn popuptrigger truncate\" data-popup=\"popupGuide\">Guide</button>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn cloudfielder-btn\" href=\"http://cloudfielder.com/\" target=\"_blank\"><img src=\"/assets/images/ide/cf-favicon.ico\" /> CloudFielder<span>NEW</span></a>\n      <button class=\"ph-nav-btn user-guide-btn popuptrigger truncate\" data-popup=\"popupGuide\">Guide</button>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
     + "</a>\n      <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button>\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate tooltip\" data-tooltip-type=\"html\" data-tooltip=\"\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
   return buffer;
@@ -264,7 +264,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<section class=\"new-project-modal\" data-bind=\"true\">\n  <label for=\"new-project-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_NAME", {hash:{},data:data}))
-    + "</label>\n  <input type=\"text\" class=\"input\" id=\"new-project-name\" data-required=\"true\" required>\n  <div class=\"modal-footer\">\n    <button class=\"btn new-project-create btn-blue\">"
+    + "</label>\n  <input type=\"text\" class=\"input\" id=\"new-project-name\" data-required=\"true\" required>\n  <div class=\"new-project-billing-wrap\">\n    <h4>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING", {hash:{},data:data}))
+    + "</h4>\n    <span class=\"billing-info-tip tooltip icon-password\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT_TIT", {hash:{},data:data}))
+    + "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT", {hash:{},data:data}))
+    + "</span>\n    <div class=\"new-project-info\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_TIP", {hash:{},data:data}))
+    + "</div>\n    <div class=\"billing-info-err warning-red\"></div>\n    <div class=\"billing-info-item billing-info-item-owner\">\n      <label for=\"new-project-fn\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_OWNER", {hash:{},data:data}))
+    + "</label>\n      <input class=\"input\" id=\"new-project-fn\" type=\"text\" placeholder=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_FIRST_NAME", {hash:{},data:data}))
+    + "\" data-required=\"true\">\n      <input class=\"input\" id=\"new-project-ln\" type=\"text\" placeholder=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_LAST_NAME", {hash:{},data:data}))
+    + "\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-email\">\n      <label for=\"new-project-email\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_EMAIL", {hash:{},data:data}))
+    + "</label>\n      <input class=\"input\" id=\"new-project-email\" type=\"text\" placeholder=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_PL_EMAIL", {hash:{},data:data}))
+    + "\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-card\">\n      <label for=\"new-project-card\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CARD_NAME", {hash:{},data:data}))
+    + "</label>\n      <input class=\"input\" id=\"new-project-card\" type=\"text\" data-required=\"true\" placeholder=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_PL_CARD_NAME", {hash:{},data:data}))
+    + "\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-cvv\">\n      <label for=\"new-project-cvv\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CARD_CVV", {hash:{},data:data}))
+    + "</label>\n      <input class=\"input\" id=\"new-project-cvv\"  type=\"text\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-date\">\n      <label for=\"new-project-date\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_EXPRIATION", {hash:{},data:data}))
+    + "</label>\n      <input class=\"input\" id=\"new-project-date\" type=\"text\" placeholder=\"MM/YYYY\" data-required=\"true\">\n    </div>\n  </div>\n  <div class=\"modal-footer\">\n    <button class=\"btn new-project-create btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "LBL_CREATE", {hash:{},data:data}))
     + "</button>\n    <button class=\"btn modal-close new-project-cancel btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
@@ -326,7 +352,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"guide-overlay\"></div>\r\n<img class=\"guide-logo guide-ui\" src=\"/assets/images/login/logo.svg\" />\r\n<div class=\"guide-view icon-menu guide-ui\"></div>\r\n<div class=\"guide-close icon-close guide-ui\"></div>\r\n<div class=\"guide-video\">\r\n	<div class=\"guide-video-tip\">Tutorial</div>\r\n	<div class=\"guide-video-title\"></div>\r\n	<div class=\"box-loading box-wrapper\">\r\n		<div class=\"loading-spinner\"></div>\r\n	</div>\r\n	<video class=\"guide-video\" controls><source type=\"video/mp4\"></video>\r\n</div>\r\n<div class=\"guide-list guide-ui\">\r\n	<!-- <div class=\"guide-title\"><div>VisualOps Guide</div></div> -->\r\n	<ul class=\"guide-cards\">\r\n		<li class=\"guide-card color1\" data-src=\"https://s3.amazonaws.com/visualopsguide/design_your_infrastructure_1.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-drag\"></i></div>\r\n			<div class=\"info\">1<span>m</span></div>\r\n			<div class=\"intro\">Design Your Infrastructure</div>\r\n		</li>\r\n		<span class=\"guide-head\">Workflow</span>\r\n		<li class=\"guide-card color2\" data-src=\"https://s3.amazonaws.com/visualopsguide/configure_deploy_app_1.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-config\"></i></div>\r\n			<div class=\"info\">1<span>m</span></div>\r\n			<div class=\"intro\">Configure & Deploy App</div>\r\n		</li>\r\n		<li class=\"guide-card color3\" data-src=\"https://s3.amazonaws.com/visualopsguide/launch_update_app_1.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-run\"></i></div>\r\n			<div class=\"info\">2<span>m</span></div>\r\n			<div class=\"intro\">Launch & Update App</div>\r\n		</li>\r\n		<li class=\"guide-card color6\" data-src=\"https://s3.amazonaws.com/visualopsguide/aws_resource_monitor_1.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-eye\"></i></div>\r\n			<div class=\"info\">1<span>m</span></div>\r\n			<div class=\"intro\">AWS Resource Monitor</div>\r\n		</li>\r\n		<li class=\"guide-card color4\" data-src=\"https://s3.amazonaws.com/visualopsguide/export_image_cloudformation.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-picture-o\"></i></div>\r\n			<div class=\"info\">50<span>s</span></div>\r\n			<div class=\"intro\">Export Image & CloudFormation</div>\r\n		</li>\r\n		<span class=\"guide-head\">Import & Export</span>\r\n		<li class=\"guide-card color5\" data-src=\"https://s3.amazonaws.com/visualopsguide/import_from_aws.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-cloud-download\"></i></div>\r\n			<div class=\"info\">58<span>s</span></div>\r\n			<div class=\"intro\">Import From AWS</div>\r\n		</li>\r\n		<li class=\"guide-card color7\" data-src=\"https://s3.amazonaws.com/visualopsguide/import_cloudformation.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-code\"></i></div>\r\n			<div class=\"info\">23<span>s</span></div>\r\n			<div class=\"intro\">Import CloudFormation</div>\r\n		</li>\r\n		<li class=\"guide-card color9\" data-src=\"https://s3.amazonaws.com/visualopsguide/aws_resource_manage.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-columns\"></i></div>\r\n			<div class=\"info\">1<span>m</span></div>\r\n			<div class=\"intro\">AWS Resource Manage</div>\r\n		</li>\r\n		<span class=\"guide-head\">Manage</span>\r\n		<li class=\"guide-card color8\" data-src=\"https://s3.amazonaws.com/visualopsguide/team_collaboration.mp4\">\r\n			<div class=\"head\"><i class=\"guideicon guideicon-users\"></i></div>\r\n			<div class=\"info\">1<span>m</span></div>\r\n			<div class=\"intro\">Team Collaboration</div>\r\n		</li>\r\n	</ul>\r\n</div>";
+  return "<div class=\"guide-overlay\"></div>\n<img class=\"guide-logo guide-ui\" src=\"/assets/images/login/logo.svg\" />\n<div class=\"guide-view icon-menu guide-ui\"></div>\n<div class=\"guide-close icon-close guide-ui\"></div>\n<div class=\"guide-video\">\n	<div class=\"guide-video-tip\">Tutorial</div>\n	<div class=\"guide-video-title\"></div>\n	<div class=\"box-loading box-wrapper\">\n		<div class=\"loading-spinner\"></div>\n	</div>\n	<video class=\"guide-video\" controls><source type=\"video/mp4\"></video>\n</div>\n<div class=\"guide-list guide-ui\">\n	<!-- <div class=\"guide-title\"><div>VisualOps Guide</div></div> -->\n	<ul class=\"guide-cards\">\n		<li class=\"guide-card color1\" data-src=\"https://s3.amazonaws.com/visualopsguide/design_your_infrastructure_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-drag\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">Design Your Infrastructure</div>\n		</li>\n		<span class=\"guide-head\">Workflow</span>\n		<li class=\"guide-card color2\" data-src=\"https://s3.amazonaws.com/visualopsguide/configure_deploy_app_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-config\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">Configure & Deploy App</div>\n		</li>\n		<li class=\"guide-card color3\" data-src=\"https://s3.amazonaws.com/visualopsguide/launch_update_app_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-run\"></i></div>\n			<div class=\"info\">2<span>m</span></div>\n			<div class=\"intro\">Launch & Update App</div>\n		</li>\n		<li class=\"guide-card color6\" data-src=\"https://s3.amazonaws.com/visualopsguide/aws_resource_monitor_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-eye\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">AWS Resource Monitor</div>\n		</li>\n		<li class=\"guide-card color4\" data-src=\"https://s3.amazonaws.com/visualopsguide/export_image_cloudformation.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-picture-o\"></i></div>\n			<div class=\"info\">50<span>s</span></div>\n			<div class=\"intro\">Export Image & CloudFormation</div>\n		</li>\n		<span class=\"guide-head\">Import & Export</span>\n		<li class=\"guide-card color5\" data-src=\"https://s3.amazonaws.com/visualopsguide/import_from_aws.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-cloud-download\"></i></div>\n			<div class=\"info\">58<span>s</span></div>\n			<div class=\"intro\">Import From AWS</div>\n		</li>\n		<li class=\"guide-card color7\" data-src=\"https://s3.amazonaws.com/visualopsguide/import_cloudformation.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-code\"></i></div>\n			<div class=\"info\">23<span>s</span></div>\n			<div class=\"intro\">Import CloudFormation</div>\n		</li>\n		<li class=\"guide-card color9\" data-src=\"https://s3.amazonaws.com/visualopsguide/aws_resource_manage.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-columns\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">AWS Resource Manage</div>\n		</li>\n		<span class=\"guide-head\">Manage</span>\n		<li class=\"guide-card color8\" data-src=\"https://s3.amazonaws.com/visualopsguide/team_collaboration.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-users\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">Team Collaboration</div>\n		</li>\n	</ul>\n</div>";
   }; return Handlebars.template(TEMPLATE); });
 define('scenes/userguide/userguide',['constant', 'i18n!/nls/lang.js', './userguideTpl', 'backbone'], function(constant, lang, template) {
   return Backbone.View.extend({
@@ -427,7 +453,7 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       return this.modal.close();
     },
     create: function() {
-      var $create, $email, $firstname, $lastname, $name, modal, valid;
+      var $create, $cvv, $email, $expire, $firstname, $lastname, $name, $number, expire, expireAry, modal, valid;
       modal = this.modal;
       modal.tpl.find(".billing-info-err").hide();
       $create = modal.tpl.find(".new-project-create");
@@ -435,7 +461,33 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       $firstname = modal.tpl.find("#new-project-fn");
       $lastname = modal.tpl.find("#new-project-ln");
       $email = modal.tpl.find("#new-project-email");
+      $number = modal.tpl.find("#new-project-card");
+      $expire = modal.tpl.find("#new-project-date");
+      $cvv = modal.tpl.find("#new-project-cvv");
       valid = true;
+      $expire.parsley('custom', function(val) {
+        return null;
+      });
+      expire = $expire.val();
+      expireAry = expire.split('/');
+      if (expire.match(/^\d\d\/\d\d$/g)) {
+        expire = "" + expireAry[0] + "/20" + expireAry[1];
+      } else if (expire.match(/^\d\d\d\d$/g)) {
+        expire = "" + (expire.substr(0, 2)) + "/20" + (expire.substr(2, 2));
+      } else if (expire.match(/^\d\d\/\d\d\d\d$/g)) {
+        expire = expire;
+      } else if (expire.match(/^\d\d\d\d\d\d$/g)) {
+        expire = "" + (expire.substr(0, 2)) + "/" + (expire.substr(2, 4));
+      } else if (expire.match(/^\d\d\d$/g)) {
+        expire = "0" + (expire.substr(0, 1)) + "/20" + (expire.substr(1, 2));
+      } else {
+        $expire.parsley('custom', function(val) {
+          if (val.indexOf('/') === -1) {
+            return lang.IDE.SETTINGS_CREATE_PROJECT_EXPIRE_FORMAT;
+          }
+          return null;
+        });
+      }
       modal.tpl.find("input").each(function(idx, dom) {
         if (!$(dom).parsley('validate')) {
           valid = false;
@@ -449,7 +501,11 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
           firstname: $firstname.val(),
           lastname: $lastname.val(),
           email: $email.val(),
-          card: null
+          card: {
+            number: $number.val(),
+            expire: expire,
+            cvv: $cvv.val()
+          }
         }).then(function(project) {
           return modal.close(function() {
             return App.loadUrl(project.url());
@@ -1350,30 +1406,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n        <a data-id=\"billing\">"
+  buffer += "\n        <a data-id=\"billing\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
-    + "</a>\r\n        <a data-id=\"credential\">"
+    + "</a>\n        <a data-id=\"credential\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROVIDER_CREDENTIAL", {hash:{},data:data}))
-    + "</a>\r\n        ";
+    + "</a>\n        ";
   return buffer;
   }
 
-  buffer += "<nav id=\"settings-nav\">\r\n    <a class=\"back-settings\">&lt; "
+  buffer += "<nav id=\"settings-nav\">\n    <a class=\"back-settings\">&lt; "
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
-    + "</a>\r\n    <section class=\"function-list\">\r\n        <header class=\"settings-nav-project-title truncate\">"
+    + "</a>\n    <section class=\"function-list\">\n        <header class=\"settings-nav-project-title truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</header>\r\n        <a data-id=\"basicsettings\">"
+    + "</header>\n        <a data-id=\"basicsettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "BASIC_SETTINGS", {hash:{},data:data}))
-    + "</a>\r\n        <a data-id=\"team\">"
+    + "</a>\n        <a data-id=\"team\">"
     + escapeExpression(helpers.i18n.call(depth0, "TEAM", {hash:{},data:data}))
-    + "</a>\r\n        <a data-id=\"usagereport\">"
+    + "</a>\n        <a data-id=\"usagereport\">"
     + escapeExpression(helpers.i18n.call(depth0, "USAGE_REPORT", {hash:{},data:data}))
-    + "</a>\r\n        ";
+    + "</a>\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.admin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        <a data-id=\"accesstoken\">"
+  buffer += "\n        <a data-id=\"accesstoken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</a>\r\n    </section>\r\n</nav>\r\n<section class=\"setting-content\">\r\n    <header class=\"project-title\">\r\n        <span id=\"title-project-name\" class=\"truncate\"></span>\r\n        <span id=\"title-tab-name\"></span>\r\n    </header>\r\n    <article class=\"project-subview\"></article>\r\n</section>";
+    + "</a>\n    </section>\n</nav>\n<section class=\"setting-content\">\n    <header class=\"project-title\">\n        <span id=\"title-project-name\" class=\"truncate\"></span>\n        <span id=\"title-tab-name\"></span>\n    </header>\n    <article class=\"project-subview\"></article>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('scenes/settings/template/TplBasicSettings',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -1906,26 +1962,26 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<section>\r\n    <div id=\"TokenManager\">\r\n        <p class=\"clearfix\">\r\n            ";
+  buffer += "<section>\n    <div id=\"TokenManager\">\n        <p class=\"clearfix\">\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n            "
+  buffer += "\n            "
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
-    + "<a href=\"http://docs.visualops.io/app_management/reload_states.html\" target=\"_blank\">"
+    + "<a href=\"http://docs.visualops.io/app/reload_states.html\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\r\n        <section class=\"token-table\">\r\n            <header class=\"clearfix\">\r\n                <span class=\"tokenName\">"
+    + "</a> </p>\n        <section class=\"token-table\">\n            <header class=\"clearfix\">\n                <span class=\"tokenName\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\r\n                <span class=\"tokenToken\">"
+    + "</span>\n                <span class=\"tokenToken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\r\n            </header>\r\n            <div class=\"scroll-wrap\">\r\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n                <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</span>\n            </header>\n            <div class=\"scroll-wrap\">\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\r\n            </div>\r\n        </section>\r\n    </div>\r\n    <div id=\"TokenRmConfirm\" class=\"hide\">\r\n        <h3 id=\"TokenRmTit\"></h3>\r\n        <p>"
+    + "\"></ul>\n            </div>\n        </section>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n        <h3 id=\"TokenRmTit\"></h3>\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
-    + "</p>\r\n        <div class=\"cred-btn-wrap clearfix\">\r\n            <button class=\"right btn btn-modal-close btn-silver\" id=\"TokenRmCancel\">"
+    + "</p>\n        <div class=\"cred-btn-wrap clearfix\">\n            <button class=\"right btn btn-modal-close btn-silver\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n            <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + "</button>\n            <button id=\"TokenRemove\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
-    + "</button>\r\n        </div>\r\n    </div>\r\n\r\n</section>";
+    + "</button>\n        </div>\n    </div>\n\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('scenes/settings/views/AccessTokenView',['backbone', "../template/TplAccessToken", 'i18n!/nls/lang.js', "ApiRequest", "UI.scrollbar"], function(Backbone, template, lang, ApiRequest) {
@@ -2145,11 +2201,52 @@ function program1(depth0,data) {
 
 function program3(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.cardNumber)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program5(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "NO_CARD", {hash:{},data:data}));
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<p class=\"payment-username\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<button class=\"btn btn-blue update-payment\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROVIDE_BILLING_INFORMATION", {hash:{},data:data}))
+    + "<i class=\"icon-right\"></i></button>\n                ";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<button class=\"btn btn-blue update-payment\">"
+    + escapeExpression(helpers.i18n.call(depth0, "UPDATE_BILLING_INFORMATION", {hash:{},data:data}))
+    + "<i class=\"icon-right\"></i></button>\n                ";
+  return buffer;
+  }
+
+function program13(depth0,data) {
+  
   
   return "\n        <dl class=\"billing-history settings-item\"></dl>\n    ";
   }
 
-function program5(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dl class=\"billing-history settings-item\">\n            <dt>"
@@ -2159,12 +2256,12 @@ function program5(depth0,data) {
     + " "
     + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.nextPeriod), "yyyy-MM-d", {hash:{},data:data}))
     + "</span>\n            <dd class=\"table-head-fix\">\n                ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentHistory)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(12, program12, data),fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentHistory)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(22, program22, data),fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </div>\n    ";
   return buffer;
   }
-function program6(depth0,data) {
+function program16(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <table class=\"table-head\">\n                        <thead>\n                        <tr>\n                            <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">"
@@ -2176,12 +2273,12 @@ function program6(depth0,data) {
     + "</th>\n                            <th data-row-type=\"string\" style=\"width:25%;\">"
     + escapeExpression(helpers.i18n.call(depth0, "ACTION", {hash:{},data:data}))
     + "</th>\n                        </tr>\n                        </thead>\n                    </table>\n                    <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <table class=\"table\">\n                                <thead>\n                                <tr>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                                </tbody>\n                            </table>\n                        </div>\n                    </dd>\n                ";
   return buffer;
   }
-function program7(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                    <tr class=\"item\" data-id=\""
@@ -2191,20 +2288,20 @@ function program7(depth0,data) {
     + "</td>\n                                        <td>$ "
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
     + "</td>\n                                        <td>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n                                        <td>\n                                            <a class=\"payment-receipt\" href=\"#\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_VIEW_RECEIPT", {hash:{},data:data}))
     + "</a></td>\n                                    </tr>\n                                ";
   return buffer;
   }
-function program8(depth0,data) {
+function program18(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program10(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<span class=\"link-red\">"
@@ -2213,7 +2310,7 @@ function program10(depth0,data) {
   return buffer;
   }
 
-function program12(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"full-space\">\n                        "
@@ -2233,8 +2330,19 @@ function program12(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
     + "</button>\n                <button class=\"btn btn-silver modal-close editEmailCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n            </div>\n        </dd>\n    </dl>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSubscription), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+    + "</button>\n            </div>\n        </dd>\n    </dl>\n    <dl class=\"settings-item credit-card-info\">\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "CREDIT_CARD_INFORMATION", {hash:{},data:data}))
+    + "</dt>\n        <dd>\n            <div class=\"payment-credit-middle payment-credit-card\">\n\n            </div>\n            <div class=\"credit-meta\">\n                <p class=\"payment-number\">";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.cardNumber), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</p>\n                ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.firstName), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </div>\n            <div class=\"credit-update\">\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSubscription), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </div>\n        </dd>\n    </dl>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSubscription), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
   return buffer;
@@ -3983,7 +4091,7 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
     + "' id=\"AccountEmail\"></button>\n        </dd>\n    </dl>\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap settings-item\">\n        <dl>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" style=\"width:100px;margin-right:10px;\"><span>@ericsson.com</span></dd>\n\n            <dt>"
+    + "</dt>\n            <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\n\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
     + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\n        </dl>\n\n      <div id=\"SettingErrorInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"edit-actions\">\n          <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
@@ -4183,9 +4291,6 @@ define('scenes/settings/GenericSettings',['i18n!/nls/lang.js', 'UI.modalplus', '
       var isValidEmail, new_email, new_pwd, regExp;
       new_email = $("#AccountNewEmail").val() || "";
       new_pwd = $("#AccountEmailPwd").val() || "";
-      if (new_email) {
-        new_email = new_email.replace(/@.+$/, "") + "@ericsson.com";
-      }
       regExp = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
       isValidEmail = regExp.test(new_email);
       if (new_email.length && new_pwd.length >= 6 && isValidEmail) {
@@ -4236,9 +4341,6 @@ define('scenes/settings/GenericSettings',['i18n!/nls/lang.js', 'UI.modalplus', '
       var email, pwd;
       email = $("#AccountNewEmail").val() || "";
       pwd = $("#AccountEmailPwd").val() || "";
-      if (email) {
-        email = email.replace(/@.+$/, "") + "@ericsson.com";
-      }
       $("#SettingErrorInfo").empty();
       $("#AccountUpdateEmail").attr("disabled", "disabled");
       App.user.changeEmail(email, pwd).then(function() {
@@ -4441,113 +4543,113 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
+  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\n\n  <section>\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STACK_APP_OP", {hash:{},data:data}))
-    + "</h3>\r\n    <ul>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_KEY", {hash:{},data:data}))
-    + "</span> </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span> </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_STAT_KEY", {hash:{},data:data}))
-    + "</span> </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span> </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_STAT_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">"
+    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\r\n          <span class=\"shortcut pc\">"
+    + "</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">"
+    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\r\n          <span class=\"shortcut pc\">"
+    + "</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + S</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + S</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SAVE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SAVE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + "
+    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + "
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\r\n          <span class=\"shortcut pc\">"
+    + "</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">← ↑ → ↓</span> </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">← ↑ → ↓</span> </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NUDGE_ITEM_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
+    + "</div>\n      </li>\n    </ul>\n  </section>\n\n  <section>\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STATE_GEN", {hash:{},data:data}))
-    + "</h3>\r\n    <ul class=\"keys\">\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">↑ ↓</span></div>\r\n        <div class=\"shortcut-desc\">"
+    + "</h3>\n    <ul class=\"keys\">\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">↑ ↓</span></div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_FOCUS_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_KEY", {hash:{},data:data}))
-    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_EXPAND_KEY", {hash:{},data:data}))
-    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_EXPAND_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COLLAPSE_KEY", {hash:{},data:data}))
-    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COLLAPSE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NEXT_KEY", {hash:{},data:data}))
-    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NEXT_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PREV_KEY", {hash:{},data:data}))
-    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PREV_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + E</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + E</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CONTENT_EDITOR_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CONTENT_EDITOR_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + I</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + I</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_INFO_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_INFO_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + L</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + L</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_LOG_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_LOG_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
+    + "</div>\n      </li>\n    </ul>\n  </section>\n\n  <section>\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STATE_EDIT", {hash:{},data:data}))
-    + "</h3>\r\n    <ul>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + A</span>\r\n          <span class=\"shortcut pc\">"
+    + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + A</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ALL_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ALL_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + D</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + D</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DESELECT_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DESELECT_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Enter</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Enter</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CREATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CREATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Delete</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Delete</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + ↑</span>\r\n          <span class=\"shortcut mac\">⌘ + ↓</span>\r\n          <span class=\"shortcut pc\">Ctrl + ↑</span>\r\n          <span class=\"shortcut pc\">Ctrl + ↓</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + ↑</span>\n          <span class=\"shortcut mac\">⌘ + ↓</span>\n          <span class=\"shortcut pc\">Ctrl + ↑</span>\n          <span class=\"shortcut pc\">Ctrl + ↓</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_MOVE_FOCUS_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + C</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + C</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COPY_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COPY_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + V</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + V</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PASTE_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PASTE_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Z</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Z</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_UNDO_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_UNDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Y</span>\r\n          <span class=\"shortcut pc\">"
+    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Y</span>\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
+    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n</div>\r\n<div class=\"icon-close-circle\"></div>\r\n</div>";
+    + "</div>\n      </li>\n    </ul>\n  </section>\n\n</div>\n<div class=\"icon-close-circle\"></div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 var __hasProp = {}.hasOwnProperty,

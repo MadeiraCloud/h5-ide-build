@@ -169,15 +169,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\r\n    <div class=\"confirmSession\">\r\n        <div class=\"modal-text-major\">\r\n            <p>"
+  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\n    <div class=\"confirmSession\">\n        <div class=\"modal-text-major\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\r\n            <p>"
+    + "</p>\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\r\n        </div>\r\n        <div class=\"modal-text-minor\">"
+    + "</p>\n        </div>\n        <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\r\n    </div>\r\n    <div class=\"reconnectSession\" style=\"display:none;\">\r\n        <div class=\"modal-text-major\">"
+    + "</div>\n    </div>\n    <div class=\"reconnectSession\" style=\"display:none;\">\n        <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\r\n        <div class=\"modal-input\">\r\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n        </div>\r\n    </div>\r\n</section>";
+    + "</div>\n        <div class=\"modal-input\">\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n        </div>\n    </div>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "UI.modalplus", "backbone"], function(lang, template, modalPlus) {
@@ -569,7 +569,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       }
       this.__userTriggerAppProgress = false;
 
-      /* env:dev                                                                                                                                                                                                       env:dev:end */
+      /* env:dev                                                                                                                                                                                                     env:dev:end */
 
       /* env:debug */
       this.listenTo(this, "change:state", function() {
@@ -2553,10 +2553,15 @@ define('ide/ApplicationModel',["OpsModel", "./submodels/Notification", "Project"
       self = this;
       return ApiRequest("project_create", {
         project_name: attr.name,
-        first_name: null,
-        last_name: null,
-        email: null,
-        credit_card: null
+        first_name: attr.firstname,
+        last_name: attr.lastname,
+        email: attr.email,
+        credit_card: {
+          full_number: attr.card.number,
+          expiration_month: attr.card.expire.split("/")[0] || "",
+          expiration_year: attr.card.expire.split("/")[1] || "",
+          cvv: attr.card.cvv
+        }
       }).then(function(projectObj) {
         var p;
         p = new Project(projectObj);
