@@ -23,13 +23,15 @@
  * Date: 2013-04-16
  */
 
+//     Underscore.js 1.8.2
+//     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-
 //     Underscore may be freely distributed under the MIT license.
 
 //     (c) 2010-2013 Jeremy Ashkenas, DocumentCloud Inc.
-
 //     Backbone may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     http://backbonejs.org
 
 /*!
 
