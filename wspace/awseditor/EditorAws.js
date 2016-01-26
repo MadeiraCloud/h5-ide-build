@@ -13425,7 +13425,7 @@ define('wspace/awseditor/property/acl/model',['../base/model', "Design", 'consta
       return null;
     },
     checkRuleNumber: function(rulenumber) {
-      var rule;
+      var inbound, rule;
       rulenumber = parseInt(rulenumber, 10);
       if (!((0 < rulenumber && rulenumber < 32768))) {
         return lang.PARSLEY.VALID_RULE_NUMBER_1_TO_32767;
@@ -13433,8 +13433,9 @@ define('wspace/awseditor/property/acl/model',['../base/model', "Design", 'consta
       if (this.get("isDefault") && rulenumber === 100) {
         return lang.PARSLEY.RULE_NUMBER_100_HAS_EXISTED;
       }
+      inbound = $('#acl-add-model-direction-inbound').prop('checked');
       rule = _.find(Design.instance().component(this.get("uid")).get("rules"), function(r) {
-        return r.number === rulenumber;
+        return r.number === rulenumber && r.egress !== inbound;
       });
       if (rule) {
         return sprintf(lang.PARSLEY.RULENUMBER_ALREADY_EXISTS, rulenumber);
@@ -29209,7 +29210,7 @@ define('wspace/awseditor/model/AclModel',["ComplexResModel", "ConnectionModel", 
       currentRules = this.get("rules");
       for (_i = 0, _len = currentRules.length; _i < _len; _i++) {
         r = currentRules[_i];
-        if (r.number === rule.number) {
+        if (r.number === rule.number && r.egress === rule.egress) {
           return false;
         }
       }
